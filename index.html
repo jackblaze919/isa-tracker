@@ -766,12 +766,12 @@ const EXERCISES = {
     {id:"stepup",name:"Step-up",sets:2,range:"8–12",perLeg:true,cue:"Whole foot on a stable step, step down slowly.",vid:"https://youtu.be/aKj-6hgiViA"}
   ],
   gluteC:[
-    {id:"hipthrust_c",name:"Hip thrust / floor bridge",prog:true,cue:"Same as Monday — try to beat it by a rep or a bit more weight.",vid:"https://youtu.be/z8WwUC_UA4w"},
+    {id:"hipthrust_c",histId:"hipthrust",name:"Hip thrust / floor bridge",prog:true,cue:"Same as Monday — try to beat it by a rep or a bit more weight.",vid:"https://youtu.be/z8WwUC_UA4w"},
     {id:"splitsquat",name:"Supported split squat",sets:2,range:"8–12",perLeg:true,cue:"Long stance, front heel down, hold a wall.",vid:"https://youtu.be/2C-uNgKwPLE"}
   ],
   upper:[
     {id:"pushup",name:"Incline push-up",sets:2,range:"8–15",cue:"Wall/counter — lower the surface as you get stronger.",vid:"https://youtu.be/0JUrOH--Kdk"},
-    {id:"row",name:"One-arm backpack row",sets:2,range:"10–15",perLeg:true,cue:"Support with the other hand; pull the pack to your hip.",vid:"https://youtu.be/PgpQ4-jHiq4"},
+    {id:"row",name:"One-arm backpack row",sets:2,range:"10–15",perLeg:true,unit:"arm",cue:"Support with the other hand; pull the pack to your hip.",vid:"https://youtu.be/PgpQ4-jHiq4"},
     {id:"ohp",name:"Overhead press",sets:2,range:"8–15",cue:"Ribs down, don't lean back.",vid:"https://youtu.be/qEwKCR5JCog"},
     {id:"arms",name:"Arms (curls or triceps)",sets:2,range:"12–20",cue:"Backpack curls or overhead triceps — alternate each session.",vid:"https://youtu.be/6DeLZ6cbgWQ"}
   ]
@@ -891,18 +891,18 @@ function lastLog(exId){
   return best;
 }
 function exCardHTML(ex,wk){
-  const sets=setsFor(ex,wk), range=rangeFor(ex,wk);
-  const log=load("log|"+TODAY_KEY+"|"+ex.id,{});
-  const last=lastLog(ex.id);
-  let fields=`<div class="logfield wide">Weight<input data-ex="${ex.id}" data-field="weight" value="${esc(log.weight)}" placeholder="e.g. 15 lb"></div>`;
-  for(let i=1;i<=sets;i++){ const rv=(log.reps&&log.reps[i-1])||""; fields+=`<div class="logfield">Set ${i}<input inputmode="numeric" data-ex="${ex.id}" data-field="r${i}" value="${esc(rv)}" placeholder="reps"></div>`; }
+  const sets=setsFor(ex,wk), range=rangeFor(ex,wk), hid=ex.histId||ex.id;
+  const log=load("log|"+TODAY_KEY+"|"+hid,{});
+  const last=lastLog(hid);
+  let fields=`<div class="logfield wide">Weight<input data-ex="${hid}" data-field="weight" value="${esc(log.weight)}" placeholder="e.g. 15 lb"></div>`;
+  for(let i=1;i<=sets;i++){ const rv=(log.reps&&log.reps[i-1])||""; fields+=`<div class="logfield">Set ${i}<input inputmode="numeric" data-ex="${hid}" data-field="r${i}" value="${esc(rv)}" placeholder="reps"></div>`; }
   const opts=["Easy","Just right","Hard","Too hard"].map(o=>`<option ${log.rpe===o?"selected":""}>${o}</option>`).join("");
-  fields+=`<div class="logfield">Effort<select data-ex="${ex.id}" data-field="rpe"><option value="">–</option>${opts}</select></div>`;
+  fields+=`<div class="logfield">Effort<select data-ex="${hid}" data-field="rpe"><option value="">–</option>${opts}</select></div>`;
   const lastHtml = last
     ? `<div class="lasttime">Last time (${fmtShort(last._date)}): ${esc(last.weight)||"—"} · ${((last.reps||[]).filter(Boolean).join(", "))||"—"}</div>`
     : `<div class="lasttime">First time — log your numbers 💪</div>`;
   return `<div class="exercise"><div class="name">${esc(ex.name)}</div>`+
-    `<div class="sets">${sets}×${range}${ex.perLeg?" / side":""}</div>`+
+    `<div class="sets">${sets}×${range}${ex.perLeg?(" / "+(ex.unit||"side")):""}</div>`+
     `<div style="font-size:13px;color:#7a5566;margin:4px 0">${esc(ex.cue)}</div>`+
     `<a class="formbtn" target="_blank" rel="noopener" href="${ex.vid}">🎥 Watch form</a>`+
     `<div class="logwrap">${fields}</div>${lastHtml}</div>`;
