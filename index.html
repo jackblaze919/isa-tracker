@@ -197,9 +197,9 @@
   .heart-fx{position:fixed;pointer-events:none;z-index:999;font-size:18px;animation:burst .9s ease-out forwards}
   @keyframes burst{0%{opacity:1;transform:translate(0,0) scale(.6) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(var(--dr))}}
 
+  /* Keep the playful animations on; only avoid auto smooth-scrolling under reduced motion. */
   @media (prefers-reduced-motion: reduce){
-    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
-    .heart-fx{display:none!important}
+    html{scroll-behavior:auto}
   }
   @media (max-width:480px){ header h1{font-size:28px} .targetgrid{grid-template-columns:1fr 1fr} }
 </style>
@@ -488,7 +488,6 @@ function effectiveType(day){ const o=load("wo_override|"+TODAY_KEY,""); return o
    CUTE FX + helpers
    ============================================================ */
 function heartBurst(x,y){
-  if(RM) return;
   const e=["💖","💕","✨","🩷","🌸","💗"];
   for(let i=0;i<7;i++){const el=document.createElement("div");el.className="heart-fx";el.textContent=e[(i*97+Math.round(x))%e.length];
     el.style.left=x+"px";el.style.top=y+"px";const a=(i/7)*Math.PI*2;
@@ -496,7 +495,6 @@ function heartBurst(x,y){
     document.body.appendChild(el);setTimeout(()=>el.remove(),900);}
 }
 function confettiRain(){
-  if(RM) return;
   const e=["💖","🎉","✨","🩷","🌸","💕","🎀"];
   for(let i=0;i<26;i++){const el=document.createElement("div");el.className="heart-fx";el.textContent=e[i%e.length];
     el.style.left=(8+(i*97%84))+"vw";el.style.top="-20px";
