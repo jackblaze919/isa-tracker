@@ -100,15 +100,25 @@ window.IsaHamster = (function(){
 
   /* ---------- ANIM state (ephemeral) ---------- */
   const A = { el:null, flip:null, stage:null, wheel:null, shadow:null, bowlFood:null, decorEl:null,
+    poseEl:null, fxLayer:null, walkInterval:0,
     hx:60, dir:1, w:320, raf:0, idleTimer:0, timers:[], paused:false,
     mood:"idle", busy:false, gen:0, queue:[], started:false, lastPet:0, lastTap:0 };
 
-  const SPOT={ bed:0.08, bowl:0.20, wheel:0.54, tunnel:0.9, bottle:0.9, center:0.5 };
+  const SPOT={ bed:0.08, bowl:0.20, wheel:0.54, tunnel:0.9, bottle:0.9, center:0.5, home:0.30, exercise:0.34 };
   const ACTIVITY={ idle:"is exploring",walking:"is exploring",sniffing:"is sniffing around",grooming:"is grooming its fur",
     sitting:"is just chilling",waitbowl:"is waiting by the bowl",looking:"is looking at you 🥰",wiggle:"wiggled its ears",
     eating:"is munching too 🍽️",drinking:"is having a sip",sleeping:"is napping 😴",resting:"is catching its breath",
     wheel:"is running on its wheel",exercising:"is working out too 💪",petted:"loves the pets 💕",
     tumbling:"went tumbling! ⭐",recovering:"is shaking it off" };
+
+  const POSE_MAP = {
+    idle:"pose-idle", walking:null, sniffing:"pose-sniff", grooming:"pose-groom-1",
+    sitting:"pose-sit", waitbowl:"pose-wait-bowl", looking:"pose-look-left",
+    wiggle:"pose-idle", eating:"pose-eat-1", drinking:"pose-drink",
+    sleeping:"pose-sleep", resting:"pose-sit", wheel:"pose-wheel-1",
+    exercising:"pose-exercise-1", petted:"pose-petted", tumbling:"pose-tumble-1",
+    recovering:"pose-recover"
+  };
 
   function frac(f){ return Math.max(38, Math.min(A.w-38, f*A.w)); }
   function place(){ if(A.el) A.el.style.left=A.hx+"px"; if(A.shadow){ A.shadow.style.left=A.hx+"px"; A.shadow.style.display="block"; } }
@@ -118,6 +128,7 @@ window.IsaHamster = (function(){
   function after(ms,fn){ const id=setTimeout(fn, ms); A.timers.push(id); return id; }
   function mood(m){
     A.mood=m;
+    const pid=POSE_MAP[m]; if(pid&&A.poseEl) A.poseEl.setAttribute("href","#"+pid);
     if(A.el){ const onWheel=A.el.classList.contains("on-wheel"), inT=A.el.classList.contains("in-tunnel"),
       tl=A.el.classList.contains("tumble-left"), tr=A.el.classList.contains("tumble-right");
       A.el.className="hammy mood-"+m+(onWheel?" on-wheel":"")+(inT?" in-tunnel":"")+(tl?" tumble-left":"")+(tr?" tumble-right":""); }
@@ -125,28 +136,61 @@ window.IsaHamster = (function(){
   }
 
   /* ---------- floating effects ---------- */
+  const FX_MAP={heart:["fx-heart-1","fx-heart-2","fx-heart-3"],star:["fx-star-1","fx-sparkle","fx-star-2"],zzz:["fx-zzz"],dust:["fx-dust-1","fx-dust-2"],crumb:["fx-crumb-1","fx-crumb-2"]};
   function fx(kind,n){
-    if(!A.stage) return;
-    const emo = kind==="heart"?["💕","💗","💖","🩷"] : kind==="star"?["⭐","✨","🌟"] : ["💤"];
-    n = n || (kind==="zzz"?1:3);
-    for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="hfx "+kind; d.textContent=emo[i%emo.length];
-      d.style.left=A.hx+"px"; d.style.setProperty("--dx", rand(-16,16)+"px"); d.style.animationDelay=(i*90)+"ms";
-      A.stage.appendChild(d); setTimeout(()=>d.remove(),1500); }
+    const layer=A.fxLayer||A.stage; if(!layer) return;
+    const syms=FX_MAP[kind]||FX_MAP.star;
+    n=n||(kind==="zzz"?1:3);
+    for(let i=0;i<n;i++){
+      const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      s.setAttribute("class","hfx "+kind); s.setAttribute("viewBox","0 0 24 24");
+      s.style.left=A.hx+"px"; s.style.setProperty("--dx",rand(-16,16)+"px");
+      s.style.animationDelay=(i*90)+"ms";
+      const u=document.createElementNS("http://www.w3.org/2000/svg","use");
+      u.setAttribute("href","#"+syms[i%syms.length]);
+      s.appendChild(u); layer.appendChild(s); setTimeout(()=>s.remove(),1500);
+    }
   }
-  function onWheel(on){ if(A.wheel) A.wheel.classList.toggle("spin", on && !RM); if(A.el) A.el.classList.toggle("on-wheel", on); }
-  function bowlFood(show){ if(A.bowlFood) A.bowlFood.classList.toggle("show", !!show); }
+  function onWheel(on){
+    if(A.wheel){
+      if(on){ A.wheel.classList.remove("wobble"); A.wheel.classList.toggle("spin", !RM); }
+      else { A.wheel.classList.remove("spin"); if(!RM) A.wheel.classList.add("wobble"); }
+    }
+    if(A.el) A.el.classList.toggle("on-wheel", on);
+  }
+  function bowlFood(show){ if(A.bowlFood) A.bowlFood.style.display=show?"block":"none"; }
+
+  /* ---------- environment ambient ---------- */
+  let bubbleTimer=0;
+  function scheduleBubble(){
+    if(bubbleTimer) clearTimeout(bubbleTimer);
+    if(A.paused||RM) return;
+    bubbleTimer=setTimeout(()=>{
+      if(!A.paused&&!document.hidden&&A.stage){
+        const b=document.createElement("div"); b.className="bottle-bubble";
+        b.style.top="54px"; b.style.right="18px";
+        A.stage.appendChild(b); setTimeout(()=>b.remove(),1300);
+      }
+      scheduleBubble();
+    }, rand(15000,40000));
+  }
 
   /* ---------- movement (rAF only while actually walking; instant under reduced motion) ---------- */
   function walkTo(target, done){
     mood("walking");
+    if(!RM && A.poseEl){
+      let wf=0; const WF=["pose-walk-1","pose-walk-2","pose-walk-3","pose-walk-4"];
+      clearInterval(A.walkInterval);
+      A.walkInterval=setInterval(()=>{wf=(wf+1)%4;if(A.poseEl)A.poseEl.setAttribute("href","#"+WF[wf]);},120);
+    }
     const start=A.hx, dist=target-start;
-    if(Math.abs(dist)<3 || RM){ A.hx=target; place(); done&&done(); return; }
+    if(Math.abs(dist)<3 || RM){ A.hx=target; place(); clearInterval(A.walkInterval); A.walkInterval=0; done&&done(); return; }
     face(dist>0?1:-1);
     const dur=Math.min(2600, Math.max(350, Math.abs(dist)/0.075));
     const t0=performance.now(), g=A.gen; cancelRaf();
     function step(t){ if(g!==A.gen||A.paused) return; const k=Math.min(1,(t-t0)/dur);
       A.hx=start+dist*k; place();
-      if(k<1) A.raf=requestAnimationFrame(step); else { A.raf=0; done&&done(); } }
+      if(k<1) A.raf=requestAnimationFrame(step); else { A.raf=0; clearInterval(A.walkInterval); A.walkInterval=0; done&&done(); } }
     A.raf=requestAnimationFrame(step);
   }
 
@@ -168,13 +212,25 @@ window.IsaHamster = (function(){
   function aIdle(done){ mood("idle"); after(rand(1400,2600),done); }
   function aLook(done){ face(Math.random()<.5?-1:1); mood("looking"); after(1800,done); }
   function aWiggle(done){ mood("wiggle"); after(1200,done); }
-  function aSniff(done){ walkTo(frac(rand(.2,.8)), ()=>{ mood("sniffing"); after(1600,done); }); }
+  // wander to a clear spot, avoiding the wheel band so we never park on/inside the wheel
+  function aSniff(done){ const x=Math.random()<.5?rand(.12,.40):rand(.64,.84); walkTo(frac(x), ()=>{ mood("sniffing"); after(1600,done); }); }
   function aGroom(done){ mood("sitting"); after(300,()=>{ mood("grooming"); after(2200,done); }); }
   function aDrink(done){ walkTo(frac(SPOT.bottle), ()=>{ face(1); mood("drinking"); after(2200,done); }); }
   function aWaitBowl(done){ walkTo(frac(SPOT.bowl), ()=>{ mood("waitbowl"); after(2000,done); }); }
-  function aTunnel(done){ walkTo(frac(SPOT.tunnel), ()=>{ if(A.el)A.el.classList.add("in-tunnel"); mood("idle"); after(1800,()=>{ if(A.el)A.el.classList.remove("in-tunnel"); done(); }); }); }
+  function aTunnel(done){
+    const tunnelEl=document.querySelector('.prop-tunnel');
+    walkTo(frac(SPOT.tunnel), ()=>{
+      if(A.el)A.el.classList.add("in-tunnel");
+      if(tunnelEl)tunnelEl.classList.add("hammy-inside");
+      mood("idle"); after(1800,()=>{
+        if(A.el)A.el.classList.remove("in-tunnel");
+        if(tunnelEl)tunnelEl.classList.remove("hammy-inside");
+        done();
+      });
+    });
+  }
   function aSit(done){ mood("sitting"); after(2200,done); }
-  function aWheelIdle(done){ walkTo(frac(SPOT.wheel), ()=>{ onWheel(true); mood("wheel"); after(2400,()=>{ onWheel(false); bump("energy",-1); saveCare(); done(); }); }); }
+  function aWheelIdle(done){ walkTo(frac(SPOT.wheel), ()=>{ onWheel(true); mood("wheel"); after(2400,()=>{ onWheel(false); bump("energy",-1); saveCare(); walkTo(frac(SPOT.home), done); }); }); }
   function aNap(done){ walkTo(frac(SPOT.bed), ()=>{ mood("sitting"); after(300,()=>{ mood("sleeping"); fx("zzz"); bump("energy",2); saveCare(); after(2800,done); }); }); }
 
   // pick the next idle action, gently weighted by care state + time of day
@@ -199,12 +255,12 @@ window.IsaHamster = (function(){
       after(dur, ()=>{ bowlFood(false); done(); }); });
   }
   function animWorkout(done){
-    walkTo(frac(SPOT.center), ()=>{ mood("exercising");
-      after(2600, ()=>{ mood("resting"); after(1400, done); }); });   // exercise then a short rest
+    walkTo(frac(SPOT.exercise), ()=>{ mood("exercising");
+      after(2600, ()=>{ mood("resting"); after(1400, ()=>walkTo(frac(SPOT.home), done)); }); });   // exercise → rest → home
   }
   function animWheel(done){
     walkTo(frac(SPOT.wheel), ()=>{ onWheel(true); mood("wheel"); fx("star",2);
-      after(4000, ()=>{ onWheel(false); mood("resting"); after(1000, done); }); });
+      after(4000, ()=>{ onWheel(false); mood("resting"); after(1000, ()=>walkTo(frac(SPOT.home), done)); }); });
   }
   function animSleep(happy, done){
     walkTo(frac(SPOT.bed), ()=>{ mood("sleeping"); fx("zzz");
@@ -256,7 +312,7 @@ window.IsaHamster = (function(){
   }
 
   /* ---------- interactions: pet (stroke) & nudge (tap) ---------- */
-  function interrupt(){ A.gen++; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); A.busy=true; }
+  function interrupt(){ A.gen++; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; A.busy=true; }
   function release(){ if(A.paused){ A.busy=false; return; } A.busy=false; mood("idle"); pump(); }
 
   function petStart(){ interrupt(); mood("petted"); fx("heart",1); }
@@ -362,13 +418,13 @@ window.IsaHamster = (function(){
   function measure(){ if(!A.stage) return; A.w=A.stage.clientWidth||320; A.hx=Math.max(38,Math.min(A.w-38,A.hx)); place(); }
   function onVis(){
     if(document.hidden){ // pause all animation work while the tab is hidden
-      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); if(A.stage) A.stage.classList.add("paused");
+      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
     } else { // recompute decay for the time we were away, then resume cleanly
       A.paused=false; if(A.stage) A.stage.classList.remove("paused");
       applyDecay(); saveCare();
-      A.gen++; A.busy=false; onWheel(false);
+      A.gen++; A.busy=false; onWheel(false); clearInterval(A.walkInterval); A.walkInterval=0;
       if(A.el) A.el.classList.remove("in-tunnel","tumble-left","tumble-right");
-      applyTimeOfDay(); mood("idle"); _msg=""; render(); scheduleIdle();
+      applyTimeOfDay(); mood("idle"); _msg=""; render(); scheduleIdle(); scheduleBubble();
     }
   }
 
@@ -379,13 +435,15 @@ window.IsaHamster = (function(){
     A.stage=document.getElementById("hammyStage"); A.wheel=document.getElementById("hammyWheel");
     A.shadow=document.getElementById("hammyShadow"); A.bowlFood=document.getElementById("hammyBowlFood");
     A.decorEl=document.getElementById("hammyDecorUnlock");
+    A.poseEl=document.getElementById("hammyPose");
+    A.fxLayer=document.getElementById("hammyFxLayer");
     if(!A.el||!A.stage) return;     // markup not present
     A.started=true;
     loadCare();
-    measure(); A.hx=frac(SPOT.center); place(); face(1);
+    measure(); A.hx=frac(SPOT.home); place(); face(1);
     applyTimeOfDay();
     bindGestures(); bindButtons(); bindName(); bindEvents();
-    mood("idle"); render(); scheduleIdle();
+    mood("idle"); render(); scheduleIdle(); scheduleBubble();
     window.addEventListener("resize", measure);
     document.addEventListener("visibilitychange", onVis);
     // refresh time-of-day roughly each half hour (cheap, only when visible)

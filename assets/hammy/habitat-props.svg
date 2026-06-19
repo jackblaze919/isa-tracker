@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+
+<!-- Prop: Cozy bed/nest -->
+<symbol id="prop-bed" viewBox="0 0 80 50">
+  <!-- Nest base/rim -->
+  <ellipse cx="40" cy="38" rx="38" ry="12" fill="#e8d4b8" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Inner cushion -->
+  <ellipse cx="40" cy="35" rx="30" ry="10" fill="#ffc2da"/>
+  <!-- Cushion highlight -->
+  <ellipse cx="36" cy="32" rx="18" ry="6" fill="#ffddeb" opacity="0.7"/>
+  <!-- Cushion shadow -->
+  <ellipse cx="40" cy="40" rx="28" ry="6" fill="#e09ab8" opacity="0.3"/>
+  <!-- Rim highlight -->
+  <path d="M8 35 Q40 28 72 35" fill="none" stroke="#f0e4d0" stroke-width="1.5" opacity="0.6"/>
+  <!-- Rim outline top -->
+  <path d="M4 38 Q40 24 76 38" fill="none" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Small pillow detail -->
+  <ellipse cx="30" cy="33" rx="8" ry="5" fill="#ffb8d0" stroke="#7a5030" stroke-width="0.6" opacity="0.7"/>
+</symbol>
+
+<!-- Prop: Food bowl (empty) -->
+<symbol id="prop-bowl" viewBox="0 0 60 34">
+  <!-- Bowl body -->
+  <ellipse cx="30" cy="26" rx="28" ry="8" fill="#d4956a" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Bowl interior -->
+  <ellipse cx="30" cy="22" rx="22" ry="7" fill="#f5dcc8"/>
+  <!-- Interior shadow -->
+  <ellipse cx="30" cy="25" rx="18" ry="4" fill="#d4956a" opacity="0.3"/>
+  <!-- Rim highlight -->
+  <ellipse cx="30" cy="19" rx="24" ry="5" fill="none" stroke="#f5dcc8" stroke-width="1.5" opacity="0.5"/>
+  <!-- Rim top edge -->
+  <ellipse cx="30" cy="19" rx="26" ry="6" fill="none" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Bowl shadow -->
+  <ellipse cx="30" cy="32" rx="20" ry="2" fill="#7a5030" opacity="0.08"/>
+</symbol>
+
+<!-- Prop: Food bowl with food -->
+<symbol id="prop-bowl-food" viewBox="0 0 60 34">
+  <!-- Bowl body -->
+  <ellipse cx="30" cy="26" rx="28" ry="8" fill="#d4956a" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Bowl interior -->
+  <ellipse cx="30" cy="22" rx="22" ry="7" fill="#f5dcc8"/>
+  <!-- Food: seeds/pellets -->
+  <g fill="#b89060" stroke="#7a5030" stroke-width="0.4">
+    <ellipse cx="24" cy="20" rx="3" ry="2" transform="rotate(-10 24 20)"/>
+    <ellipse cx="30" cy="18" rx="3" ry="2" transform="rotate(5 30 18)"/>
+    <ellipse cx="36" cy="20" rx="3" ry="2" transform="rotate(15 36 20)"/>
+    <ellipse cx="27" cy="22" rx="2.5" ry="1.8" transform="rotate(-5 27 22)"/>
+    <ellipse cx="33" cy="22" rx="2.5" ry="1.8" transform="rotate(8 33 22)"/>
+    <ellipse cx="30" cy="21" rx="2" ry="1.5"/>
+  </g>
+  <!-- Pellet highlights -->
+  <g fill="#d4a870" opacity="0.5">
+    <circle cx="23" cy="19" r="0.8"/>
+    <circle cx="29" cy="17" r="0.8"/>
+    <circle cx="35" cy="19" r="0.7"/>
+  </g>
+  <!-- Rim highlight -->
+  <ellipse cx="30" cy="19" rx="24" ry="5" fill="none" stroke="#f5dcc8" stroke-width="1.5" opacity="0.5"/>
+  <!-- Rim top edge -->
+  <ellipse cx="30" cy="19" rx="26" ry="6" fill="none" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Bowl shadow -->
+  <ellipse cx="30" cy="32" rx="20" ry="2" fill="#7a5030" opacity="0.08"/>
+</symbol>
+
+<!-- Prop: Hamster wheel (detailed) -->
+<symbol id="prop-wheel" viewBox="0 0 110 110">
+  <!-- Cast shadow beneath wheel -->
+  <ellipse cx="55" cy="105" rx="30" ry="4" fill="#7a5030" opacity="0.1"/>
+  <!-- Support stand -->
+  <rect x="50" y="85" width="10" height="18" rx="2" fill="#a0a8b0" stroke="#7a5030" stroke-width="1"/>
+  <!-- Stand base -->
+  <rect x="42" y="100" width="26" height="5" rx="2" fill="#a0a8b0" stroke="#7a5030" stroke-width="1"/>
+  <!-- Outer rim (thick ring) -->
+  <circle cx="55" cy="50" r="42" fill="none" stroke="#c4a06a" stroke-width="8"/>
+  <!-- Outer rim highlight -->
+  <circle cx="55" cy="50" r="42" fill="none" stroke="#e8d8b0" stroke-width="2" opacity="0.4"/>
+  <!-- Inner running surface -->
+  <circle cx="55" cy="50" r="35" fill="#e8c89a" stroke="#7a5030" stroke-width="1"/>
+  <!-- Inner surface highlight -->
+  <path d="M30 35 A35 35 0 0 1 80 35" fill="none" stroke="#f5e8d0" stroke-width="2" opacity="0.5"/>
+  <!-- Rungs (cross bars inside wheel) -->
+  <g stroke="#c4a06a" stroke-width="1.5" fill="none">
+    <line x1="55" y1="15" x2="55" y2="85"/>
+    <line x1="22" y1="50" x2="88" y2="50"/>
+    <line x1="32" y1="26" x2="78" y2="74"/>
+    <line x1="78" y1="26" x2="32" y2="74"/>
+    <line x1="25" y1="35" x2="85" y2="65"/>
+    <line x1="85" y1="35" x2="25" y2="65"/>
+  </g>
+  <!-- Axle center -->
+  <circle cx="55" cy="50" r="6" fill="#a0a8b0" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Axle highlight -->
+  <circle cx="53" cy="48" r="2" fill="#c8d0d8" opacity="0.6"/>
+  <!-- Outer rim outline -->
+  <circle cx="55" cy="50" r="46" fill="none" stroke="#7a5030" stroke-width="1.2"/>
+  <circle cx="55" cy="50" r="38" fill="none" stroke="#7a5030" stroke-width="0.8" opacity="0.5"/>
+</symbol>
+
+<!-- Prop: Water bottle -->
+<symbol id="prop-bottle" viewBox="0 0 30 70">
+  <!-- Metal cap -->
+  <rect x="8" y="2" width="14" height="10" rx="2" fill="#8a9098" stroke="#7a5030" stroke-width="1"/>
+  <!-- Cap highlight -->
+  <rect x="10" y="4" width="4" height="6" rx="1" fill="#b0b8c0" opacity="0.5"/>
+  <!-- Glass body -->
+  <rect x="6" y="12" width="18" height="40" rx="4" fill="#e0f0ff" fill-opacity="0.6" stroke="#7a5030" stroke-width="1"/>
+  <!-- Water level inside -->
+  <rect x="8" y="22" width="14" height="28" rx="3" fill="#a0d4f0" opacity="0.7"/>
+  <!-- Water surface highlight -->
+  <rect x="8" y="22" width="14" height="3" rx="1" fill="#c0e8ff" opacity="0.5"/>
+  <!-- Glass highlight/reflection -->
+  <rect x="9" y="14" width="3" height="35" rx="1.5" fill="#ffffff" opacity="0.3"/>
+  <!-- Nozzle tube -->
+  <rect x="12" y="52" width="6" height="12" rx="1" fill="#8a9098" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Ball tip -->
+  <circle cx="15" cy="66" r="3" fill="#a0a8b0" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Ball highlight -->
+  <circle cx="14" cy="65" r="1" fill="#c8d0d8" opacity="0.6"/>
+</symbol>
+
+<!-- Prop: Tunnel/hideout -->
+<symbol id="prop-tunnel" viewBox="0 0 74 50">
+  <!-- Tunnel body -->
+  <ellipse cx="37" cy="35" rx="35" ry="15" fill="#b8d4a8" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Tunnel top highlight -->
+  <ellipse cx="37" cy="28" rx="28" ry="8" fill="#c8e4b8" opacity="0.5"/>
+  <!-- Wall thickness rim -->
+  <path d="M12 35 Q37 20 62 35" fill="#9cc48a" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Entrance arch -->
+  <ellipse cx="37" cy="38" rx="16" ry="12" fill="#3a5030"/>
+  <!-- Entrance interior shadow depth -->
+  <ellipse cx="37" cy="40" rx="12" ry="8" fill="#2a3820" opacity="0.6"/>
+  <!-- Entrance arch outline -->
+  <ellipse cx="37" cy="38" rx="16" ry="12" fill="none" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Wall thickness visible at entrance edges -->
+  <path d="M21 38 C21 30 53 30 53 38" fill="none" stroke="#7aa06a" stroke-width="2"/>
+  <!-- Shadow beneath -->
+  <ellipse cx="37" cy="48" rx="25" ry="3" fill="#7a5030" opacity="0.08"/>
+</symbol>
+
+<!-- Prop: Wooden house -->
+<symbol id="prop-house" viewBox="0 0 70 60">
+  <!-- House shadow -->
+  <ellipse cx="35" cy="58" rx="28" ry="3" fill="#7a5030" opacity="0.08"/>
+  <!-- House body -->
+  <rect x="10" y="28" width="50" height="30" rx="2" fill="#e0c8a0" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Wall plank lines -->
+  <g stroke="#b8a070" stroke-width="0.5" opacity="0.5">
+    <line x1="12" y1="36" x2="58" y2="36"/>
+    <line x1="12" y1="44" x2="58" y2="44"/>
+    <line x1="12" y1="52" x2="58" y2="52"/>
+  </g>
+  <!-- Peaked roof -->
+  <polygon points="5,28 35,8 65,28" fill="#c4a06a" stroke="#7a5030" stroke-width="1.2"/>
+  <!-- Roof highlight -->
+  <polygon points="15,26 35,12 55,26" fill="#d4b87a" opacity="0.4"/>
+  <!-- Roof ridge line -->
+  <line x1="35" y1="8" x2="35" y2="10" stroke="#7a5030" stroke-width="1.5"/>
+  <!-- Door opening -->
+  <rect x="25" y="38" width="18" height="20" rx="9" fill="#3a2818"/>
+  <!-- Door interior shadow -->
+  <rect x="28" y="42" width="12" height="14" rx="6" fill="#2a1808" opacity="0.5"/>
+  <!-- Door outline -->
+  <rect x="25" y="38" width="18" height="20" rx="9" fill="none" stroke="#7a5030" stroke-width="1"/>
+</symbol>
+
+<!-- Prop: Small wooden bridge -->
+<symbol id="prop-bridge" viewBox="0 0 60 24">
+  <!-- Supports -->
+  <rect x="4" y="14" width="4" height="10" rx="1" fill="#b8a070" stroke="#7a5030" stroke-width="0.8"/>
+  <rect x="52" y="14" width="4" height="10" rx="1" fill="#b8a070" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Bridge deck -->
+  <rect x="2" y="10" width="56" height="6" rx="2" fill="#dcc090" stroke="#7a5030" stroke-width="1"/>
+  <!-- Plank lines -->
+  <g stroke="#b8a070" stroke-width="0.6">
+    <line x1="12" y1="10" x2="12" y2="16"/>
+    <line x1="22" y1="10" x2="22" y2="16"/>
+    <line x1="32" y1="10" x2="32" y2="16"/>
+    <line x1="42" y1="10" x2="42" y2="16"/>
+    <line x1="52" y1="10" x2="52" y2="16"/>
+  </g>
+  <!-- Deck highlight -->
+  <rect x="4" y="10" width="52" height="2" rx="1" fill="#f0e0c0" opacity="0.4"/>
+  <!-- Shadow -->
+  <ellipse cx="30" cy="23" rx="24" ry="1.5" fill="#7a5030" opacity="0.06"/>
+</symbol>
+
+<!-- Prop: Plant 1 (succulent in pot) -->
+<symbol id="prop-plant-1" viewBox="0 0 30 40">
+  <!-- Terracotta pot -->
+  <path d="M8 26 L10 38 L20 38 L22 26 Z" fill="#d4956a" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Pot rim -->
+  <rect x="7" y="24" width="16" height="3" rx="1" fill="#e0a87a" stroke="#7a5030" stroke-width="0.8"/>
+  <!-- Pot highlight -->
+  <rect x="9" y="27" width="3" height="10" rx="1" fill="#e8b88a" opacity="0.4"/>
+  <!-- Soil -->
+  <ellipse cx="15" cy="26" rx="6" ry="2" fill="#6a4830"/>
+  <!-- Succulent leaves -->
+  <ellipse cx="15" cy="20" rx="5" ry="4" fill="#b8d4a8" stroke="#7a5030" stroke-width="0.6"/>
+  <ellipse cx="11" cy="18" rx="3.5" ry="3" fill="#9cc48a" stroke="#7a5030" stroke-width="0.5" transform="rotate(-20 11 18)"/>
+  <ellipse cx="19" cy="18" rx="3.5" ry="3" fill="#9cc48a" stroke="#7a5030" stroke-width="0.5" transform="rotate(20 19 18)"/>
+  <ellipse cx="15" cy="14" rx="3" ry="3.5" fill="#c8e4b8" stroke="#7a5030" stroke-width="0.5"/>
+  <!-- Leaf highlights -->
+  <ellipse cx="14" cy="13" rx="1" ry="1.5" fill="#d8f0d0" opacity="0.5"/>
+</symbol>
+
+<!-- Prop: Plant 2 (lavender sprig) -->
+<symbol id="prop-plant-2" viewBox="0 0 24 36">
+  <!-- Stem -->
+  <path d="M12 34 Q12 20 11 10" fill="none" stroke="#6a9050" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Small leaves on stem -->
+  <ellipse cx="10" cy="28" rx="2.5" ry="1.2" fill="#8ab870" stroke="#7a5030" stroke-width="0.4" transform="rotate(-30 10 28)"/>
+  <ellipse cx="14" cy="24" rx="2.5" ry="1.2" fill="#8ab870" stroke="#7a5030" stroke-width="0.4" transform="rotate(25 14 24)"/>
+  <!-- Lavender flower cluster -->
+  <g fill="#c8a0d8" stroke="#7a5030" stroke-width="0.3">
+    <ellipse cx="11" cy="10" rx="2" ry="1.5"/>
+    <ellipse cx="12" cy="7" rx="1.8" ry="1.4"/>
+    <ellipse cx="10" cy="8" rx="1.5" ry="1.2"/>
+    <ellipse cx="13" cy="9" rx="1.5" ry="1.3"/>
+    <ellipse cx="11" cy="5" rx="1.4" ry="1.1"/>
+  </g>
+  <!-- Flower highlights -->
+  <g fill="#d8b8e8" opacity="0.5">
+    <circle cx="11" cy="9" r="0.6"/>
+    <circle cx="12" cy="6" r="0.5"/>
+  </g>
+</symbol>
+
+</svg>

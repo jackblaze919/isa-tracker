@@ -1,2 +1,5 @@
 .claude/
 .DS_Store
+test-render.mjs
+test_render.py
+screenshots/

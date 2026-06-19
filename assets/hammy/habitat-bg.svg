@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<symbol id="bg-scene" viewBox="0 0 400 280">
+  <defs>
+    <!-- Wall gradient: warm beige to cream -->
+    <linearGradient id="bg-wall-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdf6ef"/>
+      <stop offset="100%" stop-color="#f5e8d8"/>
+    </linearGradient>
+    <!-- Ambient light glow from top center -->
+    <radialGradient id="bg-light-glow" cx="0.5" cy="0.15" r="0.5">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base wall -->
+  <rect width="400" height="280" fill="url(#bg-wall-grad)"/>
+
+  <!-- Subtle wall texture: faint cross-hatch marks -->
+  <g opacity="0.04" stroke="#7a5030" stroke-width="0.5" fill="none">
+    <line x1="30" y1="20" x2="35" y2="25"/>
+    <line x1="33" y1="20" x2="28" y2="25"/>
+    <line x1="80" y1="50" x2="85" y2="55"/>
+    <line x1="83" y1="50" x2="78" y2="55"/>
+    <line x1="150" y1="30" x2="155" y2="35"/>
+    <line x1="153" y1="30" x2="148" y2="35"/>
+    <line x1="220" y1="60" x2="225" y2="65"/>
+    <line x1="223" y1="60" x2="218" y2="65"/>
+    <line x1="310" y1="40" x2="315" y2="45"/>
+    <line x1="313" y1="40" x2="308" y2="45"/>
+    <line x1="360" y1="70" x2="365" y2="75"/>
+    <line x1="363" y1="70" x2="358" y2="75"/>
+    <line x1="50" y1="100" x2="55" y2="105"/>
+    <line x1="53" y1="100" x2="48" y2="105"/>
+    <line x1="130" y1="130" x2="135" y2="135"/>
+    <line x1="133" y1="130" x2="128" y2="135"/>
+    <line x1="270" y1="110" x2="275" y2="115"/>
+    <line x1="273" y1="110" x2="268" y2="115"/>
+    <line x1="340" y1="150" x2="345" y2="155"/>
+    <line x1="343" y1="150" x2="338" y2="155"/>
+    <line x1="70" y1="180" x2="75" y2="185"/>
+    <line x1="73" y1="180" x2="68" y2="185"/>
+    <line x1="190" y1="160" x2="195" y2="165"/>
+    <line x1="193" y1="160" x2="188" y2="165"/>
+  </g>
+
+  <!-- Organic texture marks -->
+  <g opacity="0.03" fill="#7a5030">
+    <circle cx="60" cy="90" r="1.5"/>
+    <circle cx="180" cy="45" r="1"/>
+    <circle cx="320" cy="80" r="1.2"/>
+    <circle cx="250" cy="140" r="0.8"/>
+    <circle cx="100" cy="200" r="1.1"/>
+    <circle cx="350" cy="200" r="0.9"/>
+  </g>
+
+  <!-- Ambient light overlay -->
+  <rect width="400" height="280" fill="url(#bg-light-glow)"/>
+
+  <!-- Framed picture on wall -->
+  <g transform="translate(290, 55)">
+    <!-- Frame outer -->
+    <rect x="0" y="0" width="36" height="30" rx="2" ry="2" fill="#e8d4b8" stroke="#7a5030" stroke-width="1.5"/>
+    <!-- Frame inner border -->
+    <rect x="4" y="4" width="28" height="22" rx="1" ry="1" fill="#fdf6ef" stroke="#7a5030" stroke-width="0.5"/>
+    <!-- Small heart inside the frame -->
+    <path d="M18 12 C18 10, 15 9, 15 11 C15 13, 18 16, 18 16 C18 16, 21 13, 21 11 C21 9, 18 10, 18 12Z" fill="#ffe0ea" stroke="#7a5030" stroke-width="0.5"/>
+    <!-- Frame shadow -->
+    <rect x="2" y="28" width="36" height="3" rx="1" fill="#7a5030" opacity="0.06"/>
+  </g>
+
+  <!-- Subtle baseboard line at bottom -->
+  <rect x="0" y="265" width="400" height="15" fill="#e8d4b8" opacity="0.4"/>
+  <line x1="0" y1="265" x2="400" y2="265" stroke="#7a5030" stroke-width="0.5" opacity="0.15"/>
+</symbol>
+</svg>
