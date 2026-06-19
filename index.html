@@ -853,7 +853,8 @@ function progressItems(day){
   if(day===0){
     arr.push({id:"recovery",label:"Recovery day respected",hint:"rest, sleep & light optional movement",toggle:true});
   } else {
-    arr.push({id:"workout",label: day===4?"Mobility + walk done":"Workout completed",hint: day===4?"easy movement day":"log your sets below",toggle:true});
+    const isWalkDay = effectiveType(day)==="walk";
+    arr.push({id:"workout",label: isWalkDay?"Mobility + walk done":"Workout completed",hint: isWalkDay?"easy movement day":"log your sets below",toggle:true});
     arr.push({id:"steps",label:"Steps recorded",hint:"log your steps below"});
   }
   arr.push({id:"sleep",label:"Sleep recorded",hint:"log last night's hours"});
