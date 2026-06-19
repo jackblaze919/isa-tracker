@@ -225,6 +225,9 @@
   .formbtn:hover{background:var(--pink-soft)}
   .banner{background:var(--gold-soft);border:2px dashed var(--gold);color:#9a6516;border-radius:16px;padding:13px;text-align:center;font-weight:700;font-size:13.5px;margin-bottom:16px}
   .warmnote{background:var(--green-soft);border-left:5px solid var(--green);border-radius:12px;padding:10px 13px;font-size:13.5px;font-weight:600;margin-bottom:12px}
+  .streak{display:inline-block;margin-top:10px;background:linear-gradient(135deg,#ffb84d,#ff5fa2);color:#fff;font-family:"Baloo 2",cursive;font-weight:800;font-size:13px;padding:5px 14px;border-radius:999px;box-shadow:0 3px 10px rgba(255,120,80,.3);animation:bounce .4s ease}
+  .pr-badge{display:inline-block;font-family:"Baloo 2",cursive;font-weight:800;font-size:11.5px;color:#fff;background:linear-gradient(135deg,#ffb84d,#ff5fa2);padding:2px 9px;border-radius:999px;margin-left:6px;vertical-align:middle;animation:bounce .45s ease}
+  header h1{cursor:pointer}
   .footer-note{text-align:center;color:var(--muted);font-size:12px;padding:18px 16px 0;font-weight:600}
 
   table.rot{width:100%;border-collapse:collapse;font-size:14px}
@@ -267,7 +270,7 @@
   <section class="tab active" id="today">
     <div class="day-select" id="daySelect"></div>
     <div id="todayHost"></div>
-    <div class="lovenote"><span class="bigheart">💖</span>Have the best day today, Isa. I love you so much!</div>
+    <div class="lovenote"><span class="bigheart">💖</span><span id="todayLoveMsg">Have the best day today, Isa. I love you so much!</span></div>
   </section>
 
   <!-- ============ MEALS ============ -->
@@ -817,6 +820,40 @@ function confettiRain(){
     el.style.animationDuration=(1.1+(i%5)*0.18)+"s";document.body.appendChild(el);setTimeout(()=>el.remove(),1700);}
 }
 
+// ---------- cute extras ----------
+const LOVE_NOTES=[
+  "Have the best day today, Isa. I love you so much!",
+  "So proud of you, gorgeous — keep going! 🌸",
+  "You're stronger than yesterday. I love you! 💪",
+  "Water, chicken, queen energy. You've got this 👑",
+  "Thinking about you all day, Isa 🩷",
+  "Tiny steps every day = big results, beautiful ✨",
+  "My favorite person, crushing her goals 💗",
+  "Be sweet to yourself today, my love 🍓",
+  "One day closer to your goals, cutie 🎀",
+  "I believe in you, always. I love you! 🌷"
+];
+function dayOfYear(d){ return Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); }
+function numFrom(s){ const m=String(s==null?"":s).match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):NaN; }
+function repsTotal(a){ return (a||[]).reduce((t,x)=>t+(parseInt(x)||0),0); }
+function isNewBest(cur,last){
+  if(!last) return false;
+  const cw=numFrom(cur.weight), lw=numFrom(last.weight);
+  const cr=repsTotal(cur.reps), lr=repsTotal(last.reps);
+  if(!(cr>0) && isNaN(cw)) return false;            // nothing logged yet
+  if(!isNaN(cw)&&!isNaN(lw)&&cw>lw) return true;     // heavier
+  if((isNaN(cw)||isNaN(lw)||cw===lw) && cr>lr && cr>0) return true; // same weight, more reps
+  return false;
+}
+function doneOn(dk){ return load("done|"+dk,false); }
+function computeStreak(){
+  let d=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  if(!doneOn(dateKey(d))) d.setDate(d.getDate()-1);   // streak can still be "alive" if today not finished yet
+  let c=0;
+  while(doneOn(dateKey(d))){ c++; d.setDate(d.getDate()-1); }
+  return c;
+}
+
 // ---------- generic checklist ----------
 function buildCheck(container, items, storeKey, onChange){
   container.innerHTML="";
@@ -873,7 +910,11 @@ function renderProgress(){
   const pct=items.length?Math.round(done/items.length*100):0;
   const bar=document.getElementById("dayProgress"),pl=document.getElementById("dayPct"),cel=document.getElementById("celebrate");
   if(bar){bar.style.width=pct+"%";} if(pl){pl.textContent=pct+"%";}
+  if(pct===100) save("done|"+TODAY_KEY,true);
   if(cel){ if(pct===100){ if(!cel.classList.contains("show")){cel.classList.add("show");confettiRain();} } else cel.classList.remove("show"); }
+  // streak badge
+  const sb=document.getElementById("streakBadge");
+  if(sb){ const s=computeStreak(); if(s>0){ sb.textContent="🔥 "+s+" day streak"; sb.style.display="inline-block"; } else sb.style.display="none"; }
 }
 
 // ---------- workout logging ----------
@@ -901,7 +942,8 @@ function exCardHTML(ex,wk){
   const lastHtml = last
     ? `<div class="lasttime">Last time (${fmtShort(last._date)}): ${esc(last.weight)||"—"} · ${((last.reps||[]).filter(Boolean).join(", "))||"—"}</div>`
     : `<div class="lasttime">First time — log your numbers 💪</div>`;
-  return `<div class="exercise"><div class="name">${esc(ex.name)}</div>`+
+  const nb=isNewBest(log,last);
+  return `<div class="exercise" data-pr-shown="${nb?1:0}"><div class="name">${esc(ex.name)} <span class="pr-badge" style="display:${nb?"inline-block":"none"}">🎉 New best!</span></div>`+
     `<div class="sets">${sets}×${range}${ex.perLeg?(" / "+(ex.unit||"side")):""}</div>`+
     `<div style="font-size:13px;color:#7a5566;margin:4px 0">${esc(ex.cue)}</div>`+
     `<a class="formbtn" target="_blank" rel="noopener" href="${ex.vid}">🎥 Watch form</a>`+
@@ -931,6 +973,7 @@ function todayHTML(day){
         <div class="progress-line"><div id="dayProgress"></div></div>
         <span class="progress-pct" id="dayPct">0%</span>
       </div>
+      <div id="streakBadge" class="streak" style="display:none"></div>
       <div class="statlist" style="margin-top:6px">${rows}</div>
       <div class="celebrate" id="celebrate">You crushed today, queen 👑💖</div>
     </div>
@@ -1020,6 +1063,12 @@ function wireToday(){
     obj.reps=[1,2,3].map(i=>{const f=wrap.querySelector('[data-field="r'+i+'"]');return f?f.value:"";});
     const rs=wrap.querySelector('[data-field="rpe"]'); obj.rpe=rs?rs.value:"";
     save(key,obj);
+    // "New best!" celebration vs last session
+    const nb=isNewBest(obj,lastLog(ex));
+    const badge=wrap.querySelector(".pr-badge");
+    if(badge) badge.style.display=nb?"inline-block":"none";
+    if(nb && wrap.dataset.prShown!=="1"){ wrap.dataset.prShown="1"; const r=(badge||wrap).getBoundingClientRect(); heartBurst(r.left+r.width/2,r.top+12); }
+    if(!nb) wrap.dataset.prShown="0";
   }
   document.querySelectorAll("#todayHost [data-ex]").forEach(el=>{
     el.addEventListener("input",()=>saveLog(el));
@@ -1037,7 +1086,7 @@ function renderDay(day){
 }
 
 function resetDay(){
-  ["meal|"+TODAY_KEY,"prot|"+TODAY_KEY,"wo|"+TODAY_KEY,"rec|"+TODAY_KEY,"steps|"+TODAY_KEY,"sleep|"+TODAY_KEY,"wo_override|"+TODAY_KEY].forEach(k=>localStorage.removeItem(k));
+  ["meal|"+TODAY_KEY,"prot|"+TODAY_KEY,"wo|"+TODAY_KEY,"rec|"+TODAY_KEY,"steps|"+TODAY_KEY,"sleep|"+TODAY_KEY,"wo_override|"+TODAY_KEY,"done|"+TODAY_KEY].forEach(k=>localStorage.removeItem(k));
   Object.keys(localStorage).filter(k=>k.indexOf("log|"+TODAY_KEY+"|")===0).forEach(k=>localStorage.removeItem(k));
   renderDay(TODAY_DOW);
 }
@@ -1105,6 +1154,14 @@ function importBackup(e){
 
 // ---------- header label ----------
 document.getElementById("todayLabel").textContent="💕 "+DAYS[TODAY.getDay()]+" · "+TODAY.toLocaleDateString(undefined,{month:"long",day:"numeric"})+" 💕";
+
+// ---------- rotating love note ----------
+const lm=document.getElementById("todayLoveMsg");
+if(lm) lm.textContent=LOVE_NOTES[dayOfYear(TODAY)%LOVE_NOTES.length];
+
+// ---------- header heart easter egg ----------
+const hh=document.querySelector("header h1");
+if(hh) hh.addEventListener("click",(e)=>{ heartBurst(e.clientX,e.clientY); confettiRain(); });
 
 // ---------- init ----------
 buildGroceries();
