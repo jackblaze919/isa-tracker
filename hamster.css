@@ -1,0 +1,128 @@
+/* ============================================================
+   Hammy the hamster — styles (uses CSS vars from index.html :root)
+   ============================================================ */
+.hammy-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
+  background:linear-gradient(135deg,#fff,#fff2f8);border:2px solid #ffd9e7;border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px 16px;margin:0 0 18px;font-family:"Quicksand",sans-serif;color:var(--ink)}
+.hammy-card:hover{transform:translateY(-2px);transition:transform .15s}
+.hammy-card:focus-visible{outline:3px solid #7a2a48;outline-offset:2px}
+.hammy-card-emoji{font-size:32px;flex:0 0 auto;animation:hammyCardBob 2.6s ease-in-out infinite}
+@keyframes hammyCardBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
+.hammy-card-text{flex:1;font-size:15px;font-weight:600}
+.hammy-card-text b{font-family:"Baloo 2",cursive;color:var(--hotdark)}
+.hammy-card-chev{font-size:26px;color:var(--coral);font-weight:800}
+
+.hammy-stage{position:relative;height:280px;margin:6px 0 14px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,#fff6fb 0%,#ffe9f3 55%,#ffd9ea 100%);border:2px solid #ffd9e7;
+  box-shadow:inset 0 -12px 22px rgba(255,150,190,.18); touch-action:none}
+.hammy-bars{position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 30px,rgba(255,255,255,.30) 30px 33px)}
+.hammy-stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58px;
+  background:linear-gradient(180deg,#ffe7c6,#ffd6a2);border-top:3px dotted #f0bd83}
+
+/* time-of-day tint overlay */
+.ham-tod{position:absolute;inset:0;pointer-events:none;border-radius:18px;transition:background .8s ease;z-index:5;background:transparent}
+.hammy-stage.tod-evening .ham-tod{background:linear-gradient(180deg,rgba(255,170,90,.10),rgba(255,120,80,.16))}
+.hammy-stage.tod-night .ham-tod{background:linear-gradient(180deg,rgba(40,40,110,.22),rgba(30,20,70,.30))}
+.ham-moon{position:absolute;top:8px;left:10px;font-size:18px;opacity:0;transition:opacity .8s;z-index:6}
+.hammy-stage.tod-night .ham-moon{opacity:.9}
+
+.cage-item{position:absolute;z-index:2}
+.cage-item.bottle{top:6px;right:10px;height:64px;width:auto}
+.cage-item.wheel{bottom:40px;left:54%;transform:translateX(-50%);width:110px;height:110px;z-index:1}
+.cage-item.wheel .spokes{transform-origin:50px 50px}
+.cage-item.wheel.spin .spokes{animation:wheelspin .55s linear infinite}
+@keyframes wheelspin{to{transform:rotate(360deg)}}
+.cage-item.bowl{bottom:14px;left:20%;transform:translateX(-50%);width:58px}
+.cage-item.bowl-food{bottom:24px;left:20%;transform:translateX(-50%);font-size:18px;z-index:3;opacity:0;transition:opacity .25s,transform .25s}
+.cage-item.bowl-food.show{opacity:1;transform:translateX(-50%) translateY(-3px)}
+.cage-item.bed{bottom:10px;left:7%;transform:translateX(-50%);width:74px}
+.cage-item.tunnel{bottom:34px;right:4px;width:74px}
+.cage-item.decor{font-size:18px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
+.cage-item.decor.d1{top:14px;left:16%}
+.cage-item.decor.d2{top:30px;left:40%;font-size:14px}
+.cage-item.decor.d3{bottom:60px;left:42%}
+.cage-item.decor.unlocked{top:12px;left:62%;font-size:20px}
+
+.hammy-shadow{position:absolute;bottom:48px;width:60px;height:14px;border-radius:50%;
+  background:rgba(180,90,120,.22);transform:translateX(-50%);z-index:2;transition:left .05s linear;display:none}
+.hammy{position:absolute;bottom:44px;left:60px;width:72px;height:72px;transform:translateX(-50%);
+  z-index:4;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
+.hammy:focus-visible{outline:3px solid #7a2a48;outline-offset:4px;border-radius:50%}
+.hammy-flip{width:100%;height:100%;transform-origin:50% 70%}
+.hammy-svg{width:100%;height:100%;overflow:visible;transform-origin:50% 90%}
+.h-body{transform-origin:60px 64px;animation:hammyBreathe 3.2s ease-in-out infinite}
+@keyframes hammyBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04,0.97)}}
+.ear{transform-origin:60px 40px}
+.eyes-closed{display:none}
+
+/* moods */
+.mood-walking .hammy-svg{animation:hammyWalk .42s ease-in-out infinite}
+@keyframes hammyWalk{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+.mood-sniffing .hammy-svg{animation:hammySniff .5s ease-in-out infinite}
+@keyframes hammySniff{0%,100%{transform:translateY(0)}50%{transform:translateY(2px) rotate(3deg)}}
+.mood-eating .hammy-svg{animation:hammyChew .35s ease-in-out infinite}
+@keyframes hammyChew{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.mood-eating .cheek{animation:hammyPuff .35s ease-in-out infinite}
+@keyframes hammyPuff{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.mood-drinking .hammy-svg{transform:translateY(-6px) rotate(-6deg)}
+.mood-exercising .hammy-svg{animation:hammyHop .5s ease-in-out infinite}
+@keyframes hammyHop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-16px) scale(1.05,.95)}60%{transform:translateY(0) scale(.95,1.05)}}
+.mood-wheel .hammy-svg{animation:hammyRun .22s linear infinite}
+@keyframes hammyRun{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
+.mood-grooming .paws{animation:hammyGroom .4s ease-in-out infinite;transform-origin:60px 90px}
+@keyframes hammyGroom{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mood-wiggle .ear{animation:hammyEar .25s ease-in-out 4}
+@keyframes hammyEar{0%,100%{transform:rotate(0)}50%{transform:rotate(-12deg)}}
+.mood-sleeping .hammy-svg{transform:scaleY(.82) translateY(6px)}
+.mood-resting .hammy-svg{transform:scaleY(.9) translateY(4px)}
+.mood-petted .hammy-svg{transform:scaleY(.86) scaleX(1.06) translateY(5px)}
+.mood-grooming .eyes-open,.mood-sleeping .eyes-open,.mood-resting .eyes-open,.mood-petted .eyes-open,.mood-drinking .eyes-open{display:none}
+.mood-grooming .eyes-closed,.mood-sleeping .eyes-closed,.mood-resting .eyes-closed,.mood-petted .eyes-closed,.mood-drinking .eyes-closed{display:block}
+.hammy.in-tunnel{opacity:.15;transition:opacity .3s}
+.hammy.on-wheel{bottom:78px}
+
+.hammy.tumble-right .hammy-svg{animation:tumbleR .9s ease-in-out}
+.hammy.tumble-left .hammy-svg{animation:tumbleL .9s ease-in-out}
+@keyframes tumbleR{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(200deg) translateY(-22px)}60%{transform:rotate(360deg) translateY(0)}80%{transform:rotate(372deg)}100%{transform:rotate(360deg)}}
+@keyframes tumbleL{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(-200deg) translateY(-22px)}60%{transform:rotate(-360deg) translateY(0)}80%{transform:rotate(-372deg)}100%{transform:rotate(-360deg)}}
+
+.hfx{position:absolute;bottom:96px;z-index:7;pointer-events:none;font-size:18px;transform:translateX(-50%);animation:hfxFloat 1.3s ease-out forwards}
+.hfx.star{font-size:16px}
+.hfx.zzz{font-size:20px;animation:hfxZzz 1.3s ease-out forwards}
+@keyframes hfxFloat{0%{opacity:0;transform:translate(-50%,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-46px) scale(1.1)}}
+@keyframes hfxZzz{0%{opacity:0;transform:translate(-50%,0)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + 18px),-40px)}}
+
+.hammy-toast{position:absolute;left:50%;top:10px;transform:translateX(-50%) translateY(-8px);z-index:8;
+  background:rgba(255,255,255,.95);border:2px solid #ffbcd8;color:var(--hotdark);font-family:"Baloo 2",cursive;font-weight:700;
+  font-size:13px;padding:5px 12px;border-radius:999px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:var(--shadow-sm);max-width:80%}
+.hammy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.hammy-stage.paused *{animation-play-state:paused!important}
+
+.hammy-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* status bars */
+.ham-stats{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.ham-stat{display:flex;align-items:center;gap:10px}
+.ham-stat-lbl{font-size:12.5px;font-weight:700;color:var(--ink);min-width:104px}
+.ham-bar{flex:1;height:12px;background:#ffe1ec;border-radius:99px;overflow:hidden}
+.ham-bar>div{height:100%;width:70%;border-radius:99px;transition:width .5s ease}
+#hamFullness{background:linear-gradient(90deg,#ffd28a,#ff9e5e)}
+#hamHappiness{background:linear-gradient(90deg,#ff9ec6,#ff5fa2,#e11d48)}
+#hamEnergy{background:linear-gradient(90deg,#bfe6ff,#5aa6e0)}
+.ham-meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.ham-hearts{font-size:15px;letter-spacing:1px}
+.ham-msg{font-size:13px;font-weight:600;color:var(--muted)}
+
+/* reduced motion: no tumbling/large movement/confetti; keep functionality with gentle fades */
+@media (prefers-reduced-motion: reduce){
+  .hammy-card-emoji,.h-body,.ear{animation:none!important}
+  .mood-walking .hammy-svg,.mood-sniffing .hammy-svg,.mood-eating .hammy-svg,.mood-eating .cheek,
+  .mood-exercising .hammy-svg,.mood-wheel .hammy-svg,.mood-grooming .paws,.mood-wiggle .ear,
+  .cage-item.wheel.spin .spokes{animation:none!important}
+  .hammy.tumble-left .hammy-svg,.hammy.tumble-right .hammy-svg{animation:none!important;transform:scaleY(.9)!important}
+  .hammy-shadow{transition:none}
+  .hfx{animation:hfxFade .8s ease forwards!important}
+  @keyframes hfxFade{0%{opacity:0}25%{opacity:.9}100%{opacity:0}}
+}

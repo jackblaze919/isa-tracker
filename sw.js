@@ -1,8 +1,10 @@
 // Network-first for the page (so edits reach installed copies); cache-first for static assets.
-const CACHE = 'isa-tracker-v4';
+const CACHE = 'isa-tracker-v5';
 const ASSETS = [
   './',
   './index.html',
+  './hamster.css',
+  './hamster.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',

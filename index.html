@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hamster.css">
 <style>
   :root{
     --bg:#fff0f5; --bg2:#ffe3ee; --card:#ffffff;
@@ -197,99 +198,6 @@
   .heart-fx{position:fixed;pointer-events:none;z-index:999;font-size:18px;animation:burst .9s ease-out forwards}
   @keyframes burst{0%{opacity:1;transform:translate(0,0) scale(.6) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(var(--dr))}}
 
-  /* ---------- Hammy the hamster ---------- */
-  .hammy-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
-    background:linear-gradient(135deg,#fff,#fff2f8);border:2px solid #ffd9e7;border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:14px 16px;margin:0 0 18px;font-family:"Quicksand",sans-serif;color:var(--ink)}
-  .hammy-card:hover{transform:translateY(-2px);transition:transform .15s}
-  .hammy-card:focus-visible{outline:3px solid #7a2a48;outline-offset:2px}
-  .hammy-card-emoji{font-size:32px;flex:0 0 auto;animation:hammyCardBob 2.6s ease-in-out infinite}
-  @keyframes hammyCardBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
-  .hammy-card-text{flex:1;font-size:15px;font-weight:600}
-  .hammy-card-text b{font-family:"Baloo 2",cursive;color:var(--hotdark)}
-  .hammy-card-chev{font-size:26px;color:var(--coral);font-weight:800}
-
-  .hammy-stage{position:relative;height:280px;margin:6px 0 14px;border-radius:20px;overflow:hidden;
-    background:linear-gradient(180deg,#fff6fb 0%,#ffe9f3 55%,#ffd9ea 100%);border:2px solid #ffd9e7;
-    box-shadow:inset 0 -12px 22px rgba(255,150,190,.18); touch-action:none}
-  .hammy-bars{position:absolute;inset:0;border-radius:18px;pointer-events:none;
-    background:repeating-linear-gradient(90deg,transparent 0 30px,rgba(255,255,255,.30) 30px 33px)}
-  .hammy-stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58px;
-    background:linear-gradient(180deg,#ffe7c6,#ffd6a2);border-top:3px dotted #f0bd83}
-  .cage-item{position:absolute;z-index:2}
-  .cage-item.bottle{top:6px;right:10px;height:64px;width:auto}
-  .cage-item.wheel{bottom:40px;left:54%;transform:translateX(-50%);width:110px;height:110px;z-index:1}
-  .cage-item.wheel .spokes{transform-origin:50px 50px}
-  .cage-item.wheel.spin .spokes{animation:wheelspin .55s linear infinite}
-  @keyframes wheelspin{to{transform:rotate(360deg)}}
-  .cage-item.bowl{bottom:14px;left:20%;transform:translateX(-50%);width:58px}
-  .cage-item.bed{bottom:10px;left:7%;transform:translateX(-50%);width:74px}
-  .cage-item.tunnel{bottom:34px;right:4px;width:74px}
-  .cage-item.decor{font-size:18px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))}
-  .cage-item.decor.d1{top:14px;left:16%}
-  .cage-item.decor.d2{top:30px;left:40%;font-size:14px}
-  .cage-item.decor.d3{bottom:60px;left:42%}
-
-  .hammy-shadow{position:absolute;bottom:48px;width:60px;height:14px;border-radius:50%;
-    background:rgba(180,90,120,.22);transform:translateX(-50%);z-index:2;transition:left .05s linear;display:none}
-  .hammy{position:absolute;bottom:44px;left:60px;width:72px;height:72px;transform:translateX(-50%);
-    z-index:4;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
-  .hammy:focus-visible{outline:3px solid #7a2a48;outline-offset:4px;border-radius:50%}
-  .hammy-flip{width:100%;height:100%;transform-origin:50% 70%}
-  .hammy-svg{width:100%;height:100%;overflow:visible;transform-origin:50% 90%}
-  .h-body{transform-origin:60px 64px;animation:hammyBreathe 3.2s ease-in-out infinite}
-  @keyframes hammyBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04,0.97)}}
-  .ear{transform-origin:60px 40px}
-  .eyes-closed{display:none}
-
-  /* moods */
-  .mood-walking .hammy-svg{animation:hammyWalk .42s ease-in-out infinite}
-  @keyframes hammyWalk{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
-  .mood-sniffing .hammy-svg{animation:hammySniff .5s ease-in-out infinite}
-  @keyframes hammySniff{0%,100%{transform:translateY(0)}50%{transform:translateY(2px) rotate(3deg)}}
-  .mood-eating .hammy-svg{animation:hammyChew .35s ease-in-out infinite}
-  @keyframes hammyChew{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
-  .mood-eating .cheek{animation:hammyPuff .35s ease-in-out infinite}
-  @keyframes hammyPuff{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
-  .mood-drinking .hammy-svg{transform:translateY(-6px) rotate(-6deg)}
-  .mood-exercising .hammy-svg{animation:hammyHop .5s ease-in-out infinite}
-  @keyframes hammyHop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-16px) scale(1.05,.95)}60%{transform:translateY(0) scale(.95,1.05)}}
-  .mood-wheel .hammy-svg{animation:hammyRun .22s linear infinite}
-  @keyframes hammyRun{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
-  .mood-grooming .paws{animation:hammyGroom .4s ease-in-out infinite;transform-origin:60px 90px}
-  @keyframes hammyGroom{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  .mood-wiggle .ear{animation:hammyEar .25s ease-in-out 4}
-  @keyframes hammyEar{0%,100%{transform:rotate(0)}50%{transform:rotate(-12deg)}}
-  .mood-sleeping .hammy-svg{transform:scaleY(.82) translateY(6px)}
-  .mood-petted .hammy-svg{transform:scaleY(.86) scaleX(1.06) translateY(5px)}
-  .mood-grooming .eyes-open,.mood-sleeping .eyes-open,.mood-petted .eyes-open,.mood-drinking .eyes-open{display:none}
-  .mood-grooming .eyes-closed,.mood-sleeping .eyes-closed,.mood-petted .eyes-closed,.mood-drinking .eyes-closed{display:block}
-  .hammy.in-tunnel{opacity:.15;transition:opacity .3s}
-  .hammy.on-wheel{bottom:78px}
-
-  .hammy.tumble-right .hammy-svg{animation:tumbleR .9s ease-in-out}
-  .hammy.tumble-left .hammy-svg{animation:tumbleL .9s ease-in-out}
-  @keyframes tumbleR{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(200deg) translateY(-22px)}60%{transform:rotate(360deg) translateY(0)}80%{transform:rotate(372deg)}100%{transform:rotate(360deg)}}
-  @keyframes tumbleL{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(-200deg) translateY(-22px)}60%{transform:rotate(-360deg) translateY(0)}80%{transform:rotate(-372deg)}100%{transform:rotate(-360deg)}}
-
-  .hfx{position:absolute;bottom:96px;z-index:6;pointer-events:none;font-size:18px;transform:translateX(-50%);animation:hfxFloat 1.3s ease-out forwards}
-  .hfx.star{font-size:16px}
-  .hfx.zzz{font-size:20px;animation:hfxZzz 1.3s ease-out forwards}
-  @keyframes hfxFloat{0%{opacity:0;transform:translate(-50%,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-46px) scale(1.1)}}
-  @keyframes hfxZzz{0%{opacity:0;transform:translate(-50%,0)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + 18px),-40px)}}
-
-  .hammy-toast{position:absolute;left:50%;top:10px;transform:translateX(-50%) translateY(-8px);z-index:7;
-    background:rgba(255,255,255,.95);border:2px solid #ffbcd8;color:var(--hotdark);font-family:"Baloo 2",cursive;font-weight:700;
-    font-size:13px;padding:5px 12px;border-radius:999px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:var(--shadow-sm)}
-  .hammy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  .hammy-stage.paused *{animation-play-state:paused!important}
-
-  .hammy-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  .hammy-happy{display:flex;align-items:center;gap:8px;margin-top:14px}
-  .hammy-happy-bar{flex:1;height:12px;background:#ffe1ec;border-radius:99px;overflow:hidden}
-  .hammy-happy-bar>div{height:100%;width:70%;background:linear-gradient(90deg,#ff9ec6,#ff5fa2,#e11d48);border-radius:99px;transition:width .4s ease}
-
   /* Keep the playful animations on; only avoid auto smooth-scrolling under reduced motion. */
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
@@ -333,14 +241,17 @@
 
       <div class="hammy-stage" id="hammyStage">
         <div class="hammy-bars" aria-hidden="true"></div>
+        <div class="ham-tod" aria-hidden="true"></div>
+        <div class="ham-moon" aria-hidden="true">🌙</div>
         <!-- water bottle (hangs top-right) -->
         <svg class="cage-item bottle" viewBox="0 0 30 70" aria-hidden="true"><rect x="6" y="2" width="18" height="40" rx="8" fill="#bfe6ff" stroke="#8fc7ef" stroke-width="2"/><rect x="9" y="8" width="6" height="26" rx="3" fill="#e7f6ff"/><rect x="12" y="40" width="6" height="12" rx="3" fill="#cfd6dd"/><circle cx="15" cy="55" r="4" fill="#cfd6dd"/></svg>
         <!-- exercise wheel -->
         <div class="cage-item wheel" id="hammyWheel" aria-hidden="true">
           <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#ffb3d1" stroke-width="7"/><g class="spokes" stroke="#ff9ec6" stroke-width="4"><line x1="50" y1="8" x2="50" y2="92"/><line x1="8" y1="50" x2="92" y2="50"/><line x1="20" y1="20" x2="80" y2="80"/><line x1="80" y1="20" x2="20" y2="80"/></g><circle cx="50" cy="50" r="6" fill="#ff7eb3"/></svg>
         </div>
-        <!-- food bowl -->
-        <svg class="cage-item bowl" viewBox="0 0 60 34" aria-hidden="true"><path d="M2 8 Q30 30 58 8 L54 22 Q30 38 6 22 Z" fill="#ffd28a" stroke="#e8a44d" stroke-width="2"/><circle cx="22" cy="13" r="4" fill="#c97f3a"/><circle cx="32" cy="16" r="4" fill="#b96f2e"/><circle cx="40" cy="12" r="4" fill="#c97f3a"/></svg>
+        <!-- food bowl + food that appears when a meal is logged -->
+        <svg class="cage-item bowl" id="hammyBowl" viewBox="0 0 60 34" aria-hidden="true"><path d="M2 8 Q30 30 58 8 L54 22 Q30 38 6 22 Z" fill="#ffd28a" stroke="#e8a44d" stroke-width="2"/></svg>
+        <div class="cage-item bowl-food" id="hammyBowlFood" aria-hidden="true">🌰</div>
         <!-- little bed -->
         <svg class="cage-item bed" viewBox="0 0 70 36" aria-hidden="true"><ellipse cx="35" cy="24" rx="33" ry="11" fill="#ffc2da" stroke="#ff9ec6" stroke-width="2"/><ellipse cx="35" cy="20" rx="24" ry="7" fill="#fff0f6"/></svg>
         <!-- tunnel / hideout -->
@@ -349,6 +260,7 @@
         <div class="cage-item decor d1" aria-hidden="true">🌸</div>
         <div class="cage-item decor d2" aria-hidden="true">⭐</div>
         <div class="cage-item decor d3" aria-hidden="true">🌷</div>
+        <div class="cage-item decor unlocked" id="hammyDecorUnlock" aria-hidden="true" style="display:none">🎀</div>
 
         <div class="hammy-shadow" id="hammyShadow" aria-hidden="true"></div>
         <!-- the hamster -->
@@ -376,17 +288,22 @@
             </svg>
           </div>
         </div>
-        <div class="hammy-toast" id="hammyToast" aria-live="polite"></div>
+        <div class="hammy-toast" id="hammyToast" aria-hidden="true"></div>
       </div>
 
       <div class="hammy-controls">
-        <button class="ctrlbtn" id="hammyPetBtn" type="button">🤚 Pet Hammy</button>
-        <button class="ctrlbtn" id="hammyNudgeBtn" type="button" style="background:linear-gradient(135deg,#9a3aa6,#6d2a8a)">👉 Playful nudge</button>
+        <button class="ctrlbtn" id="hammyPetBtn" type="button" aria-label="Pet Hammy (gives a happy stroke)">🤚 Pet Hammy</button>
+        <button class="ctrlbtn" id="hammyNudgeBtn" type="button" style="background:linear-gradient(135deg,#9a3aa6,#6d2a8a)" aria-label="Playful nudge — Hammy tumbles and pops back up">👉 Playful nudge</button>
       </div>
-      <div class="hammy-happy">
-        <span class="sub" style="margin:0">Happiness:</span>
-        <div class="hammy-happy-bar"><div id="hammyHappyFill"></div></div>
-        <span class="sub" id="hammyHappyLbl" style="margin:0">very happy 💕</span>
+
+      <div class="ham-stats" role="group" aria-label="Hammy's wellbeing">
+        <div class="ham-stat"><span class="ham-stat-lbl">🍽️ Fullness</span><div class="ham-bar"><div id="hamFullness"></div></div></div>
+        <div class="ham-stat"><span class="ham-stat-lbl">💕 Happiness</span><div class="ham-bar"><div id="hamHappiness"></div></div></div>
+        <div class="ham-stat"><span class="ham-stat-lbl">⚡ Energy</span><div class="ham-bar"><div id="hamEnergy"></div></div></div>
+      </div>
+      <div class="ham-meta">
+        <span id="hamHearts" class="ham-hearts" aria-label="Affection level">❤️</span>
+        <span class="ham-msg" id="hamMsg" aria-live="polite"></span>
       </div>
 
       <div class="minirow" style="margin-top:14px">
@@ -737,12 +654,16 @@ function renderProgress(){
   if(cel){ if(pct===100){ if(!cel.classList.contains("show")){cel.classList.add("show");confettiRain();} } else cel.classList.remove("show"); }
   const sb=document.getElementById("streakBadge");
   if(sb){ const s=computeStreak(); if(s>0){sb.textContent="🔥 "+s+" day streak";sb.style.display="inline-block";} else sb.style.display="none"; }
-  // dispatch transition events (incomplete -> complete) for the pet & friends
-  const sig={protein:states.protein,workout:states.workout,steps:states.steps,sleep:states.sleep};
+  // dispatch transition events (incomplete -> complete) for the pet & friends.
+  // steps uses a strict target-cross signal (a target must exist) so simply
+  // recording baseline steps never triggers the wheel celebration.
+  const tgt=parseInt(stepTarget(),10)||0;
+  const stepsCrossed = tgt>0 && gStepsActual()>=tgt;
+  const sig={protein:states.protein,workout:states.workout,steps:stepsCrossed,sleep:states.sleep};
   if(_lastSig){
     if(!_lastSig.protein&&sig.protein) trackerEvent("protein-completed",{itemId:"protein"});
     if(!_lastSig.workout&&sig.workout) trackerEvent("workout-completed",{workoutType:effectiveType(TODAY_DOW)});
-    if(!_lastSig.steps&&sig.steps) trackerEvent("step-target-reached",{steps:gStepsActual(),stepTarget:parseInt(stepTarget(),10)||0});
+    if(!_lastSig.steps&&sig.steps) trackerEvent("step-target-reached",{steps:gStepsActual(),stepTarget:tgt});
     if(!_lastSig.sleep&&sig.sleep) trackerEvent("sleep-logged",{sleepHours:gSleep()});
   }
   _lastSig=sig;
@@ -1101,172 +1022,6 @@ function reloadOnNewDay(){ if(dateKey(new Date())!==BOOT_DAY) location.reload();
 setInterval(reloadOnNewDay, 60000);
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) reloadOnNewDay(); });
 
-/* ============================================================
-   HAMMY — virtual pet hamster (state machine + action queue)
-   ============================================================ */
-(function(){
-  function clamp(v,a,b){v=parseFloat(v);if(!Number.isFinite(v))v=a;return Math.max(a,Math.min(b,v));}
-  const S = {
-    el:null, flip:null, stage:null, wheel:null, shadow:null,
-    hx:60, dir:1, w:320, raf:0, idleTimer:0, timers:[], paused:false,
-    state:"idle", busy:false, gen:0, queue:[],
-    happy: clamp(load("hammy_happy",72),0,100),
-    name: (load("hammy_name","Hammy")||"Hammy"),
-    lastPet:0, lastTap:0
-  };
-  const SPOT={bed:0.08, bowl:0.20, decor:0.45, wheel:0.54, tunnel:0.9, bottle:0.9, center:0.5};
-  const STATUS={idle:"is exploring",walking:"is exploring",sniffing:"is sniffing around",grooming:"is grooming its fur",
-    sitting:"is just chilling",looking:"is looking at you 🥰",wiggle:"wiggled its ears",eating:"is munching too 🍽️",
-    drinking:"is having a sip",sleeping:"is napping 😴",wheel:"is running on its wheel",exercising:"is working out too 💪",
-    petted:"loves the pets 💕",tumbling:"went tumbling! ⭐",recovering:"is shaking it off"};
-
-  const rand=(a,b)=>a+Math.random()*(b-a);
-  function frac(f){ return Math.max(38, Math.min(S.w-38, f*S.w)); }
-  function place(){ if(S.el)S.el.style.left=S.hx+"px"; if(S.shadow){S.shadow.style.left=S.hx+"px"; S.shadow.style.display="block";} }
-  function face(d){ S.dir=d<0?-1:1; if(S.flip)S.flip.style.transform="scaleX("+S.dir+")"; }
-  function cancelRaf(){ if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;} }
-  function clearTimers(){ S.timers.forEach(clearTimeout); S.timers=[]; }
-  function after(ms,fn){ const id=setTimeout(fn,ms); S.timers.push(id); return id; }
-  function mood(m){ S.state=m; if(S.el){ const onWheel=S.el.classList.contains("on-wheel"), inT=S.el.classList.contains("in-tunnel"); S.el.className="hammy mood-"+m+(onWheel?" on-wheel":"")+(inT?" in-tunnel":""); } face(S.dir); status(); }
-
-  function status(){
-    const txt=STATUS[S.state]||"is hanging out";
-    const set=(id,t)=>{const e=document.getElementById(id); if(e)e.textContent=t;};
-    set("hammyStatus", S.name+" "+txt);
-    set("hammyCardStatus", txt);
-    set("hammyCardName", S.name);
-    set("hammyNameShow", S.name);
-    const f=document.getElementById("hammyHappyFill"); if(f)f.style.width=S.happy+"%";
-    const l=document.getElementById("hammyHappyLbl"); if(l)l.textContent=S.happy>=85?"over the moon 💖":S.happy>=60?"very happy 💕":S.happy>=35?"content 🩷":"cozy 🌸";
-  }
-  window.__hammyRefresh=status;
-  function happyBump(n){ S.happy=clamp(S.happy+n,0,100); save("hammy_happy",S.happy); status(); }
-  function toast(msg){ const t=document.getElementById("hammyToast"); if(!t)return; t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1600); }
-
-  function fx(kind,n){
-    if(!S.stage)return;
-    const emo=kind==="heart"?["💕","💗","💖","🩷"]:kind==="star"?["⭐","✨","🌟"]:["💤"];
-    n=n||(kind==="zzz"?1:3);
-    for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="hfx "+kind; d.textContent=emo[i%emo.length];
-      d.style.left=S.hx+"px"; d.style.setProperty("--dx",(rand(-16,16))+"px"); d.style.animationDelay=(i*90)+"ms";
-      S.stage.appendChild(d); setTimeout(()=>d.remove(),1500); }
-  }
-  function onWheel(on){ if(S.wheel)S.wheel.classList.toggle("spin",on); if(S.el)S.el.classList.toggle("on-wheel",on); }
-
-  function walkTo(target, done){
-    mood("walking");
-    const start=S.hx, dist=target-start;
-    if(Math.abs(dist)<3){ done&&done(); return; }
-    face(dist>0?1:-1);
-    const dur=Math.min(2600, Math.max(350, Math.abs(dist)/0.075));
-    const t0=performance.now(), g=S.gen; cancelRaf();
-    function step(t){ if(g!==S.gen||S.paused)return; const k=Math.min(1,(t-t0)/dur);
-      S.hx=start+dist*k; place();
-      if(k<1)S.raf=requestAnimationFrame(step); else {S.raf=0; done&&done();} }
-    S.raf=requestAnimationFrame(step);
-  }
-
-  /* ---- action queue ---- */
-  function enqueue(act, front){ if(front)S.queue.unshift(act); else S.queue.push(act); pump(); }
-  function pump(){
-    if(S.busy||S.paused)return;
-    if(!S.queue.length){ scheduleIdle(); return; }
-    const act=S.queue.shift(); S.busy=true; const g=S.gen;
-    act(()=>{ if(g!==S.gen)return; S.busy=false; pump(); });
-  }
-  function scheduleIdle(){ clearTimeout(S.idleTimer); if(S.paused)return;
-    S.idleTimer=setTimeout(()=>{ if(!S.busy&&!S.paused&&!S.queue.length)enqueue(pickIdle()); }, rand(4000,10000)); }
-
-  /* ---- idle actions ---- */
-  function aIdle(done){ mood("idle"); after(rand(1400,2600),done); }
-  function aLook(done){ face(Math.random()<.5?-1:1); mood("looking"); after(1800,done); }
-  function aWiggle(done){ mood("wiggle"); after(1200,done); }
-  function aSniff(done){ walkTo(frac(rand(.2,.8)),()=>{ mood("sniffing"); after(1600,done); }); }
-  function aGroom(done){ mood("sitting"); after(300,()=>{ mood("grooming"); after(2200,done); }); }
-  function aDrink(done){ walkTo(frac(SPOT.bottle),()=>{ face(1); mood("drinking"); after(2200,done); }); }
-  function aBowl(done){ walkTo(frac(SPOT.bowl),()=>{ mood("sniffing"); after(1500,done); }); }
-  function aTunnel(done){ walkTo(frac(SPOT.tunnel),()=>{ if(S.el)S.el.classList.add("in-tunnel"); mood("idle"); after(1800,()=>{ if(S.el)S.el.classList.remove("in-tunnel"); done(); }); }); }
-  function aWheel(done){ walkTo(frac(SPOT.wheel),()=>{ onWheel(true); mood("wheel"); after(2600,()=>{ onWheel(false); done(); }); }); }
-  function aNap(done){ walkTo(frac(SPOT.bed),()=>{ mood("sitting"); after(300,()=>{ mood("sleeping"); fx("zzz"); after(2600,done); }); }); }
-  const IDLE=[aIdle,aLook,aWiggle,aSniff,aSniff,aGroom,aDrink,aBowl,aTunnel,aWheel,aNap];
-  function pickIdle(){ return IDLE[Math.floor(Math.random()*IDLE.length)]; }
-
-  /* ---- event reactions ---- */
-  function evEat(done){ walkTo(frac(SPOT.bowl),()=>{ face(-1); mood("eating"); fx("heart",1); after(2600,()=>{ happyBump(2); done(); }); }); }
-  function evWorkout(done){ walkTo(frac(SPOT.center),()=>{ mood("exercising"); after(3000,()=>{ happyBump(2); done(); }); }); }
-  function evWheel(done){ walkTo(frac(SPOT.wheel),()=>{ onWheel(true); mood("wheel"); after(4200,()=>{ onWheel(false); happyBump(3); fx("star",2); done(); }); }); }
-  function evSleep(done){ walkTo(frac(SPOT.bed),()=>{ mood("sleeping"); fx("zzz"); let z=after(1600,()=>fx("zzz")); after(3800,()=>{ done(); }); }); }
-
-  /* ---- interactions ---- */
-  function interrupt(){ S.gen++; cancelRaf(); clearTimers(); clearTimeout(S.idleTimer); S.busy=true; }
-  function release(){ if(S.paused){S.busy=false;return;} S.busy=false; mood("idle"); pump(); }
-  function petStart(){ interrupt(); mood("petted"); fx("heart",1); }
-  function petFinish(){
-    const now=performance.now();
-    if(now-S.lastPet>1200){ S.lastPet=now; happyBump(4); fx("heart",3); toast(S.name+" loves that 💕"); }
-    after(900, release);
-  }
-  function petButton(){ petStart(); petFinish(); }
-  function nudge(dir){
-    const now=performance.now(); if(now-S.lastTap<1200)return; S.lastTap=now;
-    interrupt(); face(dir<0?-1:1);
-    if(S.el)S.el.classList.add(dir<0?"tumble-left":"tumble-right");
-    mood("tumbling"); fx("star",4);
-    after(950,()=>{ if(S.el)S.el.classList.remove("tumble-left","tumble-right"); mood("recovering"); after(500,release); });
-  }
-
-  function bindPointer(){
-    let pd=null;
-    const down=e=>{ pd={x:e.clientX,y:e.clientY,t:performance.now(),moved:0,pet:false}; try{S.el.setPointerCapture(e.pointerId);}catch(_){} };
-    const move=e=>{ if(!pd)return; pd.moved=Math.hypot(e.clientX-pd.x,e.clientY-pd.y); if(pd.moved>15&&!pd.pet){ pd.pet=true; petStart(); } };
-    const up=e=>{ if(!pd)return; const dur=performance.now()-pd.t, moved=pd.moved;
-      const rect=S.el.getBoundingClientRect(), cx=rect.left+rect.width/2; const p=pd; pd=null;
-      if(p.pet){ petFinish(); }
-      else if(dur<250&&moved<10){ nudge(e.clientX<cx?1:-1); }   // push away from the tap
-    };
-    S.el.addEventListener("pointerdown",down);
-    S.el.addEventListener("pointermove",move);
-    S.el.addEventListener("pointerup",up);
-    S.el.addEventListener("pointercancel",()=>{ if(pd&&pd.pet)release(); pd=null; });
-    S.el.addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();petButton();} else if(e.key===" "){e.preventDefault();nudge(Math.random()<.5?-1:1);} });
-  }
-  function bindButtons(){
-    const p=document.getElementById("hammyPetBtn"); if(p)p.addEventListener("click",petButton);
-    const n=document.getElementById("hammyNudgeBtn"); if(n)n.addEventListener("click",()=>nudge(Math.random()<.5?-1:1));
-  }
-  function bindName(){
-    const inp=document.getElementById("hammyName"), btn=document.getElementById("hammyNameSave");
-    if(inp)inp.value=S.name;
-    function saveName(){ const v=(inp&&inp.value||"").trim().slice(0,16); S.name=v||"Hammy"; if(inp)inp.value=S.name; save("hammy_name",S.name); status(); toast("Hi, I'm "+S.name+"! 🐹"); }
-    if(btn)btn.addEventListener("click",saveName);
-    if(inp)inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();saveName();} });
-  }
-  function bindEvents(){
-    const on=(n,fn)=>window.addEventListener("isa:"+n,fn);
-    on("meal-completed",()=>enqueue(evEat,true));
-    on("protein-completed",()=>{ fx("heart",2); happyBump(1); });
-    on("workout-completed",()=>enqueue(evWorkout,true));
-    on("step-target-reached",()=>enqueue(evWheel,true));
-    on("sleep-logged",()=>enqueue(evSleep,true));
-    on("checkin-saved",()=>{ fx("heart",4); happyBump(3); toast(S.name+" is proud of you 💖"); });
-  }
-  function measure(){ if(!S.stage)return; S.w=S.stage.clientWidth||320; S.hx=Math.max(38,Math.min(S.w-38,S.hx)); place(); }
-  function onVis(){
-    if(document.hidden){ S.paused=true; cancelRaf(); clearTimers(); clearTimeout(S.idleTimer); if(S.stage)S.stage.classList.add("paused"); }
-    else { S.paused=false; if(S.stage)S.stage.classList.remove("paused"); S.gen++; S.busy=false; onWheel(false); if(S.el)S.el.classList.remove("in-tunnel","tumble-left","tumble-right"); mood("idle"); scheduleIdle(); }
-  }
-  function init(){
-    S.el=document.getElementById("hammyPet"); S.flip=document.getElementById("hammyFlip");
-    S.stage=document.getElementById("hammyStage"); S.wheel=document.getElementById("hammyWheel"); S.shadow=document.getElementById("hammyShadow");
-    if(!S.el||!S.stage)return;
-    measure(); S.hx=frac(SPOT.center); place(); face(1); mood("idle");
-    bindPointer(); bindButtons(); bindName(); bindEvents();
-    status(); scheduleIdle();
-    window.addEventListener("resize", measure);
-    document.addEventListener("visibilitychange", onVis);
-  }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
-})();
 
 /* service worker */
 if("serviceWorker" in navigator){
@@ -1275,5 +1030,6 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 }
 </script>
+<script src="hamster.js"></script>
 </body>
 </html>
