@@ -48,7 +48,13 @@
   }
   header h1{margin:0;font-family:"Pacifico",cursive;font-weight:400;font-size:34px;letter-spacing:.5px;text-shadow:0 2px 0 rgba(190,20,60,.35);cursor:pointer}
   header p{margin:8px 0 0;opacity:.97;font-size:14px;font-weight:700;letter-spacing:.3px}
-  header .spark{position:absolute;font-size:20px;opacity:.85;animation:floaty 5s ease-in-out infinite}
+  header{cursor:pointer}
+  header .spark{position:absolute;font-size:20px;opacity:.85;animation:floaty 5s ease-in-out infinite;pointer-events:none}
+  .statdot.derived{border-style:dashed;border-color:#e9a7c2;cursor:pointer}
+  .statdot.derived:hover{border-color:var(--hotdark);transform:scale(1.08)}
+  .statdot.derived:focus-visible{outline:3px solid #7a2a48;outline-offset:2px}
+  .statrow.done .statdot.derived{background:linear-gradient(135deg,#ff9ec6,#ff6fa6);border-style:solid;border-color:#ff6fa6}
+  .statrow .stxt .auto{font-size:10px;font-weight:800;color:var(--purple);background:var(--purple-soft);padding:1px 6px;border-radius:999px;margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.3px}
   @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(12deg)}}
   .wrap{max-width:760px;margin:0 auto;padding:0 16px}
 
@@ -552,9 +558,9 @@ function renderProgress(){
   const items=progressItems(day);
   let done=0;
   items.forEach(it=>{const row=document.getElementById("row-"+it.id);if(!row)return;const d=!!states[it.id];row.classList.toggle("done",d);
-    const dot=row.querySelector(".statdot"); if(dot&&dot.tagName==="BUTTON")dot.setAttribute("aria-pressed",d?"true":"false"); if(d)done++;});
+    const dot=row.querySelector(".statdot[data-toggle]"); if(dot)dot.setAttribute("aria-pressed",d?"true":"false"); if(d)done++;});
   const sr=document.getElementById("row-steps");
-  if(sr){ const t=parseInt(stepTarget(),10)||0; const lbl=t?"Step target reached":"Steps recorded"; const hint=t?("target "+t.toLocaleString()):"log your steps below"; sr.querySelector(".stxt").innerHTML=esc(lbl)+"<small>"+esc(hint)+"</small>"; }
+  if(sr){ const t=parseInt(stepTarget(),10)||0; const lbl=t?"Step target reached":"Steps recorded"; const hint=t?("target "+t.toLocaleString()):"log your steps below"; sr.querySelector(".stxt").innerHTML=esc(lbl)+' <span class="auto">auto</span>'+"<small>"+esc(hint)+"</small>"; }
   const pct=items.length?Math.round(done/items.length*100):0;
   const bar=document.getElementById("dayProgress"),pl=document.getElementById("dayPct"),cel=document.getElementById("celebrate");
   if(bar)bar.style.width=pct+"%"; if(pl)pl.textContent=pct+"%";
@@ -632,8 +638,11 @@ function todayHTML(day){
   const wk=currentWeek(), st=stepTarget();
   const effType=effectiveType(day), override=load("wo_override|"+TODAY_KEY,""), W=WORKOUTS[effType];
   const rows=progressItems(day).map(it=>{
-    const dot = it.toggle ? `<button class="statdot" type="button" aria-pressed="false" data-toggle="${it.id}" aria-label="${esc(it.label)}"></button>` : `<span class="statdot" aria-hidden="true"></span>`;
-    return `<div class="statrow" id="row-${it.id}">${dot}<div class="stxt">${esc(it.label)}<small>${esc(it.hint)}</small></div></div>`;
+    const dot = it.toggle
+      ? `<button class="statdot" type="button" aria-pressed="false" data-toggle="${it.id}" aria-label="${esc(it.label)}"></button>`
+      : `<button class="statdot derived" type="button" data-jump="${it.id}" aria-label="Go to ${esc(it.label)}"></button>`;
+    const tag = it.toggle ? "" : ` <span class="auto">auto</span>`;
+    return `<div class="statrow" id="row-${it.id}">${dot}<div class="stxt">${esc(it.label)}${tag}<small>${esc(it.hint)}</small></div></div>`;
   }).join("");
   let wo;
   if(W.ex.length){ wo = warmupHTML(W.warmup) + W.ex.map(exCardHTML).join(""); }
@@ -702,6 +711,11 @@ function wireToday(){
   document.querySelectorAll("#todayHost .statdot[data-toggle]").forEach(btn=>{
     const key=TMAP[btn.dataset.toggle];
     btn.addEventListener("click",()=>{ const v=!load(key,false); save(key,v); if(v){const r=btn.getBoundingClientRect();heartBurst(r.left+13,r.top+13);} renderProgress(); });
+  });
+  // auto rows: tapping jumps to the control that fills them in
+  const JUMP={meals:()=>document.querySelector("#mealList input"), steps:()=>document.getElementById("stepsActual"), sleep:()=>document.getElementById("sleepHours")};
+  document.querySelectorAll("#todayHost .statdot[data-jump]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ const get=JUMP[btn.dataset.jump]; const el=get&&get(); if(el){ el.scrollIntoView({block:"center",behavior:RM?"auto":"smooth"}); setTimeout(()=>{try{el.focus({preventScroll:true});}catch(e){el.focus();}},RM?0:280); } });
   });
   const ov=document.getElementById("woOverride");
   if(ov) ov.addEventListener("change",()=>{ save("wo_override|"+TODAY_KEY, ov.value); renderDay(TODAY_DOW); });
@@ -883,7 +897,11 @@ function importBackup(e){
    ============================================================ */
 document.getElementById("todayLabel").textContent="💕 "+DAYS[TODAY_DOW]+" · "+TODAY.toLocaleDateString(undefined,{month:"long",day:"numeric"})+" 💕";
 (function(){ const lm=document.getElementById("todayLoveMsg"); if(lm) lm.textContent=LOVE_NOTES[dayOfYear(TODAY)%LOVE_NOTES.length]; })();
-(function(){ const h=document.getElementById("appTitle"); if(h){ const go=(e)=>{ heartBurst(e.clientX||window.innerWidth/2, e.clientY||60); confettiRain(); }; h.addEventListener("click",go); h.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();go(e);} }); } })();
+(function(){ const hdr=document.querySelector("header"), h=document.getElementById("appTitle");
+  const go=(e)=>{ const x=(e&&e.clientX)||window.innerWidth/2, y=(e&&e.clientY)||80; heartBurst(x,y); confettiRain(); };
+  if(hdr) hdr.addEventListener("click",go);
+  if(h) h.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();go(e);} });
+})();
 
 renderMealsRef();
 renderWorkoutsRef();
