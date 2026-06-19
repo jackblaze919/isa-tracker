@@ -302,6 +302,7 @@
         <li>1 cup milk</li>
       </ul>
       <div class="note">On workout days, eat the potato/plantain with the meal before or after training. Milk is handy when you're not hungry enough for solid food — it can go in your evening top-up.</div>
+      <div class="note">🥛 One cup of milk may count toward <strong>both</strong> your evening protein top-up <strong>and</strong> your daily add-on — you do not need a second cup.</div>
     </div>
 
     <div class="card">
@@ -417,13 +418,13 @@
 
     <div class="card">
       <h2>🎥 Watch the Form</h2>
-      <p class="sub">Quick demos for the trickier moves — tap to watch on YouTube:</p>
-      <a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=hip+hinge+exercise+how+to">Hip hinge</a>
-      <a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=hip+thrust+proper+form+setup">Hip thrust setup</a>
-      <a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=romanian+deadlift+dumbbell+form">Romanian deadlift</a>
-      <a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=step+up+exercise+proper+form">Step-up setup</a>
-      <a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=split+squat+proper+form">Split squat</a>
-      <div class="note">Normal training feeling = muscles working &amp; burning, a little breathless. <strong>Sharp, stabbing, or joint/back pain = stop.</strong><br><a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=muscle+soreness+vs+injury+pain">Soreness vs real pain</a></div>
+      <p class="sub">Hand-picked demos for the trickier moves — tap to watch:</p>
+      <a class="formbtn" target="_blank" rel="noopener" href="https://youtu.be/Dn3GexXx228">Hip hinge</a>
+      <a class="formbtn" target="_blank" rel="noopener" href="https://youtu.be/z8WwUC_UA4w">Hip thrust setup</a>
+      <a class="formbtn" target="_blank" rel="noopener" href="https://youtu.be/uUjqvxEWcbo">Romanian deadlift</a>
+      <a class="formbtn" target="_blank" rel="noopener" href="https://youtu.be/aKj-6hgiViA">Step-up setup</a>
+      <a class="formbtn" target="_blank" rel="noopener" href="https://youtu.be/2C-uNgKwPLE">Split squat</a>
+      <div class="note">Normal training feeling = muscles working &amp; burning, a little breathless. <strong>Sharp, stabbing, or joint/back pain = stop.</strong><br><a class="formbtn" target="_blank" rel="noopener" href="https://www.choosept.com/health-tips/soreness-vs-pain-whats-difference">Soreness vs real pain</a></div>
     </div>
 
     <div class="card">
@@ -655,9 +656,10 @@
       <p>Run the plan <strong>unchanged</strong> for 14 days. Then adjust using the rules below — not emotion or one weigh-in.</p>
       <h3>💚 Keep everything the same when</h3>
       <ul class="tight">
-        <li>Weight is stable or slowly declining</li>
-        <li>Waist is stable or decreasing</li>
+        <li>Weekly average weight is stable or slowly declining</li>
         <li>Strength is improving</li>
+        <li>Clothes fit the same or slightly looser</li>
+        <li>Progress photos look stable or improved</li>
       </ul>
       <h3>➕ Add 100–150 cal/day when</h3>
       <ul class="tight">
@@ -668,8 +670,8 @@
       <p class="sub" style="margin-top:8px">Add one more: ½ cup mashed potatoes · ½ plantain · 1 cup milk · ½ cup rice · ½ cup beans</p>
       <h3>➖ Reduce 100–150 cal/day only when</h3>
       <ul class="tight">
-        <li>Weight rises &gt; 0.5 lb/week for 3 weeks straight, <strong>and</strong></li>
-        <li>Waist is also clearly increasing</li>
+        <li>Weekly average weight rises &gt; 0.5 lb/week for 3 weeks straight, <strong>and</strong></li>
+        <li>Clothes are clearly tighter around the waist, or photos show obvious unwanted fat gain</li>
       </ul>
       <p class="sub" style="margin-top:8px">Cut unmeasured oil/butter/sauce or a small starch portion. Do <strong>not</strong> cut chicken or protein first.</p>
       <h3>🔎 If strength stops improving, check first</h3>
@@ -755,25 +757,26 @@ const PLAN = {
 
 const EXERCISES = {
   gluteA:[
-    {id:"hipthrust",name:"Backpack hip thrust",prog:true,cue:"Back on sofa, backpack on hips, squeeze 1 sec at the top.",form:"hip+thrust+proper+form"},
-    {id:"revlunge",name:"Supported reverse lunge",sets:2,range:"8–12",perLeg:true,cue:"Front heel planted, push through the whole foot.",form:"reverse+lunge+proper+form"},
-    {id:"sidelegraise",name:"Side-lying leg raise",sets:2,range:"15–25",perLeg:true,cue:"Toe down slightly, raise under control.",form:"side+lying+leg+raise+form"}
+    {id:"hipthrust",name:"Backpack hip thrust",prog:true,cue:"Back on sofa, backpack on hips, squeeze 1 sec at the top.",vid:"https://youtu.be/z8WwUC_UA4w"},
+    {id:"revlunge",name:"Supported reverse lunge",sets:2,range:"8–12",perLeg:true,cue:"Front heel planted, push through the whole foot.",vid:"https://youtu.be/GcYirgCLhnI"},
+    {id:"sidelegraise",name:"Side-lying leg raise",sets:2,range:"15–25",perLeg:true,cue:"Toe down slightly, raise under control.",vid:"https://youtu.be/4F5x69Z7Pks"}
   ],
   gluteB:[
-    {id:"rdl",name:"Backpack Romanian deadlift",prog:true,cue:"Hips back, neutral back — feel glutes & hamstrings.",form:"romanian+deadlift+dumbbell+form"},
-    {id:"stepup",name:"Step-up",sets:2,range:"8–12",perLeg:true,cue:"Whole foot on a stable step, step down slowly.",form:"step+up+exercise+proper+form"}
+    {id:"rdl",name:"Backpack Romanian deadlift",prog:true,cue:"Hips back, neutral back — feel glutes & hamstrings.",vid:"https://youtu.be/uUjqvxEWcbo"},
+    {id:"stepup",name:"Step-up",sets:2,range:"8–12",perLeg:true,cue:"Whole foot on a stable step, step down slowly.",vid:"https://youtu.be/aKj-6hgiViA"}
   ],
   gluteC:[
-    {id:"hipthrust_c",name:"Hip thrust / floor bridge",prog:true,cue:"Same as Monday — try to beat it by a rep or a bit more weight.",form:"hip+thrust+proper+form"},
-    {id:"splitsquat",name:"Supported split squat",sets:2,range:"8–12",perLeg:true,cue:"Long stance, front heel down, hold a wall.",form:"split+squat+proper+form"}
+    {id:"hipthrust_c",name:"Hip thrust / floor bridge",prog:true,cue:"Same as Monday — try to beat it by a rep or a bit more weight.",vid:"https://youtu.be/z8WwUC_UA4w"},
+    {id:"splitsquat",name:"Supported split squat",sets:2,range:"8–12",perLeg:true,cue:"Long stance, front heel down, hold a wall.",vid:"https://youtu.be/2C-uNgKwPLE"}
   ],
   upper:[
-    {id:"pushup",name:"Incline push-up",sets:2,range:"8–15",cue:"Wall/counter — lower the surface as you get stronger.",form:"incline+push+up+form"},
-    {id:"row",name:"One-arm backpack row",sets:2,range:"10–15",perLeg:true,cue:"Support with the other hand; pull the pack to your hip.",form:"one+arm+dumbbell+row+form"},
-    {id:"ohp",name:"Overhead press",sets:2,range:"8–15",cue:"Ribs down, don't lean back.",form:"dumbbell+overhead+press+form"},
-    {id:"arms",name:"Arms (curls or triceps)",sets:2,range:"12–20",cue:"Backpack curls or overhead triceps — alternate each session.",form:"dumbbell+bicep+curl+form"}
+    {id:"pushup",name:"Incline push-up",sets:2,range:"8–15",cue:"Wall/counter — lower the surface as you get stronger.",vid:"https://youtu.be/0JUrOH--Kdk"},
+    {id:"row",name:"One-arm backpack row",sets:2,range:"10–15",perLeg:true,cue:"Support with the other hand; pull the pack to your hip.",vid:"https://youtu.be/PgpQ4-jHiq4"},
+    {id:"ohp",name:"Overhead press",sets:2,range:"8–15",cue:"Ribs down, don't lean back.",vid:"https://youtu.be/qEwKCR5JCog"},
+    {id:"arms",name:"Arms (curls or triceps)",sets:2,range:"12–20",cue:"Backpack curls or overhead triceps — alternate each session.",vid:"https://youtu.be/6DeLZ6cbgWQ"}
   ]
 };
+function effectiveType(day){ const o=load("wo_override|"+TODAY_KEY,""); return o||PLAN[day].type; }
 function setsFor(ex,wk){ return ex.prog ? (wk>=3?3:2) : ex.sets; }
 function rangeFor(ex,wk){ return ex.prog ? (wk>=3?"8–15":"10–15") : ex.range; }
 
@@ -838,25 +841,34 @@ function gProtein(){ return load("prot|"+TODAY_KEY,false); }
 function gWorkout(){ return load("wo|"+TODAY_KEY,false); }
 function gStepsActual(){ return parseInt(load("steps|"+TODAY_KEY,""))||0; }
 function gSleep(){ return parseFloat(load("sleep|"+TODAY_KEY,""))||0; }
-function stepDone(){ const t=parseInt(stepTarget())||0; return t>0 && gStepsActual()>=t; }
+function gRecovery(){ return load("rec|"+TODAY_KEY,false); }
+// before a target is set, just recording any steps counts; once a target exists, you must reach it
+function stepDone(){ const t=parseInt(stepTarget())||0; const a=gStepsActual(); return t? a>=t : a>0; }
 
 function progressItems(day){
   const arr=[
     {id:"meals",label:"Meals completed",hint:"tick all meals below"},
     {id:"protein",label:"Protein target reached",hint:"~115–125 g today",toggle:true}
   ];
-  if(day!==0) arr.push({id:"workout",label: day===4?"Mobility + walk done":"Workout completed",hint: day===4?"easy movement day":"log your sets below",toggle:true});
-  arr.push({id:"steps",label:"Step target reached",hint:"enter today's steps below"});
+  if(day===0){
+    arr.push({id:"recovery",label:"Recovery day respected",hint:"rest, sleep & light optional movement",toggle:true});
+  } else {
+    arr.push({id:"workout",label: day===4?"Mobility + walk done":"Workout completed",hint: day===4?"easy movement day":"log your sets below",toggle:true});
+    arr.push({id:"steps",label:"Steps recorded",hint:"log your steps below"});
+  }
   arr.push({id:"sleep",label:"Sleep recorded",hint:"log last night's hours"});
   return arr;
 }
 
 function renderProgress(){
   const day=TODAY_DOW;
-  const states={meals:gMeals(),protein:gProtein(),workout:gWorkout(),steps:stepDone(),sleep:gSleep()>0};
+  const states={meals:gMeals(),protein:gProtein(),workout:gWorkout(),recovery:gRecovery(),steps:stepDone(),sleep:gSleep()>0};
   const items=progressItems(day);
   let done=0;
   items.forEach(it=>{const row=document.getElementById("row-"+it.id);if(!row)return;const d=!!states[it.id];row.classList.toggle("done",d);if(d)done++;});
+  // steps row label depends on whether a target has been set yet
+  const sr=document.getElementById("row-steps");
+  if(sr){ const t=parseInt(stepTarget())||0; const lbl=t?"Step target reached":"Steps recorded"; const hint=t?("target "+t.toLocaleString()):"log your steps below"; sr.querySelector(".stxt").innerHTML=esc(lbl)+"<small>"+esc(hint)+"</small>"; }
   const pct=items.length?Math.round(done/items.length*100):0;
   const bar=document.getElementById("dayProgress"),pl=document.getElementById("dayPct"),cel=document.getElementById("celebrate");
   if(bar){bar.style.width=pct+"%";} if(pl){pl.textContent=pct+"%";}
@@ -891,7 +903,7 @@ function exCardHTML(ex,wk){
   return `<div class="exercise"><div class="name">${esc(ex.name)}</div>`+
     `<div class="sets">${sets}×${range}${ex.perLeg?" / side":""}</div>`+
     `<div style="font-size:13px;color:#7a5566;margin:4px 0">${esc(ex.cue)}</div>`+
-    `<a class="formbtn" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${ex.form}">🎥 Watch form</a>`+
+    `<a class="formbtn" target="_blank" rel="noopener" href="${ex.vid}">🎥 Watch form</a>`+
     `<div class="logwrap">${fields}</div>${lastHtml}</div>`;
 }
 
@@ -903,8 +915,12 @@ function todayHTML(day){
   const rows=progressItems(day).map(it=>
     `<div class="statrow" id="row-${it.id}" ${it.toggle?`data-toggle="${it.id}"`:""}><div class="statdot"></div><div class="stxt">${esc(it.label)}<small>${esc(it.hint)}</small></div></div>`
   ).join("");
-  const exs=EXERCISES[p.type];
-  const wo = exs ? (`<div class="warmnote">Warm up ~5 min first 🤍 (steps in the Workouts tab)</div>`+exs.map(ex=>exCardHTML(ex,wk)).join("")) : TRAIN[p.type];
+  const effType=effectiveType(day), override=load("wo_override|"+TODAY_KEY,"");
+  const exs=EXERCISES[effType];
+  const wo = exs ? (`<div class="warmnote">Warm up ~5 min first 🤍 (steps in the Workouts tab)</div>`+exs.map(ex=>exCardHTML(ex,wk)).join("")) : TRAIN[effType];
+  const woOpts=[["","Today's plan"],["gluteA","Workout A · hip thrust"],["gluteB","Workout B · RDL + step-up"],["gluteC","Workout C · hip thrust + split"],["upper","Upper body"]]
+    .map(o=>`<option value="${o[0]}" ${override===o[0]?"selected":""}>${o[1]}</option>`).join("");
+  const woSel = day!==0 ? `<div class="minirow"><span>Different workout today?</span><select id="woOverride" class="field" style="width:auto">${woOpts}</select></div>` : "";
   const weekHint = wk<3 ? "Weeks 1–2: ease in (2 sets on main lifts)" : "Week 3+: 3 sets on main lifts";
   return `
     <div class="card">
@@ -935,10 +951,12 @@ function todayHTML(day){
     <div class="card">
       <h3>🍽️ Today's meals</h3>
       <ul class="check" id="mealList"></ul>
+      <div class="note" style="margin-top:10px">🥛 One cup of milk can count for <strong>both</strong> your protein top-up and your daily add-on — you don't need a second cup.</div>
     </div>
 
     <div class="card">
       <h3>💪 Today's workout</h3>
+      ${woSel}
       ${wo}
     </div>
 
@@ -967,15 +985,19 @@ function wireToday(){
   // meal checklist
   const ml=document.getElementById("mealList");
   if(ml) buildCheck(ml, MEAL_ITEMS, MEAL_KEY, renderProgress);
-  // toggles (protein / workout)
+  // toggles (protein / workout / recovery)
+  const TMAP={protein:"prot|",workout:"wo|",recovery:"rec|"};
   document.querySelectorAll("#todayHost [data-toggle]").forEach(row=>{
-    const key=(row.dataset.toggle==="protein"?"prot|":"wo|")+TODAY_KEY;
+    const key=TMAP[row.dataset.toggle]+TODAY_KEY;
     row.querySelector(".statdot").addEventListener("click",()=>{
       const v=!load(key,false); save(key,v);
       if(v){const r=row.getBoundingClientRect();heartBurst(r.left+24,r.top+18);}
       renderProgress();
     });
   });
+  // "different workout today" selector
+  const ov=document.getElementById("woOverride");
+  if(ov) ov.addEventListener("change",()=>{ save("wo_override|"+TODAY_KEY, ov.value); renderDay(TODAY_DOW); });
   // plan start
   const ps=document.getElementById("planStartInput");
   if(ps) ps.addEventListener("change",()=>{ if(ps.value){ save("plan_start",keyFromISO(ps.value)); renderDay(TODAY_DOW);} });
@@ -1014,7 +1036,7 @@ function renderDay(day){
 }
 
 function resetDay(){
-  ["meal|"+TODAY_KEY,"prot|"+TODAY_KEY,"wo|"+TODAY_KEY,"steps|"+TODAY_KEY,"sleep|"+TODAY_KEY].forEach(k=>localStorage.removeItem(k));
+  ["meal|"+TODAY_KEY,"prot|"+TODAY_KEY,"wo|"+TODAY_KEY,"rec|"+TODAY_KEY,"steps|"+TODAY_KEY,"sleep|"+TODAY_KEY,"wo_override|"+TODAY_KEY].forEach(k=>localStorage.removeItem(k));
   Object.keys(localStorage).filter(k=>k.indexOf("log|"+TODAY_KEY+"|")===0).forEach(k=>localStorage.removeItem(k));
   renderDay(TODAY_DOW);
 }
