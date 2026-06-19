@@ -1,5 +1,5 @@
 // Network-first for the page (so edits reach installed copies); cache-first for static assets.
-const CACHE = 'isa-tracker-v3';
+const CACHE = 'isa-tracker-v4';
 const ASSETS = [
   './',
   './index.html',
