@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<symbol id="fg-scene" viewBox="0 0 400 280">
+  <defs>
+    <!-- Vignette gradient for framing -->
+    <radialGradient id="fg-vignette" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0%" stop-color="#3a2818" stop-opacity="0"/>
+      <stop offset="85%" stop-color="#3a2818" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#3a2818" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Bedding texture layer: organic wood shavings at bottom -->
+  <g opacity="0.9">
+    <!-- Base bedding color -->
+    <rect x="0" y="220" width="400" height="60" fill="#e8d4b8"/>
+
+    <!-- Individual shavings — irregular organic shapes -->
+    <g fill="#d4c0a0" stroke="none">
+      <path d="M5 235 Q8 232 12 234 Q10 238 5 237Z"/>
+      <path d="M20 240 Q25 237 28 240 Q25 244 20 242Z"/>
+      <path d="M40 232 Q44 229 48 232 Q45 236 40 234Z"/>
+      <path d="M60 242 Q65 239 70 241 Q67 245 62 244Z"/>
+      <path d="M85 236 Q89 233 93 236 Q90 239 85 238Z"/>
+      <path d="M105 244 Q110 241 114 243 Q111 247 106 246Z"/>
+      <path d="M125 230 Q129 227 133 230 Q130 234 125 232Z"/>
+      <path d="M150 238 Q155 235 160 237 Q157 241 152 240Z"/>
+      <path d="M170 245 Q174 242 178 244 Q175 248 170 247Z"/>
+      <path d="M195 233 Q200 230 204 233 Q201 236 196 235Z"/>
+      <path d="M215 241 Q220 238 224 241 Q221 244 216 243Z"/>
+      <path d="M240 236 Q244 233 248 235 Q245 239 240 238Z"/>
+      <path d="M260 243 Q265 240 270 242 Q267 246 262 245Z"/>
+      <path d="M285 234 Q289 231 293 234 Q290 237 285 236Z"/>
+      <path d="M305 240 Q310 237 314 240 Q311 243 306 242Z"/>
+      <path d="M325 232 Q330 229 334 232 Q331 235 326 234Z"/>
+      <path d="M348 244 Q352 241 356 243 Q353 247 348 246Z"/>
+      <path d="M370 237 Q375 234 380 236 Q377 240 372 239Z"/>
+      <path d="M390 241 Q394 238 398 240 Q395 244 390 243Z"/>
+    </g>
+
+    <!-- More shavings, lighter tone -->
+    <g fill="#f0e4d0" stroke="none">
+      <path d="M10 248 Q14 245 18 248 Q15 251 10 250Z"/>
+      <path d="M35 252 Q40 249 44 251 Q41 255 36 254Z"/>
+      <path d="M55 246 Q59 243 63 246 Q60 249 55 248Z"/>
+      <path d="M78 255 Q83 252 87 254 Q84 258 79 257Z"/>
+      <path d="M100 250 Q105 247 109 249 Q106 253 101 252Z"/>
+      <path d="M120 257 Q124 254 128 256 Q125 260 120 259Z"/>
+      <path d="M145 248 Q150 245 154 248 Q151 251 146 250Z"/>
+      <path d="M165 254 Q169 251 173 253 Q170 257 165 256Z"/>
+      <path d="M190 249 Q195 246 199 249 Q196 252 191 251Z"/>
+      <path d="M210 256 Q214 253 218 255 Q215 259 210 258Z"/>
+      <path d="M235 250 Q240 247 244 249 Q241 253 236 252Z"/>
+      <path d="M255 257 Q259 254 263 256 Q260 260 255 259Z"/>
+      <path d="M280 248 Q285 245 289 248 Q286 251 281 250Z"/>
+      <path d="M300 254 Q304 251 308 253 Q305 257 300 256Z"/>
+      <path d="M320 249 Q325 246 329 249 Q326 252 321 251Z"/>
+      <path d="M345 255 Q349 252 353 254 Q350 258 345 257Z"/>
+      <path d="M368 250 Q372 247 376 250 Q373 253 368 252Z"/>
+      <path d="M388 253 Q392 250 396 252 Q393 256 388 255Z"/>
+    </g>
+
+    <!-- Darker shaving accents -->
+    <g fill="#c4a888" stroke="none" opacity="0.6">
+      <path d="M15 260 Q19 257 23 260 Q20 263 15 262Z"/>
+      <path d="M50 263 Q54 260 58 262 Q55 266 50 265Z"/>
+      <path d="M90 258 Q94 255 98 258 Q95 261 90 260Z"/>
+      <path d="M130 264 Q134 261 138 263 Q135 267 130 266Z"/>
+      <path d="M175 260 Q179 257 183 260 Q180 263 175 262Z"/>
+      <path d="M220 265 Q224 262 228 264 Q225 268 220 267Z"/>
+      <path d="M265 259 Q269 256 273 259 Q270 262 265 261Z"/>
+      <path d="M310 263 Q314 260 318 262 Q315 266 310 265Z"/>
+      <path d="M355 260 Q359 257 363 260 Q360 263 355 262Z"/>
+      <path d="M385 264 Q389 261 393 263 Q390 267 385 266Z"/>
+    </g>
+
+    <!-- Tiny foreground particles (sawdust dots) -->
+    <g fill="#d4c0a0" opacity="0.5">
+      <circle cx="18" cy="270" r="0.8"/>
+      <circle cx="45" cy="272" r="0.6"/>
+      <circle cx="72" cy="268" r="0.9"/>
+      <circle cx="110" cy="274" r="0.5"/>
+      <circle cx="148" cy="269" r="0.7"/>
+      <circle cx="185" cy="273" r="0.6"/>
+      <circle cx="220" cy="270" r="0.8"/>
+      <circle cx="258" cy="275" r="0.5"/>
+      <circle cx="295" cy="271" r="0.7"/>
+      <circle cx="330" cy="268" r="0.6"/>
+      <circle cx="365" cy="274" r="0.8"/>
+      <circle cx="392" cy="270" r="0.5"/>
+    </g>
+  </g>
+
+  <!-- Soft cast shadows beneath prop positions -->
+  <g opacity="0.1" fill="#3a2818">
+    <!-- Shadow under bed area (left) -->
+    <ellipse cx="70" cy="235" rx="35" ry="4"/>
+    <!-- Shadow under bowl area -->
+    <ellipse cx="180" cy="240" rx="20" ry="3"/>
+    <!-- Shadow under wheel area (right) -->
+    <ellipse cx="320" cy="230" rx="30" ry="4"/>
+    <!-- Shadow under tunnel -->
+    <ellipse cx="250" cy="242" rx="25" ry="3"/>
+  </g>
+
+  <!-- Vignette overlay to frame the scene -->
+  <rect width="400" height="280" fill="url(#fg-vignette)"/>
+</symbol>
+</svg>
