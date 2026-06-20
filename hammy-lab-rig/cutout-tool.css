@@ -1,0 +1,64 @@
+/* Hammy Cutout & Rig Studio — lab tool styles */
+body.tool{ max-width:none; }
+.tool-bar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:8px 16px; border-bottom:2px solid var(--line); }
+.btn{ font:inherit; font-size:13px; font-weight:600; padding:7px 12px; border:2px solid var(--line); background:#fff;
+  color:var(--pinkd); border-radius:10px; cursor:pointer; }
+.btn:hover{ background:#fff0f6; }
+.btn.sm{ padding:5px 9px; font-size:12px; }
+.btn.primary{ background:var(--pink); color:#fff; border-color:var(--pink); }
+.btn.mode.active{ background:var(--pinkd); color:#fff; border-color:var(--pinkd); }
+.divider{ width:1px; height:22px; background:var(--line); }
+.status-pill{ font-size:12px; color:#8a5b70; background:#fff; border:1.5px solid var(--line); padding:3px 9px; border-radius:14px; }
+
+.tool-main{ display:flex; gap:12px; padding:12px 16px; align-items:flex-start; }
+.panel{ background:#fff; border:2px solid var(--line); border-radius:14px; padding:12px; }
+.panel h3{ margin:0 0 8px; font-size:14px; }
+.parts{ width:230px; flex:none; }
+.props{ width:300px; flex:none; }
+.stagewrap{ flex:1; min-width:320px; }
+.hint{ font-size:11.5px; color:#8a5b70; line-height:1.4; }
+.hint code, .footnote code, .props code{ background:#fde7f0; padding:1px 4px; border-radius:4px; }
+
+#partList{ display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
+.part-row{ display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:8px; cursor:pointer; font-size:13px; border:1.5px solid transparent; }
+.part-row:hover{ background:#fff5fa; }
+.part-row.sel{ background:#fff0f6; border-color:var(--line); font-weight:700; }
+.part-row .swatch{ width:13px; height:13px; border-radius:3px; border:1px solid rgba(0,0,0,.15); flex:none; }
+.part-row .pname{ flex:1; }
+.part-row .pstate{ font-size:15px; }
+.part-row .pz{ font-size:10px; color:#a07; opacity:.6; }
+.part-row.optional .pname::after{ content:" (opt)"; font-size:10px; color:#a07; opacity:.6; font-weight:400; }
+
+.key-row{ display:flex; flex-direction:column; gap:6px; font-size:12px; border-top:1px dashed var(--line); padding-top:9px; }
+.key-row label{ display:flex; align-items:center; gap:6px; }
+.key-row input[type=range]{ flex:1; }
+
+.tool-stage{ position:relative; border-radius:12px; overflow:hidden; background:#f6eef3; min-height:300px; }
+.tool-stage canvas, .tool-stage svg{ display:block; max-width:100%; }
+.tool-stage .checker{ position:absolute; inset:0; z-index:0; }
+#srcCanvas, #rigCanvas{ position:relative; z-index:1; }
+#overlay{ position:absolute; inset:0; z-index:2; touch-action:none; }
+.stage-tools{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; }
+
+.poly{ fill:rgba(255,124,174,.18); stroke:var(--pinkd); stroke-width:1.5; }
+.poly.done{ fill:rgba(124,200,140,.18); stroke:#2a9d4a; }
+.vtx{ fill:#fff; stroke:var(--pinkd); stroke-width:1.5; cursor:grab; }
+.vtx:hover{ fill:var(--pink); }
+.pivot-mark{ fill:var(--pink); stroke:#fff; stroke-width:2; cursor:grab; }
+.rig-hit{ fill:rgba(0,0,0,0); cursor:move; }
+
+.prop-grid{ display:flex; flex-direction:column; gap:8px; font-size:12.5px; margin-bottom:10px; }
+.prop-grid label{ display:flex; align-items:center; gap:7px; }
+.prop-grid input[type=range]{ flex:1; }
+.pivot-readout{ font-size:12px; color:#6a4356; }
+
+.gallery{ display:flex; flex-wrap:wrap; gap:6px; min-height:40px; }
+.gcell{ width:74px; border:1.5px solid var(--line); border-radius:8px; padding:3px; text-align:center; background:
+  repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 50%/14px 14px; }
+.gcell img{ max-width:100%; max-height:54px; display:block; margin:0 auto; }
+.gcell .glabel{ font-size:9.5px; color:#5a2b40; margin-top:2px; word-break:break-all; }
+.gcell .gdl{ font-size:10px; color:var(--pinkd); cursor:pointer; text-decoration:underline; }
+.export-row{ display:flex; gap:7px; flex-wrap:wrap; margin:10px 0; }
+.footnote{ padding:0 16px 30px; font-size:12px; color:#8a5b70; }
+
+@media (max-width:900px){ .tool-main{ flex-direction:column; } .parts,.props{ width:100%; } }

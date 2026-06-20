@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hammy Cutout & Rig Studio — front rig (isolated lab)</title>
+<link rel="stylesheet" href="rig-lab.css">
+<link rel="stylesheet" href="cutout-tool.css">
+</head>
+<body class="tool">
+<header class="lab-head">
+  <h1>✂️ Hammy Cutout &amp; Rig Studio</h1>
+  <p class="sub">Isolated lab · turns ONE full-body source (<code>assets/source/front-rig-source.png</code>) into transparent puppet layers + a rig JSON. Hand-masked — never auto-traced, never redrawn.</p>
+</header>
+
+<div class="tool-bar">
+  <label class="btn">📂 Load source<input type="file" id="srcFile" accept="image/*" hidden></label>
+  <button class="btn" id="loadDefaultBtn">Use assets/source/front-rig-source.png</button>
+  <span class="divider"></span>
+  <button class="btn mode active" id="modeMask">1 · Mask</button>
+  <button class="btn mode" id="modeRig">2 · Rig</button>
+  <span class="divider"></span>
+  <button class="btn" id="saveProjBtn">💾 Save project</button>
+  <label class="btn">📁 Load project<input type="file" id="loadProjFile" accept="application/json" hidden></label>
+  <span class="status-pill" id="srcStatus">no source loaded</span>
+</div>
+
+<div class="tool-main">
+  <!-- left: parts -->
+  <aside class="panel parts">
+    <h3>Parts</h3>
+    <p class="hint" id="modeHint">Mask mode: pick a part, click on the image to drop polygon points, close with Enter or double-click. Drag points to adjust.</p>
+    <div id="partList"></div>
+    <div class="key-row">
+      <label title="Pixels more blue than this become fully transparent">key hi <input type="range" id="keyHigh" min="30" max="140" value="70"></label>
+      <label title="Pixels less blue than this stay fully opaque (soft edge between)">key lo <input type="range" id="keyLow" min="0" max="60" value="20"></label>
+      <button class="btn sm" id="rekeyBtn">re-key bg</button>
+    </div>
+  </aside>
+
+  <!-- center: stage -->
+  <section class="panel stagewrap">
+    <div id="toolStage" class="tool-stage">
+      <canvas id="bgCheck" class="checker"></canvas>
+      <canvas id="srcCanvas"></canvas>
+      <canvas id="rigCanvas" style="display:none"></canvas>
+      <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="stage-tools">
+      <button class="btn sm" id="closePolyBtn">Close polygon (Enter)</button>
+      <button class="btn sm" id="undoPtBtn">Undo point (⌫)</button>
+      <button class="btn sm" id="clearPolyBtn">Clear part mask</button>
+      <button class="btn sm" id="extractBtn">Extract this part →</button>
+      <button class="btn sm" id="extractAllBtn">Extract all masked</button>
+      <span class="status-pill" id="stageStatus"></span>
+    </div>
+  </section>
+
+  <!-- right: properties / preview -->
+  <aside class="panel props">
+    <h3>Selected: <span id="selName">—</span></h3>
+    <div class="prop-grid">
+      <label>Joint overlap pad <input type="range" id="padInput" min="0" max="40" value="8"> <span id="padVal">8px</span></label>
+      <label>Scale <input type="range" id="scaleInput" min="40" max="180" value="100"> <span id="scaleVal">1.00×</span></label>
+      <label>Opacity <input type="range" id="opacityInput" min="10" max="100" value="100"> <span id="opacityVal">100%</span></label>
+      <label>Z-index <input type="number" id="zInput" value="20" style="width:72px"></label>
+      <label><input type="checkbox" id="hiddenInput"> Hide layer</label>
+      <label><input type="checkbox" id="mirrorInput"> Mirror (preview)</label>
+      <div class="pivot-readout">pivot: <span id="pivotVal">0.50, 0.50</span> <span class="hint">(Rig mode: drag the pink dot)</span></div>
+    </div>
+    <h3>Extracted preview</h3>
+    <div id="previewGallery" class="gallery"></div>
+    <div class="export-row">
+      <button class="btn" id="testIdleBtn">▶ Test idle</button>
+      <button class="btn" id="exportLayersBtn">⬇ Export WebP layers</button>
+      <button class="btn primary" id="exportRigBtn">⬇ Export front-rig.json</button>
+    </div>
+    <p class="hint">WebP layers download individually (browsers block bulk auto-download). Save them into <code>assets/front/</code> and drop <code>front-rig.json</code> into <code>manifests/</code>. <b>Save project</b> keeps masks/pivots/layers locally so you can reload and refine.</p>
+  </aside>
+</div>
+
+<p class="footnote">Lab tool only · not wired to production · feature/hammy-v3</p>
+
+<script src="cutout-tool.js"></script>
+</body>
+</html>

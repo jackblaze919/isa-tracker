@@ -20,6 +20,9 @@ a yellow “engineering placeholders” banner. Debug buttons drive every state;
 ## Layout
 ```
 index.html        lab page (stage, debug buttons, editor panel, missing-assets banner)
+cutout-tool.html  Cutout & Rig Studio — hand-mask ONE full-body source into puppet layers
+cutout-tool.js    studio logic (chroma key, polygon masks, joint padding, pivots, WebP+JSON export, project save/reload)
+cutout-tool.css   studio styles
 rig-lab.css       styles (incl. placeholder + editor styling)
 rig-engine.js     rig builder + WAAPI state machine + queue + gestures + effects
 rig-editor.js     lab-only visual editor (drag / pivot / scale / z / toggle / mirror / export)
@@ -39,12 +42,20 @@ SHEET-SPECS.md  exact 3-sheet grid layout (the extractor contract)
 PROMPTS.md      exact image-generation prompts for the 3 sheets
 ```
 
-## Pipeline (once art exists)
-1. Generate the 3 sheets from the approved Hammy reference using `PROMPTS.md`; save into
-   `assets/source/` with the exact names in `SHEET-SPECS.md`.
-2. `python3 tools/extract-rig-sheets.py` → transparent parts + `review/extracted-contact-sheet.png`.
-3. `python3 tools/validate-rig-assets.py -v` → 0 errors required.
-4. Reload `index.html`; the placeholder banner clears and real cutouts drive the rig.
+## Front-rig pipeline (current plan — single source + Cutout Studio)
+1. Generate ONE full-body A-pose `front-rig-source.png` from the approved Hammy using the
+   front prompt in `PROMPTS.md`; save it to `assets/source/front-rig-source.png` (see `SHEET-SPECS.md`).
+2. Open `cutout-tool.html`. It auto-loads the source and removes the blue. In **Mask** mode,
+   draw a polygon around each part (body, head, each ear, each arm, each foot, tail, optionally eyes).
+3. Click **Extract** per part (or *Extract all*); set the **joint overlap pad** so rotation hides gaps.
+4. Switch to **Rig** mode: drag each layer into place, drag the pink dot to set its rotation pivot,
+   tune scale / z / opacity. **▶ Test idle** to preview breathing/blink/ear-twitch live.
+5. **Export WebP layers** → save into `assets/front/`. **Export front-rig.json** → drop into `manifests/`.
+   **Save project** keeps masks/pivots/layers locally so you can reload and refine.
+6. `python3 tools/validate-rig-assets.py -v` → 0 errors. Reload `index.html`; placeholders clear.
+
+> The Python `tools/extract-rig-sheets.py` grid extractor remains for the (later) side/special
+> sheets; the front rig now uses the browser Cutout Studio instead.
 
 ## Approval gate
 Phase 1 delivers the empty rig lab, editor, extraction/validation tooling, exact grid specs,

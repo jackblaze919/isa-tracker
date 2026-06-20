@@ -1,7 +1,7 @@
 {
   "name": "front",
   "canvas": [300, 340],
-  "comment": "Front / three-quarter cutout puppet. x,y = layer top-left in canvas px. pivot = [fx,fy] fraction of the layer box (rotation origin). Limbs must include extra hidden art beneath the body/head so rotation never exposes gaps. Head variants share the head box; the engine swaps the image src.",
+  "comment": "Front cutout puppet. A SINGLE full-body source (assets/source/front-rig-source.png) is hand-masked in cutout-tool.html into these transparent layers — never auto-traced, never redrawn. x,y = layer top-left in canvas px (cutout-tool sets canvas to the real source size on export). pivot = [fx,fy] fraction of the layer box. The 'joint overlap pad' in the tool gives each limb hidden art under the body/head so rotation never exposes gaps. Head is ONE piece (no separate expression files): blink and happy-squint come from squashing the optional 'eyes' layer. This file holds engineering-placeholder positions until the real export replaces it.",
   "layers": [
     { "name": "tail",        "src": "assets/front/tail.webp",        "z": 10, "x": 38,  "y": 196, "w": 46,  "h": 56,  "pivot": [0.9, 0.5],  "parent": "body" },
     { "name": "body",        "src": "assets/front/body.webp",        "z": 20, "x": 60,  "y": 108, "w": 180, "h": 196, "pivot": [0.5, 0.92] },
@@ -11,14 +11,7 @@
     { "name": "arm-right",   "src": "assets/front/arm-right.webp",   "z": 30, "x": 196, "y": 150, "w": 52,  "h": 86,  "pivot": [0.28, 0.16],"parent": "body", "mirrored": true },
     { "name": "ear-left",    "src": "assets/front/ear-left.webp",    "z": 35, "x": 84,  "y": 18,  "w": 52,  "h": 74,  "pivot": [0.55, 0.86],"parent": "head" },
     { "name": "ear-right",   "src": "assets/front/ear-right.webp",   "z": 35, "x": 164, "y": 18,  "w": 52,  "h": 74,  "pivot": [0.45, 0.86],"parent": "head", "mirrored": true },
-    { "name": "head",        "src": "assets/front/head-neutral.webp","z": 40, "x": 72,  "y": 40,  "w": 156, "h": 150, "pivot": [0.5, 0.95],
-      "variants": {
-        "neutral":     "assets/front/head-neutral.webp",
-        "happy":       "assets/front/head-happy.webp",
-        "eyes-closed": "assets/front/head-eyes-closed.webp",
-        "eating":      "assets/front/head-eating.webp",
-        "annoyed":     "assets/front/head-annoyed.webp",
-        "dizzy":       "assets/front/head-dizzy.webp"
-      } }
+    { "name": "head",        "src": "assets/front/head.webp",        "z": 40, "x": 72,  "y": 40,  "w": 156, "h": 150, "pivot": [0.5, 0.95] },
+    { "name": "eyes",        "src": "assets/front/eyes.webp",        "z": 42, "x": 100, "y": 92,  "w": 64,  "h": 30,  "pivot": [0.5, 0.5],  "parent": "head", "optional": true }
   ]
 }

@@ -63,6 +63,14 @@ window.RigLab = (function(){
     if(head.inner.classList.contains("ph")){ head.inner.querySelector(".ph-label").textContent = head.name+":"+(variant||"neutral"); head.inner.style.background=partColor("head")+"cc"; }
     else if(v){ head.inner.style.backgroundImage=`url(${v})`; }
   }
+  // Single-source rigs have no separate eyes-closed art — a blink / happy-squint is a quick
+  // vertical squash of the optional 'eyes' layer (falls back to a head-variant swap if present).
+  function eyeSquash(ms){
+    const rig=S.active; if(!rig) return;
+    const eyes=rig.layerMap["eyes"];
+    if(eyes){ eyes.inner.animate([{transform:"scaleY(1)"},{transform:"scaleY(0.08)"},{transform:"scaleY(1)"}],{duration:ms||220,easing:"ease-in-out"}); }
+    else { setHead("eyes-closed"); setTimeout(()=>{ if(S.state==="idle"&&!S.busy) setHead("neutral"); }, (ms||220)*0.6); }
+  }
 
   /* ---------- switch which rig is visible ---------- */
   function useRig(name){
@@ -129,9 +137,8 @@ window.RigLab = (function(){
   /* ---------- compound behaviours ---------- */
   function doIdle(){ run("idle"); idleBlinkLoop(); }
   function idleBlinkLoop(){ clearTimeout(S._blink); if(S.paused) return;
-    S._blink=setTimeout(()=>{ if(S.state==="idle" && !S.busy){ setHead("eyes-closed");
-      setTimeout(()=>{ if(S.state==="idle"&&!S.busy) setHead("neutral"); },130); } idleBlinkLoop(); }, 2200+Math.random()*2600); }
-  function doPet(){ const t=performance.now(); enqueue("pet",true);
+    S._blink=setTimeout(()=>{ if(S.state==="idle" && !S.busy) eyeSquash(200); idleBlinkLoop(); }, 2200+Math.random()*2600); }
+  function doPet(){ const t=performance.now(); enqueue("pet",true); eyeSquash(700);  // happy squint
     if(t-S.lastPet>1200){ S.lastPet=t; toast("Hammy loves that"); } }
   function doFall(){ const t=performance.now(); if(t-S.lastTap<800) return; S.lastTap=t;
     // anticipation -> (special fallen image would crossfade here) -> dizzy -> recover -> idle

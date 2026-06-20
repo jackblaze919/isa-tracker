@@ -35,34 +35,32 @@ No text, no labels, no emoji.
 
 ---
 
-## 1. `front-puppet-sheet.png` — 4×3 layout of separable FRONT parts
-Canvas 2048×2048, a 4-column × 4-row grid, flat `#0057FF`.
+## 1. `front-rig-source.png` — ONE full-body A-pose image (current plan)
+A single picture of the SAME hamster, hand-masked later in `cutout-tool.html`. **Not** a grid
+of detached parts. Recommended canvas **1024×1024** (square), flat `#0057FF`.
 ```
-Using [REFERENCE] as the exact character, produce a "puppet parts" sheet of the SAME hamster
-for a cutout animation rig. Flat solid #0057FF background. A clean 4×4 grid, one part per
-cell, each part centered with generous empty margin. Soft fuzzy fur edges, no hard outline.
-No blue on the character. No text, numbers, labels, or emoji anywhere.
+Using [REFERENCE] as the exact character, draw the SAME chibi hamster as ONE full-body
+illustration in a front three-quarter A-POSE, suitable for cutting into animation puppet parts.
 
-Cells, left to right, top to bottom:
-1. FRONT BODY only — torso/belly, NO head, NO arms, NO feet, NO tail; flat neck area on top.
-2. HEAD with NEUTRAL calm face, ears removed, include a neck stub at the bottom.
-3. HEAD with HAPPY squinty content face + soft smile (same head shape as #2).
-4. HEAD with EYES CLOSED (same head shape).
-5. HEAD EATING — cheeks a little full, nibbling mouth (same head shape).
-6. HEAD ANNOYED — brows down, small frown (same head shape).
-7. HEAD DIZZY — woozy spiral eyes, wobbly mouth (same head shape).
-8. LEFT EAR alone, with a fur stub at its base.
-9. RIGHT EAR alone, with a fur stub at its base.
-10. LEFT ARM/PAW alone, with a shoulder stub of fur.
-11. RIGHT ARM/PAW alone, with a shoulder stub of fur.
-12. LEFT FOOT alone, with an ankle stub of fur.
-13. RIGHT FOOT alone, with an ankle stub of fur.
-14. small TAIL alone, with a base stub of fur.
-15. empty (just blue).
-16. empty (just blue).
+Pose: standing upright, facing the viewer at a slight three-quarter angle, ARMS HELD SLIGHTLY
+AWAY FROM THE TORSO (a small gap under each arm), FEET SEPARATED with a gap between them, BOTH
+EARS fully visible and not overlapping each other, TAIL visible at the side, and MINIMAL
+OVERLAP between body parts so each part can be masked cleanly.
 
-All seven heads must be the SAME size and shape — only the face expression changes.
+Style: same warm caramel/cream fur, round glossy black eyes (open, neutral-friendly), pink
+inner ears, pink nose, soft cel-shaded children's-app look, soft fuzzy fur edges, NO hard
+outline. Whole body in frame, centered, generous empty margin around it.
+
+Background: flat solid #0057FF, edge to edge. NO shadow, NO gradient, NO props, NO text,
+NO labels, NO emoji. NO blue anywhere on the hamster.
 ```
+Then load it in the **Cutout & Rig Studio** (`cutout-tool.html`): remove the blue, draw a
+polygon mask for body / head / each ear / each arm / each foot / tail (and optionally the eyes
+for blinking), add joint-overlap padding, set pivots, and export the WebP layers +
+`front-rig.json`.
+
+> The old 4×4 detached-parts prompt is retired. Side / special prompts below are **not** in use
+> yet — do not generate them.
 
 ---
 

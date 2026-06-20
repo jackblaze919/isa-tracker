@@ -20,31 +20,40 @@ Hard rules for every sheet:
 
 ---
 
-## Sheet 1 — `front-puppet-sheet.png`  (front / three-quarter)
-Grid: **4 columns × 4 rows = 16 cells.** Recommended canvas **2048×2048** (cell 512×512).
-Read left→right, top→bottom:
+## FRONT RIG — one full-body source image (revised plan)
+**`assets/source/front-rig-source.png`** — a SINGLE picture of the approved Hammy, not a grid
+of detached parts. (Image models are unreliable at producing matching isolated limbs in an
+exact grid, so we hand-mask one good full-body image instead.)
 
-| # | row,col | part | notes |
-|---|---------|------|-------|
-| 1 | 0,0 | `body` | front torso only — **no** head, arms, feet, or tail. Flat shoulder/neck area on top for the head to sit over. |
-| 2 | 0,1 | `head-neutral` | full head, ears **omitted** (ears are separate). Calm eyes. Include neck stub at the bottom that tucks behind the body. |
-| 3 | 0,2 | `head-happy` | same head, content/squinty happy eyes + soft smile. |
-| 4 | 0,3 | `head-eyes-closed` | same head, eyes closed (used for blink + petting). |
-| 5 | 1,0 | `head-eating` | same head, cheeks slightly full, mouth nibbling. |
-| 6 | 1,1 | `head-annoyed` | same head, brows down, small frown. |
-| 7 | 1,2 | `head-dizzy` | same head, spiral/woozy eyes, mouth wobbly. |
-| 8 | 1,3 | `ear-left` | left ear, **base stub extends down** so it tucks under the head when rotated. |
-| 9 | 2,0 | `ear-right` | right ear (may be a mirror of left). Base stub included. |
-| 10| 2,1 | `arm-left` | left arm/paw, **shoulder stub extends up/in** under the body. |
-| 11| 2,2 | `arm-right` | right arm/paw, shoulder stub included. |
-| 12| 2,3 | `foot-left` | left foot, **ankle stub extends up** under the body. |
-| 13| 3,0 | `foot-right` | right foot, ankle stub included. |
-| 14| 3,1 | `tail` | small tail, **base stub extends in** under the body. |
-| 15| 3,2 | *(empty)* | leave blank blue. |
-| 16| 3,3 | *(empty)* | leave blank blue. |
+Pose & framing requirements (this is what makes it riggable):
+- Front / three-quarter **A-pose**: **arms held slightly away from the torso**, **feet
+  separated**, **both ears fully visible**, **tail visible**, **minimal overlap** between parts.
+- Whole body in frame, centered, generous margin, upright.
+- Flat solid **`#0057FF`** background — **no shadow, no text, no props, no labels**, no blue on Hammy.
+- Soft fur edges (no hard sticker outline). Eyes open, neutral-friendly expression.
 
-All seven heads must be **identical in size and registration** (same head outline, only the
-face changes) so swapping them never shifts the head.
+This single image is hand-masked into the layers below using **`cutout-tool.html`** (the
+Cutout & Rig Studio). The tool removes the blue, lets you draw a polygon mask per part, adds
+joint-overlap padding (the hidden art under body/head), sets pivots, and exports the WebP
+layers + `front-rig.json`. **No grid, no detached-part generation, no auto-tracing, no SVG redraw.**
+
+Layers you mask out of the one source → `assets/front/`:
+
+| part | file | notes |
+|------|------|-------|
+| body | `body.webp` | torso/belly |
+| head | `head.webp` | whole head incl. ears area you’ll exclude; ears are separate masks |
+| ear-left / ear-right | `ear-left.webp` / `ear-right.webp` | mask each ear; padding tucks the base under the head |
+| arm-left / arm-right | `arm-left.webp` / `arm-right.webp` | padding tucks the shoulder under the body |
+| foot-left / foot-right | `foot-left.webp` / `foot-right.webp` | padding tucks the ankle under the body |
+| tail | `tail.webp` | padding tucks the base under the body |
+| eyes *(optional)* | `eyes.webp` | mask just the eyes so blink / happy-squint = a quick vertical squash (no separate eyes-closed art needed) |
+
+> Tip: give arms/feet/ears a healthy **joint overlap pad** (8–16 px) in the tool so a rotated
+> limb never reveals a transparent gap at the joint.
+
+The previous 4×4 detached-parts sheet is retired for the front rig. Side / special sheets are
+**not** being produced yet.
 
 ---
 
