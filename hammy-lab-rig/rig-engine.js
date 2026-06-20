@@ -63,14 +63,16 @@ window.RigLab = (function(){
     if(head.inner.classList.contains("ph")){ head.inner.querySelector(".ph-label").textContent = head.name+":"+(variant||"neutral"); head.inner.style.background=partColor("head")+"cc"; }
     else if(v){ head.inner.style.backgroundImage=`url(${v})`; }
   }
-  // Single-source rigs have no separate eyes-closed art — a blink / happy-squint is a quick
-  // vertical squash of the optional 'eyes' layer (falls back to a head-variant swap if present).
-  function eyeSquash(ms){
-    const rig=S.active; if(!rig) return;
-    const eyes=rig.layerMap["eyes"];
-    if(eyes){ eyes.inner.animate([{transform:"scaleY(1)"},{transform:"scaleY(0.08)"},{transform:"scaleY(1)"}],{duration:ms||220,easing:"ease-in-out"}); }
-    else { setHead("eyes-closed"); setTimeout(()=>{ if(S.state==="idle"&&!S.busy) setHead("neutral"); }, (ms||220)*0.6); }
-  }
+  // Single-source rig: blink with fur-colored eyelids that wipe DOWN over the real eyes
+  // (transform-origin top, scaleY 0=open -> 1=closed). Eyes stay pristine; no fabricated patch.
+  function lids(){ const r=S.active; return r? ["lid-left","lid-right"].map(n=>r.layerMap[n]).filter(Boolean):[]; }
+  function hideLids(){ Object.values(S.rigs).forEach(r=>["lid-left","lid-right"].forEach(n=>{ const L=r.layerMap[n]; if(L) L.inner.style.transform="scaleY(0)"; })); }
+  function blink(ms){ lids().forEach(L=> L.inner.animate(
+      [{transform:"scaleY(0)"},{transform:"scaleY(1)"},{transform:"scaleY(0)"}],
+      {duration:ms||190,easing:"ease-in-out"}) ); }
+  function squint(depth,ms){ lids().forEach(L=> L.inner.animate(
+      [{transform:"scaleY(0)"},{transform:"scaleY("+(depth||0.5)+")"},{transform:"scaleY("+(depth||0.5)+")"},{transform:"scaleY(0)"}],
+      {duration:ms||1000,easing:"ease-out"}) ); }
 
   /* ---------- switch which rig is visible ---------- */
   function useRig(name){
@@ -137,8 +139,8 @@ window.RigLab = (function(){
   /* ---------- compound behaviours ---------- */
   function doIdle(){ run("idle"); idleBlinkLoop(); }
   function idleBlinkLoop(){ clearTimeout(S._blink); if(S.paused) return;
-    S._blink=setTimeout(()=>{ if(S.state==="idle" && !S.busy) eyeSquash(200); idleBlinkLoop(); }, 2200+Math.random()*2600); }
-  function doPet(){ const t=performance.now(); enqueue("pet",true); eyeSquash(700);  // happy squint
+    S._blink=setTimeout(()=>{ if(S.state==="idle" && !S.busy) blink(190); idleBlinkLoop(); }, 2200+Math.random()*2600); }
+  function doPet(){ const t=performance.now(); enqueue("pet",true); squint(0.5,1050);  // happy squint
     if(t-S.lastPet>1200){ S.lastPet=t; toast("Hammy loves that"); } }
   function doFall(){ const t=performance.now(); if(t-S.lastTap<800) return; S.lastTap=t;
     // anticipation -> (special fallen image would crossfade here) -> dizzy -> recover -> idle
@@ -206,6 +208,7 @@ window.RigLab = (function(){
       // size the character box to the front rig's canvas so layer coords line up + center it
       const cw=document.getElementById("charWrap"), fc=front.canvas;
       if(cw&&fc){ cw.style.width=fc[0]+"px"; cw.style.height=fc[1]+"px"; cw.style.marginLeft=(-fc[0]/2)+"px"; }
+      hideLids();   // eyelids start open (scaleY 0)
       useRig("front"); face(1); S.started=true;
       bindGestures(); bindDebug();
       window.addEventListener("RigEditor:applied",()=>{});  // editor hook

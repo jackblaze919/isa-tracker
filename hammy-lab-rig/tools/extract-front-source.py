@@ -21,7 +21,7 @@ LAB_TARGET_H=300.0   # character display height in the lab stage
 # part: polygon (full-res src coords), pad px, pivot frac, z, parent
 PARTS=[
  ("tail",      [(910,878),(1010,884),(1008,954),(910,950)],                                            18,[0.15,0.5], 10,"body"),
- ("body",      [(404,498),(848,498),(884,585),(884,690),(852,800),(908,930),(950,1004),(900,1092),(702,1144),(543,1144),(346,1092),(300,1004),(312,930),(372,800),(322,690),(352,585)], 8,[0.5,0.96],20,None),
+ ("body",      [(392,452),(860,452),(888,560),(884,690),(852,800),(908,930),(950,1004),(900,1092),(702,1144),(543,1144),(346,1092),(300,1004),(312,930),(372,800),(322,690),(356,560)], 8,[0.5,0.96],20,None),
  ("foot-left", [(338,1050),(552,1050),(552,1182),(326,1182)],                                          24,[0.5,0.12], 25,"body"),
  ("foot-right",[(688,1050),(922,1050),(922,1182),(688,1182)],                                          24,[0.5,0.12], 25,"body"),
  ("arm-left",  [(300,628),(420,640),(410,760),(362,858),(266,888),(200,838),(218,708),(252,658)],      26,[0.74,0.12],30,"body"),
@@ -29,9 +29,11 @@ PARTS=[
  ("ear-left",  [(322,258),(322,92),(356,54),(432,50),(506,108),(518,210),(472,260)],                   28,[0.62,0.86],35,"head"),
  ("ear-right", [(796,258),(786,148),(812,76),(886,56),(952,98),(966,212),(934,260)],                   28,[0.38,0.86],35,"head"),
  ("head",      [(348,134),(545,106),(715,106),(908,144),(958,285),(958,430),(912,548),(815,568),(640,574),(465,568),(348,548),(300,430),(298,285)], 18,[0.5,0.95],40,None),
- ("eyes",      "EYES",                                                                                  3,[0.5,0.5],  42,"head"),
 ]
 EYES=[(528,380,68,72),(752,382,68,72)]  # cx,cy,rx,ry
+# eyelids wipe down over the REAL eyes (kept in the head) to blink — no fabricated eye patch.
+LIDS=[("lid-left",528,380,68,72),("lid-right",752,382,68,72)]
+HEAD_FEATHER_TOP=470   # below this y the head's alpha ramps down so its bottom blends into body
 
 def keyed_rgba(img):
     a=np.asarray(img.convert("RGB")).astype(np.float32)
@@ -84,6 +86,33 @@ def clean_plate_eyes(rgba):
         base[m]=bl[m]
     return base
 
+def make_eyelid(kr,cx,cy,rx,ry):
+    """An eye-shaped eyelid built from REAL cheek fur (matching texture/tone), that wipes
+    down over the real eye to blink (transform-origin top, scaleY 0->1). Returns (RGBA, x, y).
+    No synthetic gradient and no fabricated eye patch."""
+    H,W=kr.shape[:2]
+    side=-1 if cx<638 else 1
+    scx=int(cx+side*rx*1.45)                                  # clean cheek fur, same tone (kept inside the face)
+    sx0=int(scx-rx*0.7); sx1=int(scx+rx*0.7); sy0=int(cy-ry); sy1=int(cy+ry)
+    LW=int(rx*2*1.14); LH=int(ry*2*1.04)
+    reg=kr[sy0:sy1,sx0:sx1].astype(np.float32)
+    furm=reg[...,3]>200
+    fur=(np.median(reg[furm][:, :3],axis=0) if furm.sum()>20 else np.array([222,182,120])).astype(np.float32)
+    rgb=reg[..., :3].copy(); rgb[reg[...,3]<=200]=fur          # kill any background/edge blue bleed
+    patch=Image.fromarray(rgb.astype(np.uint8),"RGB").resize((LW,LH))
+    pa=np.asarray(patch).astype(np.float32)
+    tyv=np.linspace(0,1,LH).reshape(-1,1,1)
+    pa=pa*(1-0.16*tyv)                                        # slightly shaded toward the fold
+    yy,xx=np.mgrid[0:LH,0:LW].astype(np.float32)
+    nx=(xx-LW/2)/(LW/2*0.99); ny=(yy-LH/2)/(LH/2*0.99)
+    a=np.clip((1.0-(nx*nx+ny*ny))/0.32,0,1)                  # soft eye-shaped ellipse (blends into face)
+    # faint, soft, slightly-curved lash crease near the lower rim
+    crease=np.exp(-((ny-0.42)**2)/0.010)*(np.abs(nx)<0.85)
+    for ch in range(3): pa[...,ch]=pa[...,ch]*(1-0.30*crease)
+    out=np.dstack([pa, a*255]).astype(np.uint8)
+    lid=Image.fromarray(out,"RGBA").filter(ImageFilter.GaussianBlur(1.0))
+    return lid,int(cx-LW/2),int(cy-ry*1.0)
+
 def alpha_bbox(arr):
     a=arr[...,3]; ys,xs=np.where(a>14)
     if not len(xs): return None
@@ -96,33 +125,47 @@ def main():
     k=LAB_TARGET_H/float(np.ptp(np.where(keyedA.any(axis=1))[0]))
     print("lab scale k=%.4f -> canvas %dx%d"%(k,round(W*k),round(H*k)))
     proj_parts={}; rig_layers=[]; contact=[]
+    H0=H
+    def add_layer(name,crop,x,y,pivot,z,parent,opt=False,poly=None,pad=0):
+        crop.save(os.path.join(OUT,name+".webp"),"WEBP",quality=95,method=6)
+        contact.append((name,crop)); w,h=crop.size
+        L={"name":name,"src":"assets/front/"+name+".webp","z":z,
+           "x":round(x*k),"y":round(y*k),"w":round(w*k),"h":round(h*k),
+           "pivot":[round(pivot[0],3),round(pivot[1],3)]}
+        if parent: L["parent"]=parent
+        if opt: L["optional"]=True
+        rig_layers.append(L)
+        buf=os.path.join(REVIEW,"_tmp.webp"); crop.save(buf,"WEBP",quality=92)
+        with open(buf,"rb") as f: durl="data:image/webp;base64,"+base64.b64encode(f.read()).decode()
+        proj_parts[name]={"poly":[[a,b] for a,b in (poly or [])],"pad":pad,"pivot":pivot,"scale":1,
+            "opacity":1,"dx":0,"dy":0,"z":z,"hidden":False,"mirrored":False,
+            "bbox":{"x":x,"y":y,"w":w,"h":h},"dataURL":durl}
+        print("  %-10s %4dx%-4d  lab(%d,%d %dx%d)"%(name,w,h,L["x"],L["y"],L["w"],L["h"]))
     for name,poly,pad,pivot,z,parent in PARTS:
-        if poly=="EYES": mask=ellipse_mask(W,H,pad)
-        else: mask=poly_mask(poly,pad,W,H)
+        mask=poly_mask(poly,pad,W,H)
         ma=np.asarray(mask).astype(np.float32)/255.0
         layer=kr.copy().astype(np.float32)
         layer[...,3]=layer[...,3]*ma
-        if name=="head": layer=clean_plate_eyes(layer.astype(np.uint8)).astype(np.float32)
+        if name=="head":
+            # feather the head's lower edge so it blends into the body (no hard neck seam)
+            yy=np.arange(H).reshape(-1,1).astype(np.float32)
+            ramp=np.clip(1.0-(yy-HEAD_FEATHER_TOP)/(H*1.0),0,1)   # placeholder, refined next line
+            bottom=alpha_bbox(layer.astype(np.uint8))
+            if bottom:
+                by=bottom[1]+bottom[3]
+                ramp=np.clip((by-yy)/float(by-HEAD_FEATHER_TOP+1),0.0,1.0)  # 1 above feather-top -> 0 at head bottom
+                ramp=0.30+0.70*ramp                                          # keep >=30% so jowls don't vanish
+                layer[...,3]=layer[...,3]*ramp
         layer=layer.astype(np.uint8)
         bb=alpha_bbox(layer)
         if not bb: print("  !! empty",name); continue
         x,y,w,h=bb
         crop=Image.fromarray(layer[y:y+h,x:x+w],"RGBA")
-        crop.save(os.path.join(OUT,name+".webp"),"WEBP",quality=95,method=6)
-        contact.append((name,crop))
-        L={"name":name,"src":"assets/front/"+name+".webp","z":z,
-           "x":round(x*k),"y":round(y*k),"w":round(w*k),"h":round(h*k),
-           "pivot":[round(pivot[0],3),round(pivot[1],3)]}
-        if parent: L["parent"]=parent
-        if name=="eyes": L["optional"]=True
-        rig_layers.append(L)
-        # studio project entry (full-res coords)
-        buf=os.path.join(REVIEW,"_tmp.webp"); crop.save(buf,"WEBP",quality=92)
-        with open(buf,"rb") as f: durl="data:image/webp;base64,"+base64.b64encode(f.read()).decode()
-        proj_parts[name]={"poly":[[a,b] for a,b in (poly if poly!="EYES" else [])],"pad":pad,
-            "pivot":pivot,"scale":1,"opacity":1,"dx":0,"dy":0,"z":z,"hidden":False,
-            "mirrored":False,"bbox":{"x":x,"y":y,"w":w,"h":h},"dataURL":durl}
-        print("  %-10s %4dx%-4d  lab(%d,%d %dx%d)"%(name,w,h,L["x"],L["y"],L["w"],L["h"]))
+        add_layer(name,crop,x,y,pivot,z,parent,poly=poly,pad=pad)
+    # ---- eyelids (blink) : fur-colored lids that wipe down over the real eyes ----
+    for name,cx,cy,rx,ry in LIDS:
+        lid,lx,ly=make_eyelid(kr,cx,cy,rx,ry)
+        add_layer(name,lid,lx,ly,[0.5,0.0],44,"head",opt=True)
     os.remove(os.path.join(REVIEW,"_tmp.webp"))
     rig={"name":"front","canvas":[round(W*k),round(H*k)],
          "comment":"Generated by tools/extract-front-source.py from the approved single full-body source. Hand-masked transparent layers (chroma-key + polygon + joint padding); no auto-trace, no vector redraw. Coords scaled to the lab stage; WebP are full resolution.",
