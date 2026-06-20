@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hammy Rig Lab — cutout-puppet prototype (isolated)</title>
+<link rel="stylesheet" href="rig-lab.css">
+</head>
+<body>
+<header class="lab-head">
+  <h1>🐹 Hammy Rig Lab</h1>
+  <p class="sub">Isolated layered-raster cutout-puppet prototype · <b>not wired to production</b>. Stroke = pet · tap = fall/dizzy · triple-tap = annoyed · Enter = pet · Space = fall.</p>
+</header>
+
+<div id="missingBanner" class="banner" style="display:none">
+  ⚠ <b>Engineering placeholders shown.</b> The real WebP parts aren’t in <code>assets/</code> yet, so every layer is a labelled rectangle. This validates the rig + animation wiring only — <b>not</b> the final look. Supply the three source sheets (see <code>SHEET-SPECS.md</code> / <code>PROMPTS.md</code>), run <code>tools/extract-rig-sheets.py</code>, and reload.
+</div>
+
+<main>
+  <div id="stage" class="stage">
+    <div class="ground"></div>
+    <div id="charWrap" class="char-wrap">
+      <div id="rigSide"  class="rig-mount" style="display:none"></div>
+      <div id="rigFront" class="rig-mount"></div>
+    </div>
+    <div id="fxLayer" class="fx-layer" aria-hidden="true"></div>
+    <div id="rigToast" class="rig-toast" aria-hidden="true"></div>
+  </div>
+
+  <div class="status">state: <b id="rigStatus">—</b></div>
+
+  <div class="dbg" role="group" aria-label="Lab debug controls">
+    <button data-act="idle">Idle</button>
+    <button data-act="walkR">Walk →</button>
+    <button data-act="walkL">← Walk</button>
+    <button data-act="wheel">Wheel</button>
+    <button data-act="sniff">Sniff</button>
+    <button data-act="pet">Pet</button>
+    <button data-act="eat">Eat</button>
+    <button data-act="fall">Fall</button>
+    <button data-act="annoyed">Annoyed</button>
+    <button data-act="sleep">Sleep</button>
+    <button data-act="pause">Pause</button>
+    <button id="editorToggle" class="ed-toggle">✎ Rig editor</button>
+  </div>
+
+  <div id="editorPanel" class="editor" style="display:none">
+    <div class="ed-top">
+      <label>Rig:
+        <select id="edRig"><option value="front">front</option><option value="side">side</option></select>
+      </label>
+      <span class="ed-hint">Drag a layer in the stage to move it · drag the pink dot to set the rotation pivot.</span>
+    </div>
+    <div class="ed-cols">
+      <div class="ed-layers"><h3>Layers (z-order)</h3><div id="layerList"></div></div>
+      <div class="ed-props">
+        <h3>Selected: <span id="edSel">—</span></h3>
+        <label>Scale <input type="range" id="edScale" min="20" max="220" value="100"> <span id="edScaleVal">1.00×</span></label>
+        <label>Z-index <input type="number" id="edZ" value="0" style="width:70px"></label>
+        <label><input type="checkbox" id="edMirror"> Mirror (preview)</label>
+        <button id="edExport" class="ed-export">⬇ Export rig JSON</button>
+        <p class="ed-note">Lab-only editor. Export overwrites nothing — it downloads a JSON you can drop into <code>manifests/</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="notes">
+    <summary>What this prototype is (and isn’t) — phase 1</summary>
+    <ul>
+      <li><b>Is:</b> the rig engine, editor, extraction/validation tooling, manifests, animation definitions, and gesture/state machine — all running on <b>placeholder rectangles</b> for engineering validation.</li>
+      <li><b>Isn’t:</b> finished art. No hamster illustration has been generated. Placeholders are temporary and clearly labelled.</li>
+      <li>Next, on approval: supply the front puppet sheet → extract → build idle / blink / ear-twitch / pet on the real cutouts → review video → stop.</li>
+    </ul>
+  </details>
+</main>
+
+<script src="rig-engine.js"></script>
+<script src="rig-editor.js"></script>
+</body>
+</html>

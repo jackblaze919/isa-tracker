@@ -1,0 +1,20 @@
+{
+  "name": "side",
+  "canvas": [320, 300],
+  "comment": "Side cutout puppet for walking / wheel. Far limbs render BEHIND the body (z < body), near limbs IN FRONT (z > body). Mirror the whole rig (scaleX -1) to face the other way. Head variants swap image src.",
+  "layers": [
+    { "name": "tail-side",      "src": "assets/side/tail-side.webp",      "z": 6,  "x": 34,  "y": 150, "w": 50,  "h": 60,  "pivot": [0.9, 0.5],  "parent": "body-side" },
+    { "name": "rear-leg-far",   "src": "assets/side/rear-leg-far.webp",   "z": 8,  "x": 70,  "y": 196, "w": 46,  "h": 70,  "pivot": [0.5, 0.16], "parent": "body-side", "opacity": 0.85 },
+    { "name": "front-leg-far",  "src": "assets/side/front-leg-far.webp",  "z": 9,  "x": 168, "y": 196, "w": 46,  "h": 70,  "pivot": [0.5, 0.16], "parent": "body-side", "opacity": 0.85 },
+    { "name": "body-side",      "src": "assets/side/body-side.webp",      "z": 20, "x": 60,  "y": 110, "w": 200, "h": 130, "pivot": [0.5, 0.85] },
+    { "name": "rear-leg-near",  "src": "assets/side/rear-leg-near.webp",  "z": 22, "x": 78,  "y": 196, "w": 48,  "h": 74,  "pivot": [0.5, 0.16], "parent": "body-side" },
+    { "name": "front-leg-near", "src": "assets/side/front-leg-near.webp", "z": 24, "x": 176, "y": 196, "w": 48,  "h": 74,  "pivot": [0.5, 0.16], "parent": "body-side" },
+    { "name": "ear-far",        "src": "assets/side/ear-far.webp",        "z": 28, "x": 196, "y": 56,  "w": 46,  "h": 60,  "pivot": [0.5, 0.85], "parent": "head-side", "opacity": 0.9 },
+    { "name": "head-side",      "src": "assets/side/head-side-neutral.webp","z": 30, "x": 168, "y": 64, "w": 120, "h": 116, "pivot": [0.3, 0.9],
+      "variants": {
+        "neutral": "assets/side/head-side-neutral.webp",
+        "blink":   "assets/side/head-side-blink.webp"
+      } },
+    { "name": "ear-near",       "src": "assets/side/ear-near.webp",       "z": 33, "x": 214, "y": 50,  "w": 48,  "h": 64,  "pivot": [0.5, 0.85], "parent": "head-side" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "front",
+  "canvas": [300, 340],
+  "comment": "Front / three-quarter cutout puppet. x,y = layer top-left in canvas px. pivot = [fx,fy] fraction of the layer box (rotation origin). Limbs must include extra hidden art beneath the body/head so rotation never exposes gaps. Head variants share the head box; the engine swaps the image src.",
+  "layers": [
+    { "name": "tail",        "src": "assets/front/tail.webp",        "z": 10, "x": 38,  "y": 196, "w": 46,  "h": 56,  "pivot": [0.9, 0.5],  "parent": "body" },
+    { "name": "body",        "src": "assets/front/body.webp",        "z": 20, "x": 60,  "y": 108, "w": 180, "h": 196, "pivot": [0.5, 0.92] },
+    { "name": "foot-left",   "src": "assets/front/foot-left.webp",   "z": 25, "x": 84,  "y": 268, "w": 58,  "h": 48,  "pivot": [0.5, 0.18], "parent": "body" },
+    { "name": "foot-right",  "src": "assets/front/foot-right.webp",  "z": 25, "x": 158, "y": 268, "w": 58,  "h": 48,  "pivot": [0.5, 0.18], "parent": "body", "mirrored": true },
+    { "name": "arm-left",    "src": "assets/front/arm-left.webp",    "z": 30, "x": 52,  "y": 150, "w": 52,  "h": 86,  "pivot": [0.72, 0.16],"parent": "body" },
+    { "name": "arm-right",   "src": "assets/front/arm-right.webp",   "z": 30, "x": 196, "y": 150, "w": 52,  "h": 86,  "pivot": [0.28, 0.16],"parent": "body", "mirrored": true },
+    { "name": "ear-left",    "src": "assets/front/ear-left.webp",    "z": 35, "x": 84,  "y": 18,  "w": 52,  "h": 74,  "pivot": [0.55, 0.86],"parent": "head" },
+    { "name": "ear-right",   "src": "assets/front/ear-right.webp",   "z": 35, "x": 164, "y": 18,  "w": 52,  "h": 74,  "pivot": [0.45, 0.86],"parent": "head", "mirrored": true },
+    { "name": "head",        "src": "assets/front/head-neutral.webp","z": 40, "x": 72,  "y": 40,  "w": 156, "h": 150, "pivot": [0.5, 0.95],
+      "variants": {
+        "neutral":     "assets/front/head-neutral.webp",
+        "happy":       "assets/front/head-happy.webp",
+        "eyes-closed": "assets/front/head-eyes-closed.webp",
+        "eating":      "assets/front/head-eating.webp",
+        "annoyed":     "assets/front/head-annoyed.webp",
+        "dizzy":       "assets/front/head-dizzy.webp"
+      } }
+  ]
+}

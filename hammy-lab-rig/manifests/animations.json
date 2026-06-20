@@ -1,0 +1,97 @@
+{
+  "comment": "Per-rig animation definitions. Each state lists per-layer keyframe TRACKS played on that layer's inner element via the Web Animations API (transform composes over the layer's base position because base position is on the outer element and transform-origin=pivot is on the inner). A track is either an array of keyframes (uses the state duration/loop) or {kf:[...], opts:{duration,delay,easing,iterations,direction}} for per-layer overrides. 'head' swaps the front head variant. 'rig' picks which rig. 'loop' true = continuous; false = one-shot then 'returnTo'. 'translate' (px/sec) moves the whole character horizontally.",
+  "front": {
+    "idle": {
+      "rig": "front", "duration": 3400, "loop": true, "head": "neutral",
+      "tracks": {
+        "body":      [ {"transform":"scale(1,1)"}, {"transform":"scale(1.018,0.985)"}, {"transform":"scale(1,1)"} ],
+        "head":      { "kf":[ {"transform":"rotate(-1.4deg)"}, {"transform":"rotate(1.4deg)"}, {"transform":"rotate(-1.4deg)"} ], "opts":{"duration":4200} },
+        "ear-left":  { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(-7deg)"}, {"transform":"rotate(0)"} ], "opts":{"duration":2300,"delay":300} },
+        "ear-right": { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(6deg)"}, {"transform":"rotate(0)"} ], "opts":{"duration":2600,"delay":900} },
+        "arm-left":  { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(3deg)"}, {"transform":"rotate(0)"} ], "opts":{"duration":3000,"delay":500} },
+        "arm-right": { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(-3deg)"}, {"transform":"rotate(0)"} ], "opts":{"duration":3300,"delay":200} },
+        "tail":      { "kf":[ {"transform":"rotate(-4deg)"}, {"transform":"rotate(6deg)"}, {"transform":"rotate(-4deg)"} ], "opts":{"duration":2800} }
+      }
+    },
+    "pet": {
+      "rig": "front", "duration": 1100, "loop": false, "returnTo": "idle", "head": "happy",
+      "tracks": {
+        "body":      [ {"transform":"scale(1,1)"}, {"transform":"scale(1.04,0.93) translateY(4px)"} ],
+        "head":      [ {"transform":"rotate(0)"}, {"transform":"rotate(8deg) translateY(3px)"} ],
+        "ear-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(22deg)"} ],
+        "ear-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(-22deg)"} ],
+        "arm-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(26deg)"} ],
+        "arm-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(-26deg)"} ]
+      },
+      "fx": "heart"
+    },
+    "eat": {
+      "rig": "front", "duration": 2000, "loop": true, "head": "eating",
+      "tracks": {
+        "head":      [ {"transform":"translateY(0)"}, {"transform":"translateY(3px)"}, {"transform":"translateY(0)"} ],
+        "arm-left":  { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(40deg) translateY(-10px)"}, {"transform":"rotate(0)"} ], "opts":{"duration":700} },
+        "arm-right": { "kf":[ {"transform":"rotate(0)"}, {"transform":"rotate(-40deg) translateY(-10px)"}, {"transform":"rotate(0)"} ], "opts":{"duration":700,"delay":350} }
+      },
+      "fx": "crumb"
+    },
+    "annoyed": {
+      "rig": "front", "duration": 1400, "loop": false, "returnTo": "idle", "head": "annoyed",
+      "tracks": {
+        "ear-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(-32deg)"} ],
+        "ear-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(32deg)"} ],
+        "foot-left": { "kf":[ {"transform":"rotate(0) translateY(0)"}, {"transform":"rotate(0) translateY(-7px)"}, {"transform":"rotate(0) translateY(0)"} ], "opts":{"duration":300,"iterations":3} },
+        "body":      [ {"transform":"translateX(0)"}, {"transform":"translateX(-2px)"}, {"transform":"translateX(2px)"}, {"transform":"translateX(0)"} ]
+      },
+      "fx": "star"
+    },
+    "fallAnticipation": {
+      "rig": "front", "duration": 260, "loop": false, "head": "dizzy",
+      "tracks": { "body":[ {"transform":"rotate(0)"}, {"transform":"rotate(-8deg) translateY(-4px)"} ],
+                  "head":[ {"transform":"rotate(0)"}, {"transform":"rotate(-10deg)"} ] }
+    },
+    "dizzy": {
+      "rig": "front", "duration": 1600, "loop": false, "returnTo": "recover", "head": "dizzy",
+      "tracks": { "head":[ {"transform":"rotate(-5deg)"}, {"transform":"rotate(5deg)"}, {"transform":"rotate(-5deg)"} ],
+                  "body":[ {"transform":"rotate(-3deg)"}, {"transform":"rotate(3deg)"}, {"transform":"rotate(-3deg)"} ] },
+      "fx": "star"
+    },
+    "recover": {
+      "rig": "front", "duration": 700, "loop": false, "returnTo": "idle", "head": "neutral",
+      "tracks": { "body":[ {"transform":"rotate(4deg)"}, {"transform":"rotate(-2deg)"}, {"transform":"rotate(0)"} ] }
+    }
+  },
+  "side": {
+    "walk": {
+      "rig": "side", "duration": 520, "loop": true, "translate": 70, "head": "neutral",
+      "tracks": {
+        "body-side":      [ {"transform":"translateY(0)"}, {"transform":"translateY(-4px)"}, {"transform":"translateY(0)"} ],
+        "head-side":      [ {"transform":"rotate(2deg)"}, {"transform":"rotate(-2deg)"}, {"transform":"rotate(2deg)"} ],
+        "ear-near":       { "kf":[ {"transform":"rotate(6deg)"}, {"transform":"rotate(-6deg)"}, {"transform":"rotate(6deg)"} ], "opts":{"duration":560,"delay":80} },
+        "ear-far":        { "kf":[ {"transform":"rotate(4deg)"}, {"transform":"rotate(-4deg)"}, {"transform":"rotate(4deg)"} ], "opts":{"duration":560,"delay":120} },
+        "front-leg-near": [ {"transform":"rotate(28deg)"}, {"transform":"rotate(-28deg)"}, {"transform":"rotate(28deg)"} ],
+        "front-leg-far":  [ {"transform":"rotate(-28deg)"}, {"transform":"rotate(28deg)"}, {"transform":"rotate(-28deg)"} ],
+        "rear-leg-near":  [ {"transform":"rotate(-28deg)"}, {"transform":"rotate(28deg)"}, {"transform":"rotate(-28deg)"} ],
+        "rear-leg-far":   [ {"transform":"rotate(28deg)"}, {"transform":"rotate(-28deg)"}, {"transform":"rotate(28deg)"} ],
+        "tail-side":      { "kf":[ {"transform":"rotate(-8deg)"}, {"transform":"rotate(8deg)"}, {"transform":"rotate(-8deg)"} ], "opts":{"duration":640} }
+      }
+    },
+    "wheel": {
+      "rig": "side", "duration": 300, "loop": true, "translate": 0, "head": "neutral",
+      "tracks": {
+        "body-side":      [ {"transform":"translateY(0)"}, {"transform":"translateY(-2px)"}, {"transform":"translateY(0)"} ],
+        "front-leg-near": [ {"transform":"rotate(40deg)"}, {"transform":"rotate(-40deg)"}, {"transform":"rotate(40deg)"} ],
+        "front-leg-far":  [ {"transform":"rotate(-40deg)"}, {"transform":"rotate(40deg)"}, {"transform":"rotate(-40deg)"} ],
+        "rear-leg-near":  [ {"transform":"rotate(-40deg)"}, {"transform":"rotate(40deg)"}, {"transform":"rotate(-40deg)"} ],
+        "rear-leg-far":   [ {"transform":"rotate(40deg)"}, {"transform":"rotate(-40deg)"}, {"transform":"rotate(40deg)"} ]
+      }
+    },
+    "sniff": {
+      "rig": "side", "duration": 900, "loop": true, "translate": 24, "head": "neutral",
+      "tracks": {
+        "head-side": [ {"transform":"rotate(6deg) translateY(2px)"}, {"transform":"rotate(2deg) translateY(0)"}, {"transform":"rotate(6deg) translateY(2px)"} ],
+        "front-leg-near": [ {"transform":"rotate(14deg)"}, {"transform":"rotate(-14deg)"}, {"transform":"rotate(14deg)"} ],
+        "rear-leg-near":  [ {"transform":"rotate(-14deg)"}, {"transform":"rotate(14deg)"}, {"transform":"rotate(-14deg)"} ]
+      }
+    }
+  }
+}
