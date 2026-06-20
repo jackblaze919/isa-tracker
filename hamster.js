@@ -206,7 +206,25 @@ window.IsaHamster = (function(){
     act(()=>{ if(g!==A.gen) return; A.busy=false; pump(); });
   }
   function scheduleIdle(){ clearTimeout(A.idleTimer); if(A.paused) return;
-    A.idleTimer=setTimeout(()=>{ if(!A.busy&&!A.paused&&!A.queue.length) enqueue(pickIdle()); }, rand(4000,10000)); }
+    A.idleTimer=setTimeout(()=>{ if(!A.busy&&!A.paused&&!A.queue.length) enqueue(pickIdle()); }, rand(2200,5000)); }
+
+  /* ---------- micro-idle: small glances / ear-wiggles so Hammy is never frozen
+     between scheduled actions. Only runs while truly resting (idle, not busy);
+     reverts only if still idle so it can never clobber a real animation. ---------- */
+  function scheduleMicro(){ clearTimeout(A.microTimer); if(A.paused) return;
+    A.microTimer=setTimeout(()=>{
+      if(A.mood==="idle" && !A.busy && !A.paused && !A.queue.length && A.poseEl){
+        const r=Math.random();
+        if(r<0.55){ // quick glance using existing look poses
+          A.poseEl.setAttribute("href", Math.random()<0.5 ? "#pose-look-left" : "#pose-look-right");
+          setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.poseEl) A.poseEl.setAttribute("href","#pose-idle"); }, 650);
+        } else if(r<0.85 && A.el){ // brief ear wiggle (reuses .mood-wiggle CSS)
+          A.el.classList.add("mood-wiggle");
+          setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.el) A.el.classList.remove("mood-wiggle"); }, 1000);
+        }
+      }
+      scheduleMicro();
+    }, rand(1800,3400)); }
 
   /* ---------- idle actions ---------- */
   function aIdle(done){ mood("idle"); after(rand(1400,2600),done); }
@@ -238,7 +256,7 @@ window.IsaHamster = (function(){
     const hr=new Date().getHours(); const night=(hr>=21||hr<6);
     const pool=[];
     const add=(fn,w)=>{ for(let i=0;i<w;i++) pool.push(fn); };
-    add(aIdle,2); add(aLook,2); add(aWiggle,1); add(aSniff,2); add(aGroom,2); add(aDrink,1); add(aSit,1); add(aTunnel,1); add(aWheelIdle,1);
+    add(aIdle,1); add(aLook,3); add(aWiggle,2); add(aSniff,3); add(aGroom,2); add(aDrink,1); add(aSit,1); add(aTunnel,1); add(aWheelIdle,1);
     add(aNap, night?5:2);
     if(care.energy<30) add(aNap,6);                 // sleepy day → naps more
     if(care.fullness<30) add(aWaitBowl,5);          // hungry → waits by the bowl
@@ -418,13 +436,13 @@ window.IsaHamster = (function(){
   function measure(){ if(!A.stage) return; A.w=A.stage.clientWidth||320; A.hx=Math.max(38,Math.min(A.w-38,A.hx)); place(); }
   function onVis(){
     if(document.hidden){ // pause all animation work while the tab is hidden
-      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
+      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearTimeout(A.microTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
     } else { // recompute decay for the time we were away, then resume cleanly
       A.paused=false; if(A.stage) A.stage.classList.remove("paused");
       applyDecay(); saveCare();
       A.gen++; A.busy=false; onWheel(false); clearInterval(A.walkInterval); A.walkInterval=0;
       if(A.el) A.el.classList.remove("in-tunnel","tumble-left","tumble-right");
-      applyTimeOfDay(); mood("idle"); _msg=""; render(); scheduleIdle(); scheduleBubble();
+      applyTimeOfDay(); mood("idle"); _msg=""; render(); scheduleIdle(); scheduleBubble(); scheduleMicro();
     }
   }
 
@@ -443,7 +461,7 @@ window.IsaHamster = (function(){
     measure(); A.hx=frac(SPOT.home); place(); face(1);
     applyTimeOfDay();
     bindGestures(); bindButtons(); bindName(); bindEvents();
-    mood("idle"); render(); scheduleIdle(); scheduleBubble();
+    mood("idle"); render(); scheduleIdle(); scheduleBubble(); scheduleMicro();
     window.addEventListener("resize", measure);
     document.addEventListener("visibilitychange", onVis);
     // refresh time-of-day roughly each half hour (cheap, only when visible)
