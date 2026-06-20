@@ -12,7 +12,9 @@ window.IsaHamster = (function(){
   const NS = "isa:v1:";
   const STATE_KEY = "hamster:state";
   const VERSION = 1;
-  const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  // Owner opted Hammy into full animation regardless of the OS "Reduce Motion" setting
+  // (that setting was making tap look identical to pet and freezing the pet).
+  const RM = false;
   const MAX_ELAPSED_MS = 72 * 3600 * 1000; // decay cap: a month closed ≈ 3 days of change
 
   /* ---------- low-level namespaced storage ---------- */
@@ -109,7 +111,7 @@ window.IsaHamster = (function(){
     sitting:"is just chilling",waitbowl:"is waiting by the bowl",looking:"is looking at you 🥰",wiggle:"wiggled its ears",
     eating:"is munching too 🍽️",drinking:"is having a sip",sleeping:"is napping 😴",resting:"is catching its breath",
     wheel:"is running on its wheel",exercising:"is working out too 💪",petted:"loves the pets 💕",
-    tumbling:"went tumbling! ⭐",recovering:"is shaking it off" };
+    tumbling:"toppled over! ⭐",recovering:"is shaking it off",dizzy:"is seeing stars ⭐",annoyed:"is a little annoyed 😤" };
 
   const POSE_MAP = {
     idle:"pose-idle", walking:null, sniffing:"pose-sniff", grooming:"pose-groom-1",
@@ -117,7 +119,7 @@ window.IsaHamster = (function(){
     wiggle:"pose-idle", eating:"pose-eat-1", drinking:"pose-drink",
     sleeping:"pose-sleep", resting:"pose-sit", wheel:"pose-wheel-1",
     exercising:"pose-exercise-1", petted:"pose-petted", tumbling:"pose-tumble-1",
-    recovering:"pose-recover"
+    recovering:"pose-recover", dizzy:"pose-dizzy", annoyed:"pose-annoyed"
   };
 
   function frac(f){ return Math.max(38, Math.min(A.w-38, f*A.w)); }
@@ -343,24 +345,28 @@ window.IsaHamster = (function(){
   }
   function pet(){ petStart(); petFinish(); }   // public / button / keyboard
 
+  // quick tap → topple over → see stars (dizzy) → shake it off. Distinct from pet.
   function nudge(dir){
-    const t=now(); if(t-A.lastTap<1200) return;  // cooldown so it can't be spammed into broken states
+    const t=now(); if(t-A.lastTap<900) return;  // short cooldown so it can't be spammed into broken states
     A.lastTap=t; interrupt(); face(dir<0?-1:1);
     care.lastInteractionAt=t; saveCare();
-    if(RM){ // reduced motion: no tumble/rotation — a gentle squish + a single soft star
-      mood("petted"); fx("star",1); message(care.name+" did a little wobble ⭐");
-      after(700, release); return;
-    }
     if(A.el) A.el.classList.add(dir<0?"tumble-left":"tumble-right");
-    mood("tumbling"); fx("star",4); message(care.name+" tumbled — wheee! ⭐");
-    after(950, ()=>{ if(A.el) A.el.classList.remove("tumble-left","tumble-right"); mood("recovering"); after(500, release); });
+    mood("tumbling"); fx("star",4); message(care.name+" toppled over — wheee! ⭐");
+    after(900, ()=>{ if(A.el) A.el.classList.remove("tumble-left","tumble-right"); mood("dizzy"); fx("star",2);
+      after(900, ()=>{ mood("recovering"); after(600, release); }); });
+  }
+  // three quick taps → annoyed (no harm, just a cute huff)
+  function annoyed(){
+    const t=now(); A.lastTap=t; interrupt();
+    mood("annoyed"); fx("star",2); message(care.name+" is a little annoyed 😤");
+    after(1500, release);
   }
 
   /* ---------- gesture detection (pointer + touch + keyboard) ----------
      A stroke = pointer started on Hammy and moved ≥15px (rewarded on release).
      A tap    = released <250ms with <10px movement (playful nudge away from tap). */
   function bindGestures(){
-    let pd=null;
+    let pd=null, tapTimes=[];
     A.el.addEventListener("pointerdown", e=>{ pd={x:e.clientX,y:e.clientY,t:performance.now(),moved:0,pet:false};
       try{ A.el.setPointerCapture(e.pointerId); }catch(_){} });
     A.el.addEventListener("pointermove", e=>{ if(!pd) return; pd.moved=Math.hypot(e.clientX-pd.x, e.clientY-pd.y);
@@ -368,9 +374,13 @@ window.IsaHamster = (function(){
     A.el.addEventListener("pointerup", e=>{ if(!pd) return; const dur=performance.now()-pd.t, moved=pd.moved;
       const r=A.el.getBoundingClientRect(), cx=r.left+r.width/2, p=pd; pd=null;
       if(p.pet){ petFinish(); }
-      else if(dur<250 && moved<10){ nudge(e.clientX<cx?1:-1); } });   // push away from the tapped side
+      else if(dur<250 && moved<10){           // quick tap
+        const tn=performance.now(); tapTimes=tapTimes.filter(x=>tn-x<1500); tapTimes.push(tn);
+        if(tapTimes.length>=3){ tapTimes=[]; annoyed(); }      // three quick taps → annoyed
+        else nudge(e.clientX<cx?1:-1);                          // single tap → topple away from the tapped side
+      } });
     A.el.addEventListener("pointercancel", ()=>{ if(pd&&pd.pet) release(); pd=null; });
-    // keyboard: Enter pets, Space nudges
+    // keyboard: Enter pets, Space topples
     A.el.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); pet(); }
       else if(e.key===" "){ e.preventDefault(); nudge(Math.random()<.5?-1:1); } });
   }
@@ -417,10 +427,24 @@ window.IsaHamster = (function(){
     if(inp) inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); saveName(); } });
   }
 
-  /* ---------- buttons ---------- */
+  /* ---------- give food / water (manual care buttons) ---------- */
+  function giveFood(){
+    const t=now(); if(t-(A._lastFeed||0)<1500) return; A._lastFeed=t;   // throttle so it can't be spammed
+    interrupt();
+    walkTo(frac(SPOT.bowl), ()=>{ face(-1); bowlFood(true); mood("eating"); fx("heart",1);
+      bump("fullness",12); addAffection(1); saveCare(); message(care.name+" enjoyed a snack 🥕");
+      after(2000, ()=>{ bowlFood(false); release(); }); });
+  }
+  function giveWater(){
+    const t=now(); if(t-(A._lastWater||0)<1500) return; A._lastWater=t;
+    interrupt();
+    walkTo(frac(SPOT.bottle), ()=>{ face(1); mood("drinking"); fx("heart",1);
+      bump("happiness",2); addAffection(1); saveCare(); message(care.name+" had a refreshing drink 💧");
+      after(2000, release); });
+  }
   function bindButtons(){
-    const p=document.getElementById("hammyPetBtn"); if(p) p.addEventListener("click", pet);
-    const n=document.getElementById("hammyNudgeBtn"); if(n) n.addEventListener("click", ()=>nudge(Math.random()<.5?-1:1));
+    const fb=document.getElementById("hammyFeedBtn"); if(fb) fb.addEventListener("click", giveFood);
+    const wb=document.getElementById("hammyWaterBtn"); if(wb) wb.addEventListener("click", giveWater);
   }
 
   /* ---------- tracker custom-event bridge ---------- */

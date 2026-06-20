@@ -128,14 +128,6 @@
 .ham-hearts{font-size:15px;letter-spacing:1px}
 .ham-msg{font-size:13px;font-weight:600;color:var(--muted)}
 
-/* reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .hammy-card-emoji{animation:none!important}
-  .mood-walking .hammy-svg,.mood-sniffing .hammy-svg,.mood-eating .hammy-svg,
-  .mood-exercising .hammy-svg,.mood-wheel .hammy-svg,.mood-grooming .hammy-svg,.mood-wiggle .hammy-svg,
-  .prop-wheel.spin{animation:none!important}
-  .hammy.tumble-left .hammy-svg,.hammy.tumble-right .hammy-svg{animation:none!important;transform:scaleY(.9)!important}
-  .hammy-shadow{transition:none}
-  .hfx{animation:hfxFade .8s ease forwards!important}
-  @keyframes hfxFade{0%{opacity:0}25%{opacity:.9}100%{opacity:0}}
-}
+/* Owner opted Hammy into full animation regardless of OS "Reduce Motion"
+   (the suppressed state made tap look like pet and froze the pet). Intentionally
+   no reduced-motion overrides here so Hammy stays lively on this personal app. */
