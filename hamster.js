@@ -1,6 +1,6 @@
 /* ============================================================
-   Hammy — virtual pet hamster
-   Public API: window.IsaHamster = { init, handleTrackerEvent, pet, nudge, getState, openTab }
+   Hammy — virtual pet hamster (WebP raster renderer)
+   Public API: window.IsaHamster = { init, handleTrackerEvent, pet, tease, getState, openTab }
 
    Two clearly separated concerns:
      • CARE state  -> persistent, authoritative, saved at isa:v1:hamster:state
@@ -13,7 +13,7 @@ window.IsaHamster = (function(){
   const STATE_KEY = "hamster:state";
   const VERSION = 1;
   const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const MAX_ELAPSED_MS = 72 * 3600 * 1000; // decay cap: a month closed ≈ 3 days of change
+  const MAX_ELAPSED_MS = 72 * 3600 * 1000; // decay cap
 
   /* ---------- low-level namespaced storage ---------- */
   function rawGet(k){ try{ return localStorage.getItem(NS+k); }catch(e){ return null; } }
@@ -29,7 +29,6 @@ window.IsaHamster = (function(){
   }
   let care = defaults();
 
-  // Validate anything we read from storage / a backup before trusting it.
   function validate(o){
     if(!o || typeof o!=="object") return null;
     const d=defaults();
@@ -47,41 +46,35 @@ window.IsaHamster = (function(){
   function loadCare(){
     let parsed=null; try{ parsed=JSON.parse(rawGet(STATE_KEY)); }catch(e){}
     let c=validate(parsed);
-    if(!c){ // fresh, or migrate from the very first prototype keys
+    if(!c){
       c=defaults();
       try{ const on=JSON.parse(rawGet("hammy_name")); if(typeof on==="string"&&on.trim()) c.name=on.trim().slice(0,16); }catch(e){}
       try{ const oh=JSON.parse(rawGet("hammy_happy")); if(Number.isFinite(oh)) c.happiness=clamp(oh,0,100); }catch(e){}
     }
     care=c;
     pruneProcessed();
-    applyDecay();      // catch up on real time that passed while closed
+    applyDecay();
     saveCare();
     return care;
   }
   function saveCare(){ if(!care.lastUpdatedAt) care.lastUpdatedAt=now(); rawSet(STATE_KEY, JSON.stringify(care)); }
 
-  /* ---------- elapsed-time decay ----------
-     Computed only when the app opens / becomes visible — never via a
-     background timer. Elapsed time is capped so a long absence stays gentle,
-     and the hamster can never reach a "dead" or harmful state. */
+  /* ---------- elapsed-time decay ---------- */
   function applyDecay(){
     const t=now(); let dt=t-(care.lastUpdatedAt||t);
     if(dt<=0){ care.lastUpdatedAt=t; return; }
     dt=Math.min(dt, MAX_ELAPSED_MS);
     const hrs=dt/3600000;
-    care.fullness  = clamp(care.fullness  - hrs*1.0, 0, 100); // slow (~24/day)
-    care.happiness = clamp(care.happiness - hrs*0.3, 0, 100); // extremely slow
-    care.energy    = clamp(care.energy    + hrs*2.2, 0, 100); // recovers while resting
+    care.fullness  = clamp(care.fullness  - hrs*1.0, 0, 100);
+    care.happiness = clamp(care.happiness - hrs*0.3, 0, 100);
+    care.energy    = clamp(care.energy    + hrs*2.2, 0, 100);
     care.lastUpdatedAt=t;
   }
 
-  /* ---------- event idempotency ----------
-     Each rewardable tracker event has a stable id like "meal|2026-6-19|0".
-     We store processed ids in care.processedEvents so unchecking/rechecking
-     or reloading can never replay or duplicate a reward. */
+  /* ---------- event idempotency ---------- */
   function processed(id){ return !!care.processedEvents[id]; }
   function markProcessed(id){ care.processedEvents[id]=1; }
-  function pruneProcessed(){ // forget ids older than ~31 days to keep state small
+  function pruneProcessed(){
     const keep={}, cutoff=now()-31*86400000;
     Object.keys(care.processedEvents||{}).forEach(id=>{
       const dk=id.split("|")[1]; let ts=NaN;
@@ -99,7 +92,7 @@ window.IsaHamster = (function(){
   }
 
   /* ---------- ANIM state (ephemeral) ---------- */
-  const A = { el:null, flip:null, stage:null, wheel:null, shadow:null, bowlFood:null, decorEl:null,
+  const A = { el:null, stage:null, shadow:null, decorEl:null,
     poseEl:null, fxLayer:null, walkInterval:0,
     hx:60, dir:1, w:320, raf:0, idleTimer:0, timers:[], paused:false,
     mood:"idle", busy:false, gen:0, queue:[], started:false, lastPet:0, lastTap:0 };
@@ -109,56 +102,55 @@ window.IsaHamster = (function(){
     sitting:"is just chilling",waitbowl:"is waiting by the bowl",looking:"is looking at you 🥰",wiggle:"wiggled its ears",
     eating:"is munching too 🍽️",drinking:"is having a sip",sleeping:"is napping 😴",resting:"is catching its breath",
     wheel:"is running on its wheel",exercising:"is working out too 💪",petted:"loves the pets 💕",
-    tumbling:"went tumbling! ⭐",recovering:"is shaking it off" };
+    shoveLeft:"needs a second…",shoveRight:"needs a second…",
+    fallLeft:"went tumbling! ⭐",fallRight:"went tumbling! ⭐",
+    dizzy:"looks dizzy",annoyed:"is not impressed",shakeOff:"shook it off",
+    recovering:"is shaking it off" };
 
+  /* ---------- WebP pose system ---------- */
+  const POSE_PATH = "assets/hammy/poses/hammy-";
   const POSE_MAP = {
-    idle:"pose-idle", walking:null, sniffing:"pose-sniff", grooming:"pose-groom-1",
-    sitting:"pose-sit", waitbowl:"pose-wait-bowl", looking:"pose-look-left",
-    wiggle:"pose-idle", eating:"pose-eat-1", drinking:"pose-drink",
-    sleeping:"pose-sleep", resting:"pose-sit", wheel:"pose-wheel-1",
-    exercising:"pose-exercise-1", petted:"pose-petted", tumbling:"pose-tumble-1",
-    recovering:"pose-recover"
+    idle:"idle", walking:null, sniffing:"idle", grooming:"idle",
+    sitting:"idle", waitbowl:"idle", looking:"idle",
+    wiggle:"idle", eating:"eat", drinking:"eat",
+    sleeping:"sleep", resting:"idle", wheel:"walk-1",
+    exercising:"walk-1", petted:"petted",
+    recovering:"idle",
+    shoveLeft:"idle", shoveRight:"idle",
+    fallLeft:"fallen", fallRight:"fallen",
+    dizzy:"dizzy", annoyed:"annoyed", shakeOff:"idle"
   };
+  const WALK_FRAMES=["walk-1","walk-2","walk-3","walk-4"];
 
   function frac(f){ return Math.max(38, Math.min(A.w-38, f*A.w)); }
   function place(){ if(A.el) A.el.style.left=A.hx+"px"; if(A.shadow){ A.shadow.style.left=A.hx+"px"; A.shadow.style.display="block"; } }
-  function face(d){ A.dir=d<0?-1:1; if(A.flip) A.flip.style.transform="scaleX("+A.dir+")"; }
+  function face(d){ A.dir=d<0?-1:1; if(A.el) A.el.style.transform="translateX(-50%) scaleX("+A.dir+")"; }
   function cancelRaf(){ if(A.raf){ cancelAnimationFrame(A.raf); A.raf=0; } }
   function clearTimers(){ A.timers.forEach(clearTimeout); A.timers=[]; }
   function after(ms,fn){ const id=setTimeout(fn, ms); A.timers.push(id); return id; }
+
   function mood(m){
     A.mood=m;
-    const pid=POSE_MAP[m]; if(pid&&A.poseEl) A.poseEl.setAttribute("href","#"+pid);
-    if(A.el){ const onWheel=A.el.classList.contains("on-wheel"), inT=A.el.classList.contains("in-tunnel"),
-      tl=A.el.classList.contains("tumble-left"), tr=A.el.classList.contains("tumble-right");
-      A.el.className="hammy mood-"+m+(onWheel?" on-wheel":"")+(inT?" in-tunnel":"")+(tl?" tumble-left":"")+(tr?" tumble-right":""); }
+    const pose=POSE_MAP[m];
+    if(pose && A.poseEl) A.poseEl.src = POSE_PATH + pose + ".webp";
+    if(A.el){
+      A.el.className="hammy mood-"+m;
+    }
     face(A.dir); render();
   }
 
-  /* ---------- floating effects ---------- */
-  const FX_MAP={heart:["fx-heart-1","fx-heart-2","fx-heart-3"],star:["fx-star-1","fx-sparkle","fx-star-2"],zzz:["fx-zzz"],dust:["fx-dust-1","fx-dust-2"],crumb:["fx-crumb-1","fx-crumb-2"]};
+  /* ---------- floating effects (emoji-based) ---------- */
   function fx(kind,n){
     const layer=A.fxLayer||A.stage; if(!layer) return;
-    const syms=FX_MAP[kind]||FX_MAP.star;
+    const chars = kind==="heart"?["❤️","💗","💖"]:kind==="star"?["⭐","✨","🌟"]:["💤"];
     n=n||(kind==="zzz"?1:3);
     for(let i=0;i<n;i++){
-      const s=document.createElementNS("http://www.w3.org/2000/svg","svg");
-      s.setAttribute("class","hfx "+kind); s.setAttribute("viewBox","0 0 24 24");
-      s.style.left=A.hx+"px"; s.style.setProperty("--dx",rand(-16,16)+"px");
-      s.style.animationDelay=(i*90)+"ms";
-      const u=document.createElementNS("http://www.w3.org/2000/svg","use");
-      u.setAttribute("href","#"+syms[i%syms.length]);
-      s.appendChild(u); layer.appendChild(s); setTimeout(()=>s.remove(),1500);
+      const d=document.createElement("div"); d.className="hfx "+kind; d.textContent=chars[i%chars.length];
+      d.style.left=A.hx+"px"; d.style.setProperty("--dx",rand(-16,16)+"px");
+      d.style.animationDelay=(i*90)+"ms";
+      layer.appendChild(d); setTimeout(()=>d.remove(),1500);
     }
   }
-  function onWheel(on){
-    if(A.wheel){
-      if(on){ A.wheel.classList.remove("wobble"); A.wheel.classList.toggle("spin", !RM); }
-      else { A.wheel.classList.remove("spin"); if(!RM) A.wheel.classList.add("wobble"); }
-    }
-    if(A.el) A.el.classList.toggle("on-wheel", on);
-  }
-  function bowlFood(show){ if(A.bowlFood) A.bowlFood.style.display=show?"block":"none"; }
 
   /* ---------- environment ambient ---------- */
   let bubbleTimer=0;
@@ -175,13 +167,13 @@ window.IsaHamster = (function(){
     }, rand(15000,40000));
   }
 
-  /* ---------- movement (rAF only while actually walking; instant under reduced motion) ---------- */
+  /* ---------- movement ---------- */
   function walkTo(target, done){
     mood("walking");
     if(!RM && A.poseEl){
-      let wf=0; const WF=["pose-walk-1","pose-walk-2","pose-walk-3","pose-walk-4"];
+      let wf=0;
       clearInterval(A.walkInterval);
-      A.walkInterval=setInterval(()=>{wf=(wf+1)%4;if(A.poseEl)A.poseEl.setAttribute("href","#"+WF[wf]);},120);
+      A.walkInterval=setInterval(()=>{wf=(wf+1)%4;if(A.poseEl)A.poseEl.src=POSE_PATH+WALK_FRAMES[wf]+".webp";},150);
     }
     const start=A.hx, dist=target-start;
     if(Math.abs(dist)<3 || RM){ A.hx=target; place(); clearInterval(A.walkInterval); A.walkInterval=0; done&&done(); return; }
@@ -194,10 +186,7 @@ window.IsaHamster = (function(){
     A.raf=requestAnimationFrame(step);
   }
 
-  /* ---------- action queue ----------
-     Idle actions and event reactions are queued so they never overlap or
-     corrupt each other. A generation counter (A.gen) invalidates any in-flight
-     action when an interaction interrupts it. */
+  /* ---------- action queue ---------- */
   function enqueue(act, front){ if(front) A.queue.unshift(act); else A.queue.push(act); pump(); }
   function pump(){
     if(A.busy||A.paused) return;
@@ -212,73 +201,77 @@ window.IsaHamster = (function(){
   function aIdle(done){ mood("idle"); after(rand(1400,2600),done); }
   function aLook(done){ face(Math.random()<.5?-1:1); mood("looking"); after(1800,done); }
   function aWiggle(done){ mood("wiggle"); after(1200,done); }
-  // wander to a clear spot, avoiding the wheel band so we never park on/inside the wheel
   function aSniff(done){ const x=Math.random()<.5?rand(.12,.40):rand(.64,.84); walkTo(frac(x), ()=>{ mood("sniffing"); after(1600,done); }); }
   function aGroom(done){ mood("sitting"); after(300,()=>{ mood("grooming"); after(2200,done); }); }
   function aDrink(done){ walkTo(frac(SPOT.bottle), ()=>{ face(1); mood("drinking"); after(2200,done); }); }
   function aWaitBowl(done){ walkTo(frac(SPOT.bowl), ()=>{ mood("waitbowl"); after(2000,done); }); }
   function aTunnel(done){
-    const tunnelEl=document.querySelector('.prop-tunnel');
     walkTo(frac(SPOT.tunnel), ()=>{
-      if(A.el)A.el.classList.add("in-tunnel");
-      if(tunnelEl)tunnelEl.classList.add("hammy-inside");
+      if(A.el)A.el.style.opacity="0.15";
       mood("idle"); after(1800,()=>{
-        if(A.el)A.el.classList.remove("in-tunnel");
-        if(tunnelEl)tunnelEl.classList.remove("hammy-inside");
+        if(A.el)A.el.style.opacity="";
         done();
       });
     });
   }
   function aSit(done){ mood("sitting"); after(2200,done); }
-  function aWheelIdle(done){ walkTo(frac(SPOT.wheel), ()=>{ onWheel(true); mood("wheel"); after(2400,()=>{ onWheel(false); bump("energy",-1); saveCare(); walkTo(frac(SPOT.home), done); }); }); }
+  function aWheelIdle(done){ walkTo(frac(SPOT.wheel), ()=>{ mood("wheel");
+    // Cycle wheel frames
+    let wf=0; const WH=["walk-1","walk-2"];
+    if(!RM && A.poseEl){ clearInterval(A.walkInterval); A.walkInterval=setInterval(()=>{wf=(wf+1)%2;A.poseEl.src=POSE_PATH+WH[wf]+".webp";},200); }
+    after(2400,()=>{ clearInterval(A.walkInterval); A.walkInterval=0; bump("energy",-1); saveCare(); walkTo(frac(SPOT.home), done); }); }); }
   function aNap(done){ walkTo(frac(SPOT.bed), ()=>{ mood("sitting"); after(300,()=>{ mood("sleeping"); fx("zzz"); bump("energy",2); saveCare(); after(2800,done); }); }); }
 
-  // pick the next idle action, gently weighted by care state + time of day
   function pickIdle(){
     const hr=new Date().getHours(); const night=(hr>=21||hr<6);
     const pool=[];
     const add=(fn,w)=>{ for(let i=0;i<w;i++) pool.push(fn); };
     add(aIdle,2); add(aLook,2); add(aWiggle,1); add(aSniff,2); add(aGroom,2); add(aDrink,1); add(aSit,1); add(aTunnel,1); add(aWheelIdle,1);
     add(aNap, night?5:2);
-    if(care.energy<30) add(aNap,6);                 // sleepy day → naps more
-    if(care.fullness<30) add(aWaitBowl,5);          // hungry → waits by the bowl
-    if(care.happiness<35) add(aSit,5);              // low spirits → sits quietly (until petted)
+    if(care.energy<30) add(aNap,6);
+    if(care.fullness<30) add(aWaitBowl,5);
+    if(care.happiness<35) add(aSit,5);
     return pool[Math.floor(Math.random()*pool.length)];
   }
 
   /* ---------- event reaction animations ---------- */
   function animMeal(idx, done){
-    bowlFood(true);
     walkTo(frac(SPOT.bowl), ()=>{ face(-1); mood("eating");
+      // Cycle eat frames
+      let ef=0; const EF=["eat","eat","eat"];
+      if(!RM && A.poseEl){ clearInterval(A.walkInterval); A.walkInterval=setInterval(()=>{ef=(ef+1)%3;A.poseEl.src=POSE_PATH+EF[ef]+".webp";},250); }
       if(idx===3) fx("heart",3); else if(idx===1) fx("heart",1);
       const dur = idx===1?2800 : idx===2?1400 : idx===3?2000 : 1800;
-      after(dur, ()=>{ bowlFood(false); done(); }); });
+      after(dur, ()=>{ clearInterval(A.walkInterval); A.walkInterval=0; done(); }); });
   }
   function animWorkout(done){
     walkTo(frac(SPOT.exercise), ()=>{ mood("exercising");
-      after(2600, ()=>{ mood("resting"); after(1400, ()=>walkTo(frac(SPOT.home), done)); }); });   // exercise → rest → home
+      // Cycle workout frames
+      let wf=0; const WK=["walk-1","walk-3"];
+      if(!RM && A.poseEl){ clearInterval(A.walkInterval); A.walkInterval=setInterval(()=>{wf=(wf+1)%2;A.poseEl.src=POSE_PATH+WK[wf]+".webp";},300); }
+      after(2600, ()=>{ clearInterval(A.walkInterval); A.walkInterval=0; mood("resting"); after(1400, ()=>walkTo(frac(SPOT.home), done)); }); });
   }
   function animWheel(done){
-    walkTo(frac(SPOT.wheel), ()=>{ onWheel(true); mood("wheel"); fx("star",2);
-      after(4000, ()=>{ onWheel(false); mood("resting"); after(1000, ()=>walkTo(frac(SPOT.home), done)); }); });
+    walkTo(frac(SPOT.wheel), ()=>{ mood("wheel");
+      let wf=0; const WH=["walk-1","walk-2"];
+      if(!RM && A.poseEl){ clearInterval(A.walkInterval); A.walkInterval=setInterval(()=>{wf=(wf+1)%2;A.poseEl.src=POSE_PATH+WH[wf]+".webp";},200); }
+      fx("star",2);
+      after(4000, ()=>{ clearInterval(A.walkInterval); A.walkInterval=0; mood("resting"); after(1000, ()=>walkTo(frac(SPOT.home), done)); }); });
   }
   function animSleep(happy, done){
     walkTo(frac(SPOT.bed), ()=>{ mood("sleeping"); fx("zzz");
       after(1600, ()=>fx("zzz")); after(happy?4200:3400, done); });
   }
 
-  /* ---------- public reaction: handleTrackerEvent ----------
-     Rewards are applied here (synchronously, exactly once via idempotency),
-     decoupled from the animation so an interrupted animation never affects
-     the reward. */
+  /* ---------- public reaction: handleTrackerEvent ---------- */
   function handleTrackerEvent(type, detail){
     detail=detail||{}; const dk=detail.date||todayKey();
     if(type==="meal"){
       const idx = (detail.mealIndex!=null) ? detail.mealIndex : 0;
       const id="meal|"+dk+"|"+idx;
-      if(processed(id)) return;                     // already eaten today → no duplicate
+      if(processed(id)) return;
       markProcessed(id);
-      const gain = idx===1?24 : idx===2?10 : idx===3?12 : 14;   // main / topup / treat / breakfast
+      const gain = idx===1?24 : idx===2?10 : idx===3?12 : 14;
       bump("fullness",gain); addAffection(1); saveCare();
       const msg = idx===1?"Hammy enjoyed a big meal 🍲" : idx===2?"Hammy had a protein snack 💪" : idx===3?"Hammy got a special treat 🍓" : "Hammy had a little breakfast 🌅";
       message(msg); enqueue((d)=>animMeal(idx,d), true); render(); return;
@@ -293,7 +286,7 @@ window.IsaHamster = (function(){
       message("Hammy trained with you 💪"); enqueue(animWorkout, true); render(); return;
     }
     if(type==="steps"){
-      const id="step|"+dk; if(processed(id)) return; markProcessed(id);     // only on first crossing per day
+      const id="step|"+dk; if(processed(id)) return; markProcessed(id);
       bump("happiness",4); bump("energy",-4); addAffection(1); saveCare();
       message("Hammy ran on the wheel! 🎡"); enqueue(animWheel, true); render(); return;
     }
@@ -301,46 +294,80 @@ window.IsaHamster = (function(){
       const id="sleep|"+dk; if(processed(id)) return; markProcessed(id);
       const hrs=Number(detail.sleepHours)||0, good=hrs>=7;
       bump("energy", good?30:20); if(good) bump("happiness",3); addAffection(1); saveCare();
-      message(good?"Hammy had a cozy sleep 😴":"Hammy had a little nap 😴");   // supportive either way
+      message(good?"Hammy had a cozy sleep 😴":"Hammy had a little nap 😴");
       enqueue((d)=>animSleep(good,d), true); render(); return;
     }
     if(type==="checkin"){
-      bump("happiness",4); addAffection(2); saveCare();                     // not deduped — celebrate every save
+      bump("happiness",4); addAffection(2); saveCare();
       fx("heart",4); if(!RM && typeof window.confettiRain==="function") window.confettiRain();
       message("Hammy is proud of you 💖"); render(); return;
     }
   }
 
-  /* ---------- interactions: pet (stroke) & nudge (tap) ---------- */
+  /* ---------- interactions: pet (stroke) & tease (tap) ---------- */
   function interrupt(){ A.gen++; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; A.busy=true; }
   function release(){ if(A.paused){ A.busy=false; return; } A.busy=false; mood("idle"); pump(); }
 
   function petStart(){ interrupt(); mood("petted"); fx("heart",1); }
   function petFinish(){
     const t=now();
-    // throttle so rapidly rubbing the screen can't farm happiness/affection
     if(t-A.lastPet>1200){ A.lastPet=t; bump("happiness",4); addAffection(2); care.lastInteractionAt=t; saveCare();
       fx("heart",3); message(care.name+" loves that 💕"); render(); }
     after(900, release);
   }
-  function pet(){ petStart(); petFinish(); }   // public / button / keyboard
+  function pet(){ petStart(); petFinish(); }
 
-  function nudge(dir){
-    const t=now(); if(t-A.lastTap<1200) return;  // cooldown so it can't be spammed into broken states
-    A.lastTap=t; interrupt(); face(dir<0?-1:1);
+  /* ---------- tease (fall-over sequence) ---------- */
+  let recentTaps = [];
+
+  function tease(dir){
+    const t=now();
+    if(t-A.lastTap<1200) return; // cooldown
+    A.lastTap=t; interrupt();
     care.lastInteractionAt=t; saveCare();
-    if(RM){ // reduced motion: no tumble/rotation — a gentle squish + a single soft star
-      mood("petted"); fx("star",1); message(care.name+" did a little wobble ⭐");
+
+    recentTaps.push(t);
+    recentTaps = recentTaps.filter(ts => t-ts < 5000);
+    const forceAnnoyed = recentTaps.length >= 2;
+
+    if(RM){
+      mood("dizzy"); fx("star",1); message(care.name+" looks dizzy");
       after(700, release); return;
     }
-    if(A.el) A.el.classList.add(dir<0?"tumble-left":"tumble-right");
-    mood("tumbling"); fx("star",4); message(care.name+" tumbled — wheee! ⭐");
-    after(950, ()=>{ if(A.el) A.el.classList.remove("tumble-left","tumble-right"); mood("recovering"); after(500, release); });
+
+    // 1. Anticipation
+    const fallDir = dir < 0 ? "Left" : "Right";
+    mood("shove"+fallDir);
+
+    after(100, ()=>{
+      // 2. Fall
+      mood("fall"+fallDir); fx("star",3);
+
+      after(250, ()=>{
+        // 3. On floor — stay in fall pose
+
+        after(rand(500,900), ()=>{
+          // 4. Reaction
+          if(forceAnnoyed || Math.random() < 0.4){
+            mood("annoyed");
+            message(care.name+" is not impressed");
+          } else {
+            mood("dizzy");
+            message(care.name+" looks dizzy");
+          }
+
+          after(1200, ()=>{
+            // 5. Recovery
+            mood("shakeOff");
+            message(care.name+" shook it off");
+            after(600, release);
+          });
+        });
+      });
+    });
   }
 
-  /* ---------- gesture detection (pointer + touch + keyboard) ----------
-     A stroke = pointer started on Hammy and moved ≥15px (rewarded on release).
-     A tap    = released <250ms with <10px movement (playful nudge away from tap). */
+  /* ---------- gesture detection ---------- */
   function bindGestures(){
     let pd=null;
     A.el.addEventListener("pointerdown", e=>{ pd={x:e.clientX,y:e.clientY,t:performance.now(),moved:0,pet:false};
@@ -350,20 +377,20 @@ window.IsaHamster = (function(){
     A.el.addEventListener("pointerup", e=>{ if(!pd) return; const dur=performance.now()-pd.t, moved=pd.moved;
       const r=A.el.getBoundingClientRect(), cx=r.left+r.width/2, p=pd; pd=null;
       if(p.pet){ petFinish(); }
-      else if(dur<250 && moved<10){ nudge(e.clientX<cx?1:-1); } });   // push away from the tapped side
+      else if(dur<250 && moved<10){ tease(e.clientX<cx?1:-1); } });
     A.el.addEventListener("pointercancel", ()=>{ if(pd&&pd.pet) release(); pd=null; });
-    // keyboard: Enter pets, Space nudges
+    // keyboard: Enter pets, Space teases
     A.el.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); pet(); }
-      else if(e.key===" "){ e.preventDefault(); nudge(Math.random()<.5?-1:1); } });
+      else if(e.key===" "){ e.preventDefault(); tease(Math.random()<.5?-1:1); } });
   }
 
-  /* ---------- rendering of status / bars / messages ---------- */
+  /* ---------- rendering ---------- */
   function setText(id,t){ const e=document.getElementById(id); if(e) e.textContent=t; }
   function setWidth(id,v){ const e=document.getElementById(id); if(e) e.style.width=clamp(v,0,100)+"%"; }
   function heartsStr(){ const lvl=Math.min(5, Math.floor(care.affectionXp/20)); return "❤️".repeat(Math.max(1,lvl)) + "  ·  Lv " + (Math.floor(care.affectionXp/20)+1); }
   let _msg="";
   function message(t){ _msg=t; setText("hamMsg", t); }
-  function gentleHint(){ // friendly, never guilt — used when nothing recent happened
+  function gentleHint(){
     if(care.fullness<25) return "Hammy could use a snack when you have your next meal";
     if(care.energy<25)   return "Hammy is having a sleepy day";
     if(care.happiness<35) return "A little pet would make Hammy happy";
@@ -379,10 +406,10 @@ window.IsaHamster = (function(){
     if(!_msg) setText("hamMsg", gentleHint());
     renderDecor();
   }
-  window.__hammyRefresh = render;   // tracker re-render hook (Today card rebuilds)
+  window.__hammyRefresh = render;
   function renderDecor(){ if(!A.decorEl) return; A.decorEl.style.display = care.unlockedDecorations.indexOf("bow")>=0 ? "block" : "none"; }
 
-  /* ---------- time of day (local) ---------- */
+  /* ---------- time of day ---------- */
   function applyTimeOfDay(){
     if(!A.stage) return; const hr=new Date().getHours();
     A.stage.classList.remove("tod-day","tod-evening","tod-night");
@@ -399,10 +426,14 @@ window.IsaHamster = (function(){
     if(inp) inp.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); saveName(); } });
   }
 
-  /* ---------- buttons ---------- */
-  function bindButtons(){
-    const p=document.getElementById("hammyPetBtn"); if(p) p.addEventListener("click", pet);
-    const n=document.getElementById("hammyNudgeBtn"); if(n) n.addEventListener("click", ()=>nudge(Math.random()<.5?-1:1));
+  /* ---------- instruction overlay ---------- */
+  const HINT_KEY = "hammy_hint_seen";
+  function showHintOnce(){
+    if(rawGet(HINT_KEY)) return;
+    const hint = document.getElementById("hammyHint");
+    if(hint){ hint.classList.add("show");
+      setTimeout(()=>{ hint.classList.remove("show"); rawSet(HINT_KEY,"1"); }, 4000);
+    }
   }
 
   /* ---------- tracker custom-event bridge ---------- */
@@ -417,13 +448,13 @@ window.IsaHamster = (function(){
   /* ---------- visibility & resize ---------- */
   function measure(){ if(!A.stage) return; A.w=A.stage.clientWidth||320; A.hx=Math.max(38,Math.min(A.w-38,A.hx)); place(); }
   function onVis(){
-    if(document.hidden){ // pause all animation work while the tab is hidden
+    if(document.hidden){
       A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
-    } else { // recompute decay for the time we were away, then resume cleanly
+    } else {
       A.paused=false; if(A.stage) A.stage.classList.remove("paused");
       applyDecay(); saveCare();
-      A.gen++; A.busy=false; onWheel(false); clearInterval(A.walkInterval); A.walkInterval=0;
-      if(A.el) A.el.classList.remove("in-tunnel","tumble-left","tumble-right");
+      A.gen++; A.busy=false; clearInterval(A.walkInterval); A.walkInterval=0;
+      if(A.el) A.el.style.opacity="";
       applyTimeOfDay(); mood("idle"); _msg=""; render(); scheduleIdle(); scheduleBubble();
     }
   }
@@ -431,23 +462,24 @@ window.IsaHamster = (function(){
   /* ---------- init ---------- */
   function init(){
     if(A.started) return;
-    A.el=document.getElementById("hammyPet"); A.flip=document.getElementById("hammyFlip");
-    A.stage=document.getElementById("hammyStage"); A.wheel=document.getElementById("hammyWheel");
-    A.shadow=document.getElementById("hammyShadow"); A.bowlFood=document.getElementById("hammyBowlFood");
+    A.el=document.getElementById("hammyPet");
+    A.stage=document.getElementById("hammyStage");
+    A.shadow=document.getElementById("hammyShadow");
     A.decorEl=document.getElementById("hammyDecorUnlock");
     A.poseEl=document.getElementById("hammyPose");
     A.fxLayer=document.getElementById("hammyFxLayer");
-    if(!A.el||!A.stage) return;     // markup not present
+    if(!A.el||!A.stage) return;
     A.started=true;
     loadCare();
     measure(); A.hx=frac(SPOT.home); place(); face(1);
     applyTimeOfDay();
-    bindGestures(); bindButtons(); bindName(); bindEvents();
+    bindGestures(); bindName(); bindEvents();
     mood("idle"); render(); scheduleIdle(); scheduleBubble();
     window.addEventListener("resize", measure);
     document.addEventListener("visibilitychange", onVis);
-    // refresh time-of-day roughly each half hour (cheap, only when visible)
     setInterval(()=>{ if(!document.hidden) applyTimeOfDay(); }, 1800000);
+    // Show hint after a short delay for first-time users
+    setTimeout(showHintOnce, 2000);
   }
 
   function openTab(){ const t=document.getElementById("tab-hammy"); if(t) t.click(); }
@@ -455,5 +487,5 @@ window.IsaHamster = (function(){
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init); else init();
 
-  return { init, handleTrackerEvent, pet, nudge, getState, openTab };
+  return { init, handleTrackerEvent, pet, tease, getState, openTab };
 })();

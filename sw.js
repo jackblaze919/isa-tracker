@@ -1,8 +1,5 @@
 // Network-first for the page (so edits reach installed copies); cache-first for static assets.
-// Architecture (Option A): all Hammy artwork is inlined in index.html as same-document
-// <symbol>/<use> (best WebKit compatibility, no extra runtime fetch). The files under
-// assets/hammy/ are editable authoring source only and are NOT loaded or cached at runtime.
-const CACHE = 'isa-tracker-v7';
+const CACHE = 'isa-tracker-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -12,7 +9,20 @@ const ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './icon-maskable.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './assets/hammy/poses/hammy-idle.webp',
+  './assets/hammy/poses/hammy-walk-1.webp',
+  './assets/hammy/poses/hammy-walk-2.webp',
+  './assets/hammy/poses/hammy-walk-3.webp',
+  './assets/hammy/poses/hammy-walk-4.webp',
+  './assets/hammy/poses/hammy-eat.webp',
+  './assets/hammy/poses/hammy-sleep.webp',
+  './assets/hammy/poses/hammy-petted.webp',
+  './assets/hammy/poses/hammy-fallen.webp',
+  './assets/hammy/poses/hammy-dizzy.webp',
+  './assets/hammy/poses/hammy-annoyed.webp',
+  './assets/hammy/habitat/hammy-habitat-background.webp',
+  './assets/hammy/habitat/hammy-habitat-foreground.webp'
 ];
 
 self.addEventListener('install', e => {
