@@ -16,12 +16,12 @@
     "pet": {
       "rig": "front", "duration": 1100, "loop": false, "returnTo": "idle", "head": "happy",
       "tracks": {
-        "body":      [ {"transform":"scale(1,1)"}, {"transform":"scale(1.04,0.93) translateY(4px)"} ],
-        "head":      [ {"transform":"rotate(0)"}, {"transform":"rotate(8deg) translateY(3px)"} ],
-        "ear-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(22deg)"} ],
-        "ear-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(-22deg)"} ],
-        "arm-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(26deg)"} ],
-        "arm-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(-26deg)"} ]
+        "body":      { "kf":[ {"transform":"translateY(0) scaleY(1)"}, {"transform":"translateY(3px) scaleY(0.975)"}, {"transform":"translateY(2px) scaleY(0.985)"} ], "opts":{"easing":"ease-out"} },
+        "head":      { "kf":[ {"transform":"rotate(0) translateY(0)"}, {"transform":"rotate(6deg) translateY(2px)"}, {"transform":"rotate(4deg) translateY(1px)"} ], "opts":{"easing":"ease-out"} },
+        "ear-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(15deg)"} ],
+        "ear-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(-15deg)"} ],
+        "arm-left":  [ {"transform":"rotate(0)"}, {"transform":"rotate(-11deg)"} ],
+        "arm-right": [ {"transform":"rotate(0)"}, {"transform":"rotate(11deg)"} ]
       },
       "fx": "heart"
     },
