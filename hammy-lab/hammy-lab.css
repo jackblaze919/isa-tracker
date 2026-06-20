@@ -1,0 +1,51 @@
+/* Hammy v3 lab — standalone styling (not the production tracker) */
+:root{
+  --bg:#fff0f5; --card:#fff; --ink:#4a2230; --muted:#84566a;
+  --hot:#ff4d86; --hotdark:#cc1f4a; --line:#ffd9e7; --grad:linear-gradient(135deg,#ff5fa2,#e11d48);
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 0 40px;background:
+  radial-gradient(900px 400px at 80% -10%,#ffd6e8,transparent 60%),
+  linear-gradient(180deg,#fff0f5,#ffe3ee);
+  min-height:100vh;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-weight:600}
+header{background:linear-gradient(135deg,#ff8fc4,#ff5fa2 45%,#e11d48);color:#fff;text-align:center;
+  padding:max(20px,env(safe-area-inset-top)) 16px 18px;border-radius:0 0 28px 28px;box-shadow:0 8px 22px rgba(225,29,72,.25)}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;opacity:.95}
+main{max-width:460px;margin:0 auto;padding:18px 16px}
+
+.stage{position:relative;width:100%;aspect-ratio:5/4;border-radius:22px;overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 50% 0%, #fff6fb 0%, #ffe9f3 55%, #ffd9ea 100%);
+  border:2px solid var(--line);box-shadow:inset 0 -14px 26px rgba(255,150,190,.20);touch-action:none}
+.ground{position:absolute;left:0;right:0;bottom:0;height:24%;
+  background:linear-gradient(180deg,#ffe7c6,#ffd6a2);border-top:3px dotted #f0bd83}
+
+.hammy{position:absolute;bottom:8%;left:50%;width:34%;max-width:150px;transform:translateX(-50%);
+  cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent;z-index:3}
+.hammy:active{cursor:grabbing}
+.hammy:focus-visible{outline:3px solid #7a2a48;outline-offset:4px;border-radius:14px}
+.hammy .frame{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 6px 5px rgba(150,80,110,.22))}
+
+.hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) translateY(6px);z-index:5;
+  background:rgba(255,255,255,.92);border:2px solid #ffbcd8;color:var(--hotdark);font-weight:700;font-size:12px;
+  padding:6px 13px;border-radius:999px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 3px 12px rgba(255,93,162,.18)}
+.hint.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.status{text-align:center;color:var(--muted);font-size:13px;margin:10px 0 6px;font-weight:700;text-transform:capitalize}
+
+.panel{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px}
+.panel button{border:2px solid var(--line);background:#fff;color:var(--hotdark);font-family:inherit;font-weight:700;
+  font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;box-shadow:0 3px 10px rgba(255,93,162,.12);transition:transform .12s}
+.panel button:hover{transform:translateY(-2px)}
+.panel button:focus-visible{outline:3px solid #7a2a48;outline-offset:2px}
+.panel button[data-act="pause"]{background:var(--grad);color:#fff;border-color:transparent}
+
+.stage.paused .hammy{filter:none}
+
+.notes{max-width:460px;margin:18px auto 0;background:#fff;border:2px solid var(--line);border-radius:16px;padding:6px 16px;color:var(--muted);font-size:13px}
+.notes summary{cursor:pointer;font-weight:700;color:var(--hotdark);padding:8px 0}
+.notes ul{margin:0 0 10px;padding-left:18px}
+.notes li{margin:5px 0}
+
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }

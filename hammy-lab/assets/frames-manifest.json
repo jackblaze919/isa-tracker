@@ -1,0 +1,75 @@
+{
+  "viewBox": "0 0 120 140",
+  "groundY": 126,
+  "frameCount": 30,
+  "animations": {
+    "idle": {
+      "frames": [
+        "f-idle-0",
+        "f-idle-1",
+        "f-idle-0",
+        "f-idle-2",
+        "f-idle-0",
+        "f-idle-3"
+      ],
+      "fps": 4,
+      "loop": true
+    },
+    "walk": {
+      "frames": [
+        "f-walk-0",
+        "f-walk-1",
+        "f-walk-2",
+        "f-walk-3",
+        "f-walk-4",
+        "f-walk-5"
+      ],
+      "fps": 12,
+      "loop": true,
+      "moves": true
+    },
+    "pet": {
+      "frames": [
+        "f-pet-0",
+        "f-pet-1",
+        "f-pet-2",
+        "f-pet-3",
+        "f-pet-2",
+        "f-pet-4"
+      ],
+      "fps": 7,
+      "loop": false,
+      "returnTo": "idle"
+    },
+    "fall": {
+      "frames": [
+        "f-fall-0",
+        "f-fall-1",
+        "f-fall-2",
+        "f-fall-3",
+        "f-fall-4",
+        "f-fall-5",
+        "f-fall-6",
+        "f-fall-7",
+        "f-fall-8",
+        "f-fall-9"
+      ],
+      "fps": 9,
+      "loop": false,
+      "returnTo": "idle"
+    },
+    "annoyed": {
+      "frames": [
+        "f-annoyed-0",
+        "f-annoyed-1",
+        "f-annoyed-2",
+        "f-annoyed-3",
+        "f-annoyed-1",
+        "f-annoyed-4"
+      ],
+      "fps": 7,
+      "loop": false,
+      "returnTo": "idle"
+    }
+  }
+}
