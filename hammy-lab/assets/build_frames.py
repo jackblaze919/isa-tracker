@@ -38,7 +38,10 @@ def mouth(kind, sx=0):
     return path(f"M{x} {y-1} Q{x-5} {y+4} {x-8} {y+1} M{x} {y-1} Q{x+5} {y+4} {x+8} {y+1}",sw=2.2)
 
 def ear(cx,cy,rot):
-    return (f'<g transform="rotate({rot} {cx} {cy})">'+el(cx,cy,11,13,C["body"])+el(cx,cy+1,5.5,7,C["ear"],sw=0)+'</g>')
+    # pivot near the ear BASE so a tilt fans it out from where it meets the head;
+    # ear is drawn before the body, so the body covers the base -> reads as attached.
+    py=cy+12
+    return (f'<g transform="rotate({rot} {cx} {py})">'+el(cx,cy,10,14,C["body"])+el(cx,cy+2,5,8,C["ear"],sw=0)+'</g>')
 
 def drawHammy(o):
     dy=o.get("dy",0); sq=o.get("squash",1.0); rot=o.get("rot",0)
@@ -51,9 +54,9 @@ def drawHammy(o):
     fl=o.get("footL",(46,122)); fr=o.get("footR",(74,122))
     parts.append(el(fl[0],fl[1]+dy*0.3,10,7,C["paw"]))
     parts.append(el(fr[0],fr[1]+dy*0.3,10,7,C["paw"]))
-    # ears
-    parts.append(ear(38,40+dy,o.get("earL",-8)))
-    parts.append(ear(82,40+dy,o.get("earR",8)))
+    # ears — seated on top of the head dome (inward + up) so they connect, not float
+    parts.append(ear(47,36+dy,o.get("earL",-12)))
+    parts.append(ear(73,36+dy,o.get("earR",12)))
     # body
     parts.append(el(bcx,bcy,brx,bry,C["body"]))
     parts.append(el(bcx,bcy+10,brx-14,bry-14,C["belly"],sw=0))
