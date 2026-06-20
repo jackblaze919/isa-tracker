@@ -203,6 +203,9 @@ window.RigLab = (function(){
       S.anims=anims;
       S.rigs.front=buildRig(front, document.getElementById("rigFront"), "front");
       S.rigs.side =buildRig(side,  document.getElementById("rigSide"),  "side");
+      // size the character box to the front rig's canvas so layer coords line up + center it
+      const cw=document.getElementById("charWrap"), fc=front.canvas;
+      if(cw&&fc){ cw.style.width=fc[0]+"px"; cw.style.height=fc[1]+"px"; cw.style.marginLeft=(-fc[0]/2)+"px"; }
       useRig("front"); face(1); S.started=true;
       bindGestures(); bindDebug();
       window.addEventListener("RigEditor:applied",()=>{});  // editor hook
