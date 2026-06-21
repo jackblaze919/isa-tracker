@@ -23,18 +23,18 @@
 .habitat-fg{z-index:1}  /* bedding floor sits BEHIND props so they rest on it, not under it */
 .hammy-fx-layer{position:absolute;inset:0;z-index:9;pointer-events:none}
 
-/* Props positioning */
+/* Props positioning — spaced so nothing overlaps; bulky decor kept small & to the sides */
 .prop{position:absolute;pointer-events:none;z-index:3}
-.prop-bed{bottom:8px;left:4%;width:74px;height:40px}
-.prop-bowl{bottom:12px;left:20%;width:58px;height:34px}
-.prop-bowl-food{bottom:22px;left:22%;width:30px;height:24px;display:none}
-.prop-wheel{bottom:36px;left:50%;transform:translateX(-50%);width:110px;height:110px}
-.prop-bottle{top:6px;right:10px;width:30px;height:64px}
-.prop-tunnel{bottom:30px;right:4px;width:74px;height:50px}
-.prop-house{bottom:10px;right:18%;width:70px;height:60px}
-.prop-bridge{bottom:50px;left:34%;width:60px;height:30px}
-.prop-plant-1{bottom:10px;left:0;width:36px;height:50px}
-.prop-plant-2{top:12px;right:25%;width:30px;height:40px}
+.prop-plant-1{bottom:6px;left:0;width:22px;height:34px}       /* far-left corner */
+.prop-bed{bottom:8px;left:6%;width:46px;height:28px}          /* front floor: nest */
+.prop-bowl{bottom:9px;left:24%;width:36px;height:24px}        /* front floor: food bowl */
+.prop-bowl-food{bottom:16px;left:26%;width:22px;height:20px;display:none}
+.prop-wheel{bottom:26px;left:52%;transform:translateX(-50%);width:84px;height:84px}  /* front: wheel */
+.prop-house{bottom:8px;right:15%;width:42px;height:36px}      /* right decor, smaller */
+.prop-tunnel{bottom:8px;right:1%;width:44px;height:30px}      /* far-right decor, smaller */
+.prop-bottle{top:6px;right:9px;width:28px;height:60px}        /* on the wall */
+.prop-plant-2{top:12px;right:32%;width:26px;height:36px}      /* on the wall */
+.prop-bridge{display:none}                                    /* removed: was overlapping the wheel */
 
 /* thrown food (feed from POV) + water drip (from bottle) */
 .thrown-food{position:absolute;z-index:8;pointer-events:none;will-change:transform}
@@ -102,6 +102,9 @@
 .hammy.in-tunnel{opacity:.15;transition:opacity .3s}
 .hammy.on-wheel{bottom:88px}
 
+/* topple rotates around mid-body (not the feet) so the body stays inside the stage and
+   never gets clipped in half by the stage's overflow:hidden edge */
+.hammy.tumble-right .hammy-svg,.hammy.tumble-left .hammy-svg{transform-origin:50% 58%}
 .hammy.tumble-right .hammy-svg{animation:tumbleR .9s cubic-bezier(.5,.05,.3,1)}
 .hammy.tumble-left .hammy-svg{animation:tumbleL .9s cubic-bezier(.5,.05,.3,1)}
 /* tips over onto its side (no full spin) then pops back upright into the dizzy pose */

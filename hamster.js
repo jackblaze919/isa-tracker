@@ -369,6 +369,7 @@ window.IsaHamster = (function(){
   function nudge(dir){
     const t=now(); if(t-A.lastTap<900) return;  // short cooldown so it can't be spammed into broken states
     A.lastTap=t; interrupt(); face(dir<0?-1:1);
+    A.hx=Math.max(66, Math.min(A.w-66, A.hx)); place();   // keep clear of the edges so the topple isn't clipped
     care.lastInteractionAt=t; saveCare();
     if(A.el) A.el.classList.add(dir<0?"tumble-left":"tumble-right");
     mood("tumbling"); fx("star",4); message(care.name+" toppled over — wheee! ⭐");
