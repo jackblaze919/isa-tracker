@@ -20,11 +20,11 @@
 .habitat-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .habitat-bg{z-index:0}
 .habitat-mg{z-index:2;position:absolute;inset:0}
-.habitat-fg{z-index:6}
+.habitat-fg{z-index:1}  /* bedding floor sits BEHIND props so they rest on it, not under it */
 .hammy-fx-layer{position:absolute;inset:0;z-index:9;pointer-events:none}
 
 /* Props positioning */
-.prop{position:absolute;pointer-events:none}
+.prop{position:absolute;pointer-events:none;z-index:3}
 .prop-bed{bottom:8px;left:4%;width:74px;height:40px}
 .prop-bowl{bottom:12px;left:20%;width:58px;height:34px}
 .prop-bowl-food{bottom:22px;left:22%;width:30px;height:24px;display:none}
@@ -36,8 +36,15 @@
 .prop-plant-1{bottom:10px;left:0;width:36px;height:50px}
 .prop-plant-2{top:12px;right:25%;width:30px;height:40px}
 
+/* thrown food (feed from POV) + water drip (from bottle) */
+.thrown-food{position:absolute;z-index:8;pointer-events:none;will-change:transform}
+.water-drip{position:absolute;width:7px;height:11px;z-index:8;pointer-events:none;
+  background:radial-gradient(circle at 38% 28%,#eaf7ff,#56a4e4);border-radius:50% 50% 50% 50%/65% 65% 38% 38%;
+  box-shadow:0 0 2px rgba(80,160,220,.4);animation:waterDrop .66s ease-in forwards}
+@keyframes waterDrop{0%{opacity:0;transform:translate(0,0) scaleY(.7)}18%{opacity:1}88%{opacity:1}100%{opacity:0;transform:translate(-5px,104px) scaleY(1.2)}}
+
 /* Wheel spin animation */
-.prop-wheel.spin{animation:wheelspin .55s linear infinite}
+.prop-wheel.spin{animation:wheelspin .45s linear infinite}
 @keyframes wheelspin{to{transform:translateX(-50%) rotate(360deg)}}
 /* Wheel wobble deceleration when stopping */
 .prop-wheel.wobble{animation:wheelWobble .6s ease-out}
@@ -57,8 +64,8 @@
 
 /* time-of-day tint overlay */
 .ham-tod{position:absolute;inset:0;pointer-events:none;border-radius:18px;transition:background .8s ease;z-index:5;background:transparent}
-.hammy-stage.tod-evening .ham-tod{background:linear-gradient(180deg,rgba(255,170,90,.10),rgba(255,120,80,.16))}
-.hammy-stage.tod-night .ham-tod{background:linear-gradient(180deg,rgba(40,40,110,.22),rgba(30,20,70,.30))}
+.hammy-stage.tod-evening .ham-tod{background:linear-gradient(180deg,rgba(255,180,110,.07),rgba(255,140,90,.10))}
+.hammy-stage.tod-night .ham-tod{background:linear-gradient(180deg,rgba(70,80,150,.10),rgba(50,45,110,.15))}
 .ham-moon{position:absolute;top:8px;left:10px;font-size:18px;opacity:0;transition:opacity .8s;z-index:6}
 .hammy-stage.tod-night .ham-moon{opacity:.9}
 
@@ -83,8 +90,8 @@
 .mood-drinking .hammy-svg{transform:translateY(-6px) rotate(-6deg)}
 .mood-exercising .hammy-svg{animation:hammyHop .5s ease-in-out infinite}
 @keyframes hammyHop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-16px) scale(1.05,.95)}60%{transform:translateY(0) scale(.95,1.05)}}
-.mood-wheel .hammy-svg{animation:hammyRun .22s linear infinite}
-@keyframes hammyRun{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
+.mood-wheel .hammy-svg{animation:hammyRun .26s ease-in-out infinite}
+@keyframes hammyRun{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-2.5px) rotate(1deg)}}
 .mood-grooming .hammy-svg{animation:hammyGroom .4s ease-in-out infinite}
 @keyframes hammyGroom{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .mood-wiggle .hammy-svg{animation:hammyEar .25s ease-in-out 4}
@@ -122,9 +129,12 @@
 .ham-stat-lbl{font-size:12.5px;font-weight:700;color:var(--ink);min-width:104px}
 .ham-bar{flex:1;height:12px;background:#ffe1ec;border-radius:99px;overflow:hidden}
 .ham-bar>div{height:100%;width:70%;border-radius:99px;transition:width .5s ease}
-#hamFullness{background:linear-gradient(90deg,#ffd28a,#ff9e5e)}
+#hamHunger{background:linear-gradient(90deg,#ffce8a,#ff9442)}
+#hamThirst{background:linear-gradient(90deg,#bfe9ff,#49a6e6)}
 #hamHappiness{background:linear-gradient(90deg,#ff9ec6,#ff5fa2,#e11d48)}
-#hamEnergy{background:linear-gradient(90deg,#bfe6ff,#5aa6e0)}
+#hamEnergy{background:linear-gradient(90deg,#ffe49a,#f5b13d)}
+/* low-need warning tint applied by JS when a meter is too low */
+.ham-bar>div.low{background:linear-gradient(90deg,#ff9a9a,#e0463f)!important}
 .ham-meta{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
 .ham-hearts{font-size:15px;letter-spacing:1px}
 .ham-msg{font-size:13px;font-weight:600;color:var(--muted)}

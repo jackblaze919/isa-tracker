@@ -26,7 +26,7 @@ window.IsaHamster = (function(){
 
   /* ---------- CARE state (authoritative) ---------- */
   function defaults(){
-    return { version:VERSION, name:"Hammy", fullness:70, happiness:70, energy:75,
+    return { version:VERSION, name:"Hammy", hunger:72, thirst:66, happiness:70, energy:75,
       affectionXp:0, lastUpdatedAt:now(), lastInteractionAt:0, processedEvents:{}, unlockedDecorations:[] };
   }
   let care = defaults();
@@ -38,7 +38,10 @@ window.IsaHamster = (function(){
     return {
       version:VERSION,
       name:(typeof o.name==="string" && o.name.trim()) ? o.name.trim().slice(0,16) : d.name,
-      fullness:clamp(o.fullness,0,100), happiness:clamp(o.happiness,0,100), energy:clamp(o.energy,0,100),
+      // hunger/thirst replaced the old single "fullness"; migrate it into hunger if present
+      hunger:clamp(o.hunger!=null?o.hunger:o.fullness, 0,100),
+      thirst:clamp(o.thirst!=null?o.thirst:d.thirst, 0,100),
+      happiness:clamp(o.happiness,0,100), energy:clamp(o.energy,0,100),
       affectionXp:Math.max(0, Math.floor(Number(o.affectionXp)||0)),
       lastUpdatedAt:Number(o.lastUpdatedAt)||now(),
       lastInteractionAt:Number(o.lastInteractionAt)||0,
@@ -71,7 +74,8 @@ window.IsaHamster = (function(){
     if(dt<=0){ care.lastUpdatedAt=t; return; }
     dt=Math.min(dt, MAX_ELAPSED_MS);
     const hrs=dt/3600000;
-    care.fullness  = clamp(care.fullness  - hrs*1.0, 0, 100); // slow (~24/day)
+    care.hunger    = clamp(care.hunger    - hrs*0.7, 0, 100); // gentle (~17/day) — takes days to empty
+    care.thirst    = clamp(care.thirst    - hrs*1.2, 0, 100); // thirstier more often (faster than hunger)
     care.happiness = clamp(care.happiness - hrs*0.3, 0, 100); // extremely slow
     care.energy    = clamp(care.energy    + hrs*2.2, 0, 100); // recovers while resting
     care.lastUpdatedAt=t;
@@ -102,11 +106,11 @@ window.IsaHamster = (function(){
 
   /* ---------- ANIM state (ephemeral) ---------- */
   const A = { el:null, flip:null, stage:null, wheel:null, shadow:null, bowlFood:null, decorEl:null,
-    poseEl:null, fxLayer:null, walkInterval:0,
+    poseEl:null, fxLayer:null, walkInterval:0, wheelInterval:0,
     hx:60, dir:1, w:320, raf:0, idleTimer:0, timers:[], paused:false,
     mood:"idle", busy:false, gen:0, queue:[], started:false, lastPet:0, lastTap:0 };
 
-  const SPOT={ bed:0.08, bowl:0.20, wheel:0.54, tunnel:0.9, bottle:0.9, center:0.5, home:0.30, exercise:0.34 };
+  const SPOT={ bed:0.08, bowl:0.20, wheel:0.54, tunnel:0.86, bottle:0.95, center:0.5, home:0.30, exercise:0.34 };
   const ACTIVITY={ idle:"is exploring",walking:"is exploring",sniffing:"is sniffing around",grooming:"is grooming its fur",
     sitting:"is just chilling",waitbowl:"is waiting by the bowl",looking:"is looking at you 🥰",wiggle:"wiggled its ears",
     eating:"is munching too 🍽️",drinking:"is having a sip",sleeping:"is napping 😴",resting:"is catching its breath",
@@ -128,9 +132,15 @@ window.IsaHamster = (function(){
   function cancelRaf(){ if(A.raf){ cancelAnimationFrame(A.raf); A.raf=0; } }
   function clearTimers(){ A.timers.forEach(clearTimeout); A.timers=[]; }
   function after(ms,fn){ const id=setTimeout(fn, ms); A.timers.push(id); return id; }
+  // sad when a need is low — shows the sad face for calm/resting moods only
+  function isSad(){ return care.hunger<28 || care.thirst<28 || care.happiness<26; }
+  const SAD_OVERRIDE={ idle:1, sitting:1, resting:1, waitbowl:1, looking:1 };
+  function restingPose(){ return isSad()?"pose-sad":"pose-idle"; }
   function mood(m){
     A.mood=m;
-    const pid=POSE_MAP[m]; if(pid&&A.poseEl) A.poseEl.setAttribute("href","#"+pid);
+    let pid=POSE_MAP[m];
+    if(SAD_OVERRIDE[m] && isSad()) pid="pose-sad";
+    if(pid&&A.poseEl) A.poseEl.setAttribute("href","#"+pid);
     if(A.el){ const onWheel=A.el.classList.contains("on-wheel"), inT=A.el.classList.contains("in-tunnel"),
       tl=A.el.classList.contains("tumble-left"), tr=A.el.classList.contains("tumble-right");
       A.el.className="hammy mood-"+m+(onWheel?" on-wheel":"")+(inT?" in-tunnel":"")+(tl?" tumble-left":"")+(tr?" tumble-right":""); }
@@ -159,6 +169,12 @@ window.IsaHamster = (function(){
       else { A.wheel.classList.remove("spin"); if(!RM) A.wheel.classList.add("wobble"); }
     }
     if(A.el) A.el.classList.toggle("on-wheel", on);
+    clearInterval(A.wheelInterval); A.wheelInterval=0;
+    if(on && !RM && A.poseEl){            // alternate two running poses → pumping legs
+      let wf=0; const WP=["pose-wheel-1","pose-wheel-2"];
+      A.poseEl.setAttribute("href","#pose-wheel-1");
+      A.wheelInterval=setInterval(()=>{ wf^=1; if(A.poseEl) A.poseEl.setAttribute("href","#"+WP[wf]); }, 95);
+    }
   }
   function bowlFood(show){ if(A.bowlFood) A.bowlFood.style.display=show?"block":"none"; }
 
@@ -216,13 +232,16 @@ window.IsaHamster = (function(){
   function scheduleMicro(){ clearTimeout(A.microTimer); if(A.paused) return;
     A.microTimer=setTimeout(()=>{
       if(A.mood==="idle" && !A.busy && !A.paused && !A.queue.length && A.poseEl){
-        const r=Math.random();
-        if(r<0.55){ // quick glance using existing look poses
-          A.poseEl.setAttribute("href", Math.random()<0.5 ? "#pose-look-left" : "#pose-look-right");
-          setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.poseEl) A.poseEl.setAttribute("href","#pose-idle"); }, 650);
-        } else if(r<0.85 && A.el){ // brief ear wiggle (reuses .mood-wiggle CSS)
-          A.el.classList.add("mood-wiggle");
-          setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.el) A.el.classList.remove("mood-wiggle"); }, 1000);
+        if(isSad()){ A.poseEl.setAttribute("href","#pose-sad"); }   // stay visibly sad while a need is low
+        else {
+          const r=Math.random();
+          if(r<0.55){ // quick glance using existing look poses
+            A.poseEl.setAttribute("href", Math.random()<0.5 ? "#pose-look-left" : "#pose-look-right");
+            setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.poseEl) A.poseEl.setAttribute("href",restingPose()); }, 650);
+          } else if(r<0.85 && A.el){ // brief ear wiggle (reuses .mood-wiggle CSS)
+            A.el.classList.add("mood-wiggle");
+            setTimeout(()=>{ if(A.mood==="idle" && !A.busy && A.el) A.el.classList.remove("mood-wiggle"); }, 1000);
+          }
         }
       }
       scheduleMicro();
@@ -261,7 +280,8 @@ window.IsaHamster = (function(){
     add(aIdle,1); add(aLook,3); add(aWiggle,2); add(aSniff,3); add(aGroom,2); add(aDrink,1); add(aSit,1); add(aTunnel,1); add(aWheelIdle,1);
     add(aNap, night?5:2);
     if(care.energy<30) add(aNap,6);                 // sleepy day → naps more
-    if(care.fullness<30) add(aWaitBowl,5);          // hungry → waits by the bowl
+    if(care.hunger<30) add(aWaitBowl,5);            // hungry → waits by the bowl
+    if(care.thirst<30) add(aDrink,5);               // thirsty → heads to the bottle
     if(care.happiness<35) add(aSit,5);              // low spirits → sits quietly (until petted)
     return pool[Math.floor(Math.random()*pool.length)];
   }
@@ -299,13 +319,13 @@ window.IsaHamster = (function(){
       if(processed(id)) return;                     // already eaten today → no duplicate
       markProcessed(id);
       const gain = idx===1?24 : idx===2?10 : idx===3?12 : 14;   // main / topup / treat / breakfast
-      bump("fullness",gain); addAffection(1); saveCare();
+      bump("hunger",gain); bump("thirst",4); addAffection(1); saveCare();
       const msg = idx===1?"Hammy enjoyed a big meal 🍲" : idx===2?"Hammy had a protein snack 💪" : idx===3?"Hammy got a special treat 🍓" : "Hammy had a little breakfast 🌅";
       message(msg); enqueue((d)=>animMeal(idx,d), true); render(); return;
     }
     if(type==="protein"){
       const id="protein|"+dk; if(processed(id)) return; markProcessed(id);
-      bump("fullness",5); addAffection(1); saveCare(); fx("heart",2); message("Hammy nibbled some protein 💕"); render(); return;
+      bump("hunger",5); addAffection(1); saveCare(); fx("heart",2); message("Hammy nibbled some protein 💕"); render(); return;
     }
     if(type==="workout"){
       const id="workout|"+dk+"|"+(detail.workoutType||"any"); if(processed(id)) return; markProcessed(id);
@@ -332,7 +352,7 @@ window.IsaHamster = (function(){
   }
 
   /* ---------- interactions: pet (stroke) & nudge (tap) ---------- */
-  function interrupt(){ A.gen++; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; A.busy=true; }
+  function interrupt(){ A.gen++; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearInterval(A.wheelInterval); A.wheelInterval=0; A.busy=true; }
   function release(){ if(A.paused){ A.busy=false; return; } A.busy=false; mood("idle"); pump(); }
 
   function petStart(){ interrupt(); mood("petted"); fx("heart",1); }
@@ -388,11 +408,13 @@ window.IsaHamster = (function(){
   /* ---------- rendering of status / bars / messages ---------- */
   function setText(id,t){ const e=document.getElementById(id); if(e) e.textContent=t; }
   function setWidth(id,v){ const e=document.getElementById(id); if(e) e.style.width=clamp(v,0,100)+"%"; }
+  function setBar(id,v){ const e=document.getElementById(id); if(!e) return; e.style.width=clamp(v,0,100)+"%"; e.classList.toggle("low", v<28); }
   function heartsStr(){ const lvl=Math.min(5, Math.floor(care.affectionXp/20)); return "❤️".repeat(Math.max(1,lvl)) + "  ·  Lv " + (Math.floor(care.affectionXp/20)+1); }
   let _msg="";
   function message(t){ _msg=t; setText("hamMsg", t); }
   function gentleHint(){ // friendly, never guilt — used when nothing recent happened
-    if(care.fullness<25) return "Hammy could use a snack when you have your next meal";
+    if(care.thirst<25)   return "Hammy is thirsty — tap Give water 💧";
+    if(care.hunger<25)   return "Hammy is hungry — tap Give food 🥕";
     if(care.energy<25)   return "Hammy is having a sleepy day";
     if(care.happiness<35) return "A little pet would make Hammy happy";
     return "Hammy is happy you're here 💕";
@@ -402,7 +424,8 @@ window.IsaHamster = (function(){
     setText("hammyCardStatus", ACTIVITY[A.mood]||"is hanging out");
     setText("hammyCardName", care.name);
     setText("hammyNameShow", care.name);
-    setWidth("hamFullness", care.fullness); setWidth("hamHappiness", care.happiness); setWidth("hamEnergy", care.energy);
+    setBar("hamHunger", care.hunger); setBar("hamThirst", care.thirst);
+    setBar("hamHappiness", care.happiness); setBar("hamEnergy", care.energy);
     setText("hamHearts", heartsStr());
     if(!_msg) setText("hamMsg", gentleHint());
     renderDecor();
@@ -428,19 +451,49 @@ window.IsaHamster = (function(){
   }
 
   /* ---------- give food / water (manual care buttons) ---------- */
+  // a piece of food tossed in from the viewer's POV (front/bottom) that arcs in and lands by Hammy
+  function throwFood(landX, cb){
+    if(!A.stage){ cb&&cb(null); return; }
+    const f=document.createElement("div"); f.className="thrown-food";
+    f.innerHTML='<svg viewBox="0 0 24 24" width="32" height="32"><path d="M11 8 L17 22 Q12 24 9 21 Z" fill="#ff9c3f" stroke="#c96a1e" stroke-width="1.2" stroke-linejoin="round"/><path d="M11 8 q3 -6 7 -5 q-1 4 -5 6Z" fill="#5fb45a" stroke="#3c7a3a" stroke-width="1"/><path d="M12 12 l1 2 M11 16 l1 2" stroke="#c96a1e" stroke-width="0.9" stroke-linecap="round"/></svg>';
+    f.style.left=landX+"px"; f.style.bottom="62px"; A.stage.appendChild(f);
+    const a=f.animate([
+      {transform:"translate(-50%,130px) scale(2.0) rotate(-30deg)", opacity:0},
+      {transform:"translate(-50%,70px) scale(1.6) rotate(-12deg)", opacity:1, offset:0.2},
+      {transform:"translate(-50%,-26px) scale(1.05) rotate(8deg)", opacity:1, offset:0.62},
+      {transform:"translate(-50%,0) scale(1) rotate(0)", opacity:1}
+    ], {duration:600, easing:"cubic-bezier(.3,.65,.4,1)", fill:"forwards"});
+    a.onfinish=()=>cb&&cb(f);
+  }
   function giveFood(){
     const t=now(); if(t-(A._lastFeed||0)<1500) return; A._lastFeed=t;   // throttle so it can't be spammed
     interrupt();
-    walkTo(frac(SPOT.bowl), ()=>{ face(-1); bowlFood(true); mood("eating"); fx("heart",1);
-      bump("fullness",12); addAffection(1); saveCare(); message(care.name+" enjoyed a snack 🥕");
-      after(2000, ()=>{ bowlFood(false); release(); }); });
+    const landX=A.hx;
+    face(A.hx<=A.w/2?1:-1);            // turn toward the incoming snack
+    mood("waitbowl");                  // looks up/forward, waiting to catch it
+    throwFood(landX, (foodEl)=>{
+      face(A.hx<=A.w/2?1:-1); mood("eating"); fx("heart",1);
+      bump("hunger",16); bump("thirst",2); addAffection(1); saveCare();
+      message(care.name+" caught a snack 🥕"); render();
+      if(foodEl){ foodEl.animate([{opacity:1,transform:"translate(-50%,0) scale(1)"},{opacity:0,transform:"translate(-50%,8px) scale(.25)"}],{duration:1300,easing:"ease-in",fill:"forwards"}).onfinish=()=>foodEl.remove(); }
+      after(1700, release);
+    });
+  }
+  // water drips from the bottle spout down toward Hammy's mouth
+  function waterDrip(){
+    if(!A.stage||A.paused) return;
+    const d=document.createElement("div"); d.className="water-drip";
+    d.style.right="30px"; d.style.top="64px"; A.stage.appendChild(d);
+    setTimeout(()=>d.remove(),700);
   }
   function giveWater(){
     const t=now(); if(t-(A._lastWater||0)<1500) return; A._lastWater=t;
     interrupt();
-    walkTo(frac(SPOT.bottle), ()=>{ face(1); mood("drinking"); fx("heart",1);
-      bump("happiness",2); addAffection(1); saveCare(); message(care.name+" had a refreshing drink 💧");
-      after(2000, release); });
+    walkTo(frac(SPOT.bottle), ()=>{ face(1); mood("drinking");        // stands under the bottle, looks up
+      bump("thirst",18); addAffection(1); saveCare();
+      message(care.name+" had a refreshing drink 💧"); render(); fx("heart",1);
+      waterDrip(); after(420,waterDrip); after(860,waterDrip); after(1300,waterDrip); after(1700,waterDrip);
+      after(2200, release); });
   }
   function bindButtons(){
     const fb=document.getElementById("hammyFeedBtn"); if(fb) fb.addEventListener("click", giveFood);
@@ -460,7 +513,7 @@ window.IsaHamster = (function(){
   function measure(){ if(!A.stage) return; A.w=A.stage.clientWidth||320; A.hx=Math.max(38,Math.min(A.w-38,A.hx)); place(); }
   function onVis(){
     if(document.hidden){ // pause all animation work while the tab is hidden
-      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearTimeout(A.microTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
+      A.paused=true; cancelRaf(); clearTimers(); clearTimeout(A.idleTimer); clearTimeout(A.microTimer); clearInterval(A.walkInterval); A.walkInterval=0; clearInterval(A.wheelInterval); A.wheelInterval=0; clearTimeout(bubbleTimer); bubbleTimer=0; if(A.stage) A.stage.classList.add("paused");
     } else { // recompute decay for the time we were away, then resume cleanly
       A.paused=false; if(A.stage) A.stage.classList.remove("paused");
       applyDecay(); saveCare();
