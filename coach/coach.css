@@ -137,3 +137,43 @@
 @media (prefers-reduced-motion: reduce){
   .coach-panel{transition:none}.coach-typing span{animation:none}.coach-fab.has-ai .coach-fab-dot{animation:none}
 }
+
+/* ---- status: development mock ---- */
+.coach-status.mock{color:#b9791f}
+.coach-status.mock::before{background:#f5b13d}
+
+/* ---- locked / access-code screen ---- */
+.coach-locked{text-align:center;padding:22px 18px 10px;color:var(--muted)}
+.coach-locked .wav{width:84px;height:84px;margin:0 auto 8px;border-radius:50%;background:#fff3f8;display:flex;
+  align-items:center;justify-content:center;box-shadow:inset 0 0 0 3px #ffd9e7}
+.coach-locked .wav svg{width:74px;height:74px}
+.coach-locked h3{font-family:"Baloo 2",cursive;color:var(--hot);font-size:18px;margin:0 0 6px}
+.coach-locked p{font-size:13px;line-height:1.5;margin:0 auto 14px;max-width:300px}
+.coach-locked form{display:flex;gap:8px;max-width:320px;margin:0 auto}
+.coach-locked input{flex:1;border:1.5px solid #ffd9e7;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px;
+  color:var(--ink);background:#fff8fc;outline:none}
+.coach-locked input:focus{border-color:#ff9ec6;box-shadow:0 0 0 3px rgba(255,158,198,.25)}
+.coach-unlock{border:none;border-radius:12px;padding:10px 16px;font-weight:800;font-size:14px;cursor:pointer;
+  background:linear-gradient(135deg,#ff7eb3,#e11d48);color:#fff;font-family:inherit}
+.coach-unlock:disabled{opacity:.6}
+.coach-locked-err{min-height:18px;font-size:12.5px;font-weight:700;color:var(--red);margin:10px 0 4px}
+.coach-offline-link{background:none;border:none;color:var(--hotdark);font-weight:700;font-size:12.5px;cursor:pointer;
+  text-decoration:underline;font-family:inherit;margin-top:6px;padding:4px}
+
+/* ---- non-AI labels (offline / dev mock) ---- */
+.coach-tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;
+  color:#b9791f;background:#fff0d6;border:1px solid #f0d49a;border-radius:6px;padding:2px 7px;margin-bottom:6px}
+.coach-row.bot .coach-bubble:has(.coach-tag){background:#fffdf6;border-color:#f0e2bf}
+
+/* ---- structured reply: safety banner, options, follow-up ---- */
+.coach-safety{font-size:12px;font-weight:800;border-radius:8px;padding:5px 9px;margin-bottom:7px}
+.coach-safety.caution{background:#fff0d6;color:#8a5b1a;border:1px solid #f0d49a}
+.coach-safety.urgent{background:#ffe0e5;color:#b0142f;border:1px solid #ffb3c0}
+.coach-reply{white-space:pre-wrap}
+.coach-options{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.coach-opt{border:1.5px solid #ffe1ee;border-radius:12px;padding:8px 11px;background:#fff8fc}
+.coach-opt b{display:block;font-size:13.5px;color:var(--hotdark);margin-bottom:2px}
+.coach-opt span{display:block;font-size:13px;color:var(--ink);line-height:1.45}
+.coach-followup{display:block;margin-top:9px;width:100%;text-align:left;border:1.5px dashed #ffc4dc;background:#fff0f6;
+  color:var(--hotdark);border-radius:12px;padding:8px 11px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.coach-followup:hover{background:#ffe1ee}

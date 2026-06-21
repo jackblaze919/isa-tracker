@@ -1,0 +1,14 @@
+name = "hammy-coach"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# Non-secret configuration (safe to commit). Change to your values.
+[vars]
+OPENAI_MODEL = "gpt-4.1-mini"
+ALLOWED_ORIGINS = "https://jackblaze919.github.io,http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173"
+
+# SECRETS — never put in this file. Set them with:
+#   wrangler secret put OPENAI_API_KEY
+#   wrangler secret put COACH_ACCESS_CODE
+#   wrangler secret put SESSION_SIGNING_SECRET
+# For local dev, copy .dev.vars.example -> .dev.vars (gitignored) and fill it in.

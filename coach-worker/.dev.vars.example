@@ -1,0 +1,8 @@
+# Copy this file to ".dev.vars" (which is gitignored) and fill in real values for local dev.
+# In production these are set as Worker secrets/vars — NEVER commit real values.
+
+OPENAI_API_KEY="PASTE-YOUR-OPENAI-KEY-HERE"
+OPENAI_MODEL="gpt-4.1-mini"
+COACH_ACCESS_CODE="pick-a-private-code-for-isa"
+SESSION_SIGNING_SECRET="paste-a-long-random-string-here"
+ALLOWED_ORIGINS="https://jackblaze919.github.io,http://localhost:8080"
