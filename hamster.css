@@ -95,10 +95,11 @@
 .hammy.in-tunnel{opacity:.15;transition:opacity .3s}
 .hammy.on-wheel{bottom:88px}
 
-.hammy.tumble-right .hammy-svg{animation:tumbleR .9s ease-in-out}
-.hammy.tumble-left .hammy-svg{animation:tumbleL .9s ease-in-out}
-@keyframes tumbleR{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(200deg) translateY(-22px)}60%{transform:rotate(360deg) translateY(0)}80%{transform:rotate(372deg)}100%{transform:rotate(360deg)}}
-@keyframes tumbleL{0%{transform:rotate(0) translateY(0)}30%{transform:rotate(-200deg) translateY(-22px)}60%{transform:rotate(-360deg) translateY(0)}80%{transform:rotate(-372deg)}100%{transform:rotate(-360deg)}}
+.hammy.tumble-right .hammy-svg{animation:tumbleR .9s cubic-bezier(.5,.05,.3,1)}
+.hammy.tumble-left .hammy-svg{animation:tumbleL .9s cubic-bezier(.5,.05,.3,1)}
+/* tips over onto its side (no full spin) then pops back upright into the dizzy pose */
+@keyframes tumbleR{0%{transform:rotate(0) translateY(0)}16%{transform:rotate(-8deg)}44%{transform:rotate(72deg) translateY(6px)}60%{transform:rotate(86deg) translateY(8px)}74%{transform:rotate(72deg) translateY(4px)}100%{transform:rotate(0) translateY(0)}}
+@keyframes tumbleL{0%{transform:rotate(0) translateY(0)}16%{transform:rotate(8deg)}44%{transform:rotate(-72deg) translateY(6px)}60%{transform:rotate(-86deg) translateY(8px)}74%{transform:rotate(-72deg) translateY(4px)}100%{transform:rotate(0) translateY(0)}}
 
 .hfx{position:absolute;bottom:96px;width:24px;height:24px;z-index:7;pointer-events:none;transform:translateX(-50%);animation:hfxFloat 1.3s ease-out forwards}
 .hfx.star{width:20px;height:20px}
