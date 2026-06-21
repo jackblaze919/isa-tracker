@@ -745,9 +745,9 @@ const WARMUPS = {
 };
 
 const WORKOUTS = {
-  gluteA:{label:"Workout A", focus:"Hip thrust day",            warmup:"glute", ex:["hipthrust","revlunge","sidelegraise"]},
-  gluteB:{label:"Workout B", focus:"RDL + step-up",             warmup:"glute", ex:["rdl","stepup"]},
-  gluteC:{label:"Workout C", focus:"Hip thrust + split squat",  warmup:"glute", ex:["hipthrust","splitsquat"]},
+  gluteA:{label:"Lower body", focus:"Hip thrust day",            warmup:"glute", ex:["hipthrust","revlunge","sidelegraise"]},
+  gluteB:{label:"Lower body", focus:"RDL + step-up",             warmup:"glute", ex:["rdl","stepup"]},
+  gluteC:{label:"Lower body", focus:"Hip thrust + split squat",  warmup:"glute", ex:["hipthrust","splitsquat"]},
   upper: {label:"Upper body",focus:"Push · pull · arms",        warmup:"upper", ex:["pushup","row","ohp","curl","triceps"]},
   walk:  {label:"Walk + mobility", focus:"Easy movement day",   warmup:null,    ex:[]},
   rest:  {label:"Rest day",  focus:"Recover",                   warmup:null,    ex:[]}
@@ -1013,7 +1013,7 @@ function todayHTML(day){
   if(W.ex.length){ wo = warmupHTML(W.warmup) + W.ex.map(exCardHTML).join(""); }
   else if(effType==="walk"){ wo = `<div class="warmnote">Easy movement day — keep it relaxed. 🌿</div><ul class="tight"><li>Walk at a conversation pace toward today's step target</li><li>Light stretching / hip mobility — nothing intense</li></ul>`; }
   else { wo = `<p>Complete rest day, gorgeous. 🌷</p><ul class="tight"><li>No hard workouts</li><li>Light walking is fine if you feel like it</li><li>Prioritize sleep &amp; recovery</li></ul>`; }
-  const woOpts=[["","Today's plan ("+WORKOUTS[SCHED[day].wo].label+")"],["gluteA","Workout A · hip thrust"],["gluteB","Workout B · RDL + step-up"],["gluteC","Workout C · hip thrust + split"],["upper","Upper body"],["walk","Walk + mobility"]]
+  const woOpts=[["","Today's plan ("+WORKOUTS[SCHED[day].wo].label+")"],["gluteA","Lower body · hip thrust"],["gluteB","Lower body · RDL + step-up"],["gluteC","Lower body · hip thrust + split"],["upper","Upper body"],["walk","Walk + mobility"]]
     .map(o=>`<option value="${o[0]}" ${override===o[0]?"selected":""}>${o[1]}</option>`).join("");
   const woSel = day!==0 ? `<div class="minirow"><label for="woOverride">Different workout today?</label><select id="woOverride" class="field" style="width:auto">${woOpts}</select></div>` : "";
   const weekHint = "Stay at 2 sets until form feels controlled, then add a 3rd to the main lifts.";
