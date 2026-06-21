@@ -2,12 +2,14 @@
 // Architecture (Option A): all Hammy artwork is inlined in index.html as same-document
 // <symbol>/<use> (best WebKit compatibility, no extra runtime fetch). The files under
 // assets/hammy/ are editable authoring source only and are NOT loaded or cached at runtime.
-const CACHE = 'isa-tracker-v15';
+const CACHE = 'isa-tracker-v16';
 const ASSETS = [
   './',
   './index.html',
   './hamster.css',
   './hamster.js',
+  './coach.css',
+  './coach.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
