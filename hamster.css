@@ -78,7 +78,7 @@
   z-index:7;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
 .hammy:focus-visible{outline:3px solid #7a2a48;outline-offset:4px;border-radius:50%}
 .hammy-flip{width:100%;height:100%;transform-origin:50% 70%}
-.hammy-svg{width:100%;height:100%;overflow:visible;transform-origin:50% 90%}
+.hammy-svg{width:150px;height:150px;margin-left:-29px;margin-top:-17px;overflow:visible;transform-origin:50% 84%}
 
 /* moods */
 .mood-walking .hammy-svg{animation:hammyWalk .42s ease-in-out infinite}
@@ -104,7 +104,7 @@
 
 /* topple rotates around mid-body (not the feet) so the body stays inside the stage and
    never gets clipped in half by the stage's overflow:hidden edge */
-.hammy.tumble-right .hammy-svg,.hammy.tumble-left .hammy-svg{transform-origin:50% 58%}
+.hammy.tumble-right .hammy-svg,.hammy.tumble-left .hammy-svg{transform-origin:50% 50%}
 .hammy.tumble-right .hammy-svg{animation:tumbleR .9s cubic-bezier(.5,.05,.3,1)}
 .hammy.tumble-left .hammy-svg{animation:tumbleL .9s cubic-bezier(.5,.05,.3,1)}
 /* tips over onto its side (no full spin) then pops back upright into the dizzy pose */

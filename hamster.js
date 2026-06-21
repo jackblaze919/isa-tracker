@@ -122,7 +122,7 @@ window.IsaHamster = (function(){
     sitting:"pose-sit", waitbowl:"pose-wait-bowl", looking:"pose-look-left",
     wiggle:"pose-idle", eating:"pose-eat-1", drinking:"pose-drink",
     sleeping:"pose-sleep", resting:"pose-sit", wheel:"pose-wheel-1",
-    exercising:"pose-exercise-1", petted:"pose-petted", tumbling:"pose-tumble-1",
+    exercising:"pose-exercise-1", petted:"pose-petted", tumbling:"pose-dizzy", /* centered pose so the topple rotation stays in-frame (pose-tumble-1 art is off-center) */
     recovering:"pose-recover", dizzy:"pose-dizzy", annoyed:"pose-annoyed"
   };
 
@@ -369,7 +369,7 @@ window.IsaHamster = (function(){
   function nudge(dir){
     const t=now(); if(t-A.lastTap<900) return;  // short cooldown so it can't be spammed into broken states
     A.lastTap=t; interrupt(); face(dir<0?-1:1);
-    A.hx=Math.max(66, Math.min(A.w-66, A.hx)); place();   // keep clear of the edges so the topple isn't clipped
+    A.hx=Math.max(82, Math.min(A.w-82, A.hx)); place();   // keep clear of the edges (lying length ~120px) so the topple isn't clipped
     care.lastInteractionAt=t; saveCare();
     if(A.el) A.el.classList.add(dir<0?"tumble-left":"tumble-right");
     mood("tumbling"); fx("star",4); message(care.name+" toppled over — wheee! ⭐");

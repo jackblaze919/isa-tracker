@@ -537,8 +537,12 @@
         <div class="hammy-shadow" id="hammyShadow" aria-hidden="true"></div>
         <div id="hammyPet" class="hammy mood-idle" role="img" aria-label="Hammy the hamster" tabindex="0">
           <div id="hammyFlip" class="hammy-flip">
-            <svg class="hammy-svg" viewBox="0 0 120 135">
-              <use id="hammyPose" href="#pose-idle"/>
+            <!-- padded viewBox + larger box: the hamster (0..120 x 0..135) is centered with
+                 transparent padding so a CSS-animated rotation never gets clipped to the box
+                 (compositing-layer clip). Visual size/position unchanged. -->
+            <svg class="hammy-svg" viewBox="-38 -30 196 196" preserveAspectRatio="xMidYMid meet">
+              <!-- explicit size so the symbol renders 1:1 (centered) instead of auto-scaling to the padded viewBox -->
+              <use id="hammyPose" href="#pose-idle" x="0" y="0" width="120" height="135"/>
             </svg>
           </div>
         </div>
