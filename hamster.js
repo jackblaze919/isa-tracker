@@ -549,7 +549,20 @@ window.IsaHamster = (function(){
   function openTab(){ const t=document.getElementById("tab-hammy"); if(t) t.click(); }
   function getState(){ return JSON.parse(JSON.stringify(care)); }
 
+  // Public hook for the Ask Hammy coach to give the stage hamster a tiny, non-disruptive
+  // reaction (a floating effect only) while chatting. Never interrupts autonomous behavior.
+  function handleCoachMood(kind){
+    try{
+      if(!A.started || !A.stage || document.hidden) return;
+      if(kind==="proud"){ fx("heart",2); }
+      else if(kind==="meal"){ fx("heart",1); }
+      else if(kind==="sleep"){ fx("zzz",1); }
+      else if(kind==="thinking"||kind==="workout"){ fx("star",1); }
+      // "caution" stays calm — no effect on purpose
+    }catch(e){}
+  }
+
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init); else init();
 
-  return { init, handleTrackerEvent, pet, nudge, getState, openTab };
+  return { init, handleTrackerEvent, pet, nudge, getState, openTab, handleCoachMood };
 })();
