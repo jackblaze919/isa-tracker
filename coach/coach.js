@@ -305,11 +305,23 @@
   function autosize(){ el.text.style.height="auto"; el.text.style.height=Math.min(120, el.text.scrollHeight)+"px"; }
 
   /* ---------- open / close ---------- */
-  let lastFocus=null;
+  let lastFocus=null, lockedScrollY=0;
+  function lockScroll(){
+    // iOS Safari ignores body{overflow:hidden} for touch scrolling, so pin the body in
+    // place and restore the scroll position on close. Stops the tab scrolling behind the sheet.
+    lockedScrollY=window.scrollY||window.pageYOffset||0;
+    const b=document.body.style;
+    b.position="fixed"; b.top=(-lockedScrollY)+"px"; b.left="0"; b.right="0"; b.width="100%"; b.overflow="hidden";
+  }
+  function unlockScroll(){
+    const b=document.body.style;
+    b.position=""; b.top=""; b.left=""; b.right=""; b.width=""; b.overflow="";
+    window.scrollTo(0, lockedScrollY);
+  }
   async function open(){
     lastFocus=document.activeElement;
     el.back.classList.add("open"); el.panel.classList.add("open"); el.fab.classList.add("hidden");
-    document.body.style.overflow="hidden";
+    lockScroll();
     setStatus("checking");
     const h=await health();
     if(DEV_MOCK){ if(sessionValid()){ setStatus("mock"); renderChat(); } else { setStatus("locked"); renderLocked(""); } }
@@ -321,7 +333,7 @@
     if(sessionValid()||DEV_MOCK&&sessionValid()) setTimeout(()=>el.text&&el.text.focus(),300);
   }
   function close(){ el.back.classList.remove("open"); el.panel.classList.remove("open"); el.fab.classList.remove("hidden");
-    document.body.style.overflow=""; if(lastFocus&&lastFocus.focus) try{lastFocus.focus();}catch(e){} }
+    unlockScroll(); if(lastFocus&&lastFocus.focus) try{lastFocus.focus();}catch(e){} }
 
   function wire(){
     el.fab.addEventListener("click",open);
