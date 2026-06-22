@@ -18,7 +18,14 @@ binding = "REMINDERS_DB"
 database_name = "hammy-reminders"
 database_id = "06a594a1-0cfe-4950-aec8-e4197e546c88"
 
-# Cron: run the reminder scheduler about every 15 minutes.
+# Daily Hammy email digest (one summary email per day to Felipe). Non-secret config:
+DIGEST_ENABLED = "true"
+DIGEST_TIME = "08:00"                 # local send time (24h)
+DIGEST_REPORT_MODE = "yesterday"      # summarizes yesterday (the finished day)
+DIGEST_FALLBACK_TIMEZONE = "America/Sao_Paulo"
+DIGEST_FROM_EMAIL = "Hammy <hammy@example.com>"   # change to a Resend-verified sender
+
+# Cron: run the reminder scheduler AND the daily email digest about every 15 minutes.
 [triggers]
 crons = ["*/15 * * * *"]
 
@@ -27,4 +34,7 @@ crons = ["*/15 * * * *"]
 #   wrangler secret put COACH_ACCESS_CODE
 #   wrangler secret put SESSION_SIGNING_SECRET
 #   wrangler secret put VAPID_PRIVATE_KEY
+#   wrangler secret put RESEND_API_KEY
+#   wrangler secret put DIGEST_TO_EMAIL
+#   wrangler secret put DIGEST_TEST_CODE
 # For local dev, copy .dev.vars.example -> .dev.vars (gitignored) and fill it in.

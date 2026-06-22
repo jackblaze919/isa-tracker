@@ -11,3 +11,10 @@ ALLOWED_ORIGINS="https://jackblaze919.github.io,http://localhost:8080"
 VAPID_PUBLIC_KEY="PASTE-VAPID-PUBLIC-KEY"
 VAPID_PRIVATE_KEY="PASTE-VAPID-PRIVATE-KEY"
 VAPID_SUBJECT="https://jackblaze919.github.io/isa-tracker/"
+
+# Daily Hammy email digest (Resend). Secrets:
+RESEND_API_KEY="PASTE-RESEND-API-KEY"
+DIGEST_TO_EMAIL="felipe@example.com"
+DIGEST_TEST_CODE="pick-a-private-test-code"
+# (DIGEST_FROM_EMAIL / DIGEST_ENABLED / DIGEST_TIME / DIGEST_REPORT_MODE / DIGEST_FALLBACK_TIMEZONE
+#  are non-secret vars set in wrangler.toml)

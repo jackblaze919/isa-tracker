@@ -6,6 +6,7 @@ import { createSession, verifySession, randomId } from "./session.js";
 import { parseAllowedOrigins, originAllowed, validateSessionBody, validateChatBody } from "./validation.js";
 import { buildInstructions, REPLY_SCHEMA, normalizeReply } from "./coach-prompt.js";
 import { handleReminders, runScheduled } from "./reminders.js";
+import { handleDigestTest, runDigest } from "./email-digest.js";
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const MAX_OUTPUT_TOKENS = 800;
@@ -16,7 +17,7 @@ function corsHeaders(origin, allowed){
   if(originAllowed(origin, allowed)){
     h["Access-Control-Allow-Origin"] = origin;
     h["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
-    h["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-Hammy-Anon";
+    h["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-Hammy-Anon, X-Digest-Test-Code";
     h["Access-Control-Max-Age"] = "86400";
   }
   return h;
@@ -157,10 +158,17 @@ export async function handle(request, env, deps){
     return handleReminders(request, env, cors, deps);
   }
 
+  // email digest test send — origin-gated; authorized by the X-Digest-Test-Code header (checked inside)
+  if(url.pathname === "/digest/test" && request.method === "POST"){
+    if(origin && !originAllowed(origin, allowed)) return json({ error: "forbidden_origin" }, 403, cors);
+    return handleDigestTest(request, env, cors, deps);
+  }
+
   return json({ error: "not_found" }, 404, cors);
 }
 
 export default {
   fetch: (request, env) => handle(request, env),
-  scheduled: (event, env, ctx) => { ctx.waitUntil(runScheduled(env)); }
+  // run BOTH schedulers; allSettled so one failing never breaks the other (reminders keep working)
+  scheduled: (event, env, ctx) => { ctx.waitUntil(Promise.allSettled([runScheduled(env), runDigest(env)])); }
 };

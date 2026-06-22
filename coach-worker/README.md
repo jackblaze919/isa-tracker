@@ -145,3 +145,51 @@ curl -H "Origin: https://jackblaze919.github.io" https://hammy-coach.<sub>.worke
 boolean completion flags for the current day. No names, emails, weights, meal
 contents, photos, chat, or medical data are ever uploaded. `user_id` is an HMAC of the browser's
 anonymous id (never the raw id, never the access code). Notification copy is server-controlled.
+
+---
+
+# Hammy daily email digest — one-time setup
+
+ONE completion-summary email per day to Felipe (default 8:00 AM local, summarizing **yesterday**).
+Reuses the existing `REMINDERS_DB` D1 (the `daily_status` table). **No OpenAI.** Deterministic copy.
+Reads ONLY completion flags — never weight, foods, calories, chat, photos, pain, or medical data.
+
+### Secrets / vars
+
+| Name | What | How |
+|---|---|---|
+| `RESEND_API_KEY` | Resend API key | `wrangler secret put RESEND_API_KEY` (SECRET) |
+| `DIGEST_TO_EMAIL` | Felipe's email | `wrangler secret put DIGEST_TO_EMAIL` (SECRET) |
+| `DIGEST_TEST_CODE` | private code for the test route | `wrangler secret put DIGEST_TEST_CODE` (SECRET) |
+| `DIGEST_FROM_EMAIL` | a Resend-verified sender | `[vars]` in `wrangler.toml` |
+| `DIGEST_ENABLED` | `"true"` to send | `[vars]` |
+| `DIGEST_TIME` | local send time, e.g. `"08:00"` | `[vars]` |
+| `DIGEST_REPORT_MODE` | `"yesterday"` | `[vars]` |
+| `DIGEST_FALLBACK_TIMEZONE` | e.g. `"America/Sao_Paulo"` | `[vars]` |
+
+### Exact steps
+
+```bash
+cd coach-worker
+# 1) Create a Resend account at resend.com and verify a sender domain/address.
+# 2) Create a Resend API key.
+# 3) Store the secrets:
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put DIGEST_TO_EMAIL
+npx wrangler secret put DIGEST_TEST_CODE
+# 4) Confirm the [vars] in wrangler.toml (DIGEST_FROM_EMAIL must be a verified sender).
+# 5) Apply the new migration (same D1 as reminders):
+npx wrangler d1 migrations apply hammy-reminders --local
+npx wrangler d1 migrations apply hammy-reminders --remote
+# 6) Deploy:
+npx wrangler deploy
+# 7) Test a send (use your DIGEST_TEST_CODE):
+curl -X POST https://hammy-coach.isa-hammy.workers.dev/digest/test \
+  -H "Content-Type: application/json" \
+  -H "X-Digest-Test-Code: <code>" \
+  -d '{}'
+```
+
+The cron (`*/15`) runs both the reminders scheduler **and** the digest scheduler. The digest sends
+once per local date when `DIGEST_TIME` arrives (30-min window for cron drift); duplicates are blocked
+by `email_digest_log` (unique `digest_date + recipient_hash`, where the recipient email is HMACed).
