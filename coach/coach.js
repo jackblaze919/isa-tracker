@@ -108,6 +108,7 @@
       <div class="coach-head">
         <div class="av">${avatar("pose-idle")}</div>
         <div class="ttl"><b>Ask Hammy</b><span class="sub">Fitness, food, and plan help <span class="coach-status" id="coachStatus">Connecting…</span></span></div>
+        <button class="hbtn" id="coachBell" title="Hammy reminders" aria-label="Hammy reminders">🔔</button>
         <button class="hbtn" id="coachLock" title="Lock / sign out" aria-label="Lock coach">🔒</button>
         <button class="hbtn" id="coachNew" title="New chat" aria-label="New chat">🗑️</button>
         <button class="hbtn" id="coachClose" title="Close" aria-label="Close">✕</button>
@@ -341,6 +342,7 @@
     el.back.addEventListener("click",close);
     el.panel.querySelector("#coachNew").addEventListener("click",()=>{ if(history.length && !confirm("Start a new chat? This clears the current conversation.")) return; history=[]; offlineMode=false; saveHistory(); sessionValid()||DEV_MOCK?renderChat():renderLocked(""); });
     el.panel.querySelector("#coachLock").addEventListener("click",()=>{ if(!confirm("Lock the coach and sign out on this device?")) return; ldel("session"); session=null; offlineMode=false; setStatus("locked"); renderLocked("Locked. Enter your access code to chat again."); });
+    const bell=el.panel.querySelector("#coachBell"); if(bell) bell.addEventListener("click",()=>{ if(window.HammyReminders&&typeof HammyReminders.open==="function") HammyReminders.open(); });
     el.text.addEventListener("input",()=>{ autosize(); updateSend(); });
     el.text.addEventListener("keydown",e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); offlineMode?offlineAsk():ask(); } });
     el.send.addEventListener("click",()=>{ offlineMode?offlineAsk():ask(); });
