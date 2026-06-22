@@ -5,6 +5,6 @@
    Once the Cloudflare Worker is deployed (see coach-worker/README.md), set:
      workerUrl: "https://<your-worker>.workers.dev", developmentMock: false  */
 window.HAMMY_COACH_CONFIG = {
-  workerUrl: "",
-  developmentMock: true
+  workerUrl: "https://hammy-coach.isa-hammy.workers.dev",
+  developmentMock: false
 };
