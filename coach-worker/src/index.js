@@ -5,6 +5,7 @@
 import { createSession, verifySession, randomId } from "./session.js";
 import { parseAllowedOrigins, originAllowed, validateSessionBody, validateChatBody } from "./validation.js";
 import { buildInstructions, REPLY_SCHEMA, normalizeReply } from "./coach-prompt.js";
+import { handleReminders, runScheduled } from "./reminders.js";
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const MAX_OUTPUT_TOKENS = 800;
@@ -14,8 +15,8 @@ function corsHeaders(origin, allowed){
   const h = { "Vary": "Origin" };
   if(originAllowed(origin, allowed)){
     h["Access-Control-Allow-Origin"] = origin;
-    h["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
-    h["Access-Control-Allow-Headers"] = "Authorization, Content-Type";
+    h["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
+    h["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-Hammy-Anon";
     h["Access-Control-Max-Age"] = "86400";
   }
   return h;
@@ -150,7 +151,16 @@ export async function handle(request, env, deps){
   if(url.pathname === "/session" && request.method === "POST") return handleSession(request, env, cors);
   if(url.pathname === "/chat" && request.method === "POST") return handleChat(request, env, cors, deps);
 
+  // reminders: all routes are origin-gated; all except GET /reminders/config require the session (checked inside)
+  if(url.pathname.startsWith("/reminders/")){
+    if(origin && !originAllowed(origin, allowed)) return json({ error: "forbidden_origin" }, 403, cors);
+    return handleReminders(request, env, cors, deps);
+  }
+
   return json({ error: "not_found" }, 404, cors);
 }
 
-export default { fetch: (request, env) => handle(request, env) };
+export default {
+  fetch: (request, env) => handle(request, env),
+  scheduled: (event, env, ctx) => { ctx.waitUntil(runScheduled(env)); }
+};

@@ -6,3 +6,8 @@ OPENAI_MODEL="gpt-4.1-mini"
 COACH_ACCESS_CODE="pick-a-private-code-for-isa"
 SESSION_SIGNING_SECRET="paste-a-long-random-string-here"
 ALLOWED_ORIGINS="https://jackblaze919.github.io,http://localhost:8080"
+
+# Hammy reminders (Web Push). Generate with: node scripts/gen-vapid.mjs
+VAPID_PUBLIC_KEY="PASTE-VAPID-PUBLIC-KEY"
+VAPID_PRIVATE_KEY="PASTE-VAPID-PRIVATE-KEY"
+VAPID_SUBJECT="https://jackblaze919.github.io/isa-tracker/"

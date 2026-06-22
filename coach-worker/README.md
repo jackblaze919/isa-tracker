@@ -81,3 +81,67 @@ wrangler secret put SESSION_SIGNING_SECRET
 wrangler deploy
 ```
 Then put the Worker URL in the frontend `coach/coach-config.js` (`workerUrl`). The URL is public.
+
+---
+
+# Hammy Reminders (Web Push) — one-time setup
+
+Smart, **deterministic** phone reminders from Hammy (no OpenAI). Reuses the same signed coach
+session for auth; adds Cloudflare **D1** + standards-based **VAPID Web Push** + a 15-minute Cron.
+
+### Extra secrets / config
+
+| Name | What | How |
+|---|---|---|
+| `VAPID_PRIVATE_KEY` | VAPID signing key | `wrangler secret put VAPID_PRIVATE_KEY` (SECRET) |
+| `VAPID_PUBLIC_KEY` | VAPID public key (browser needs it) | `[vars]` in `wrangler.toml` |
+| `VAPID_SUBJECT` | `mailto:` or site URL | `[vars]` (defaults to the GitHub Pages URL) |
+| `REMINDERS_DB` | D1 binding | `[[d1_databases]]` in `wrangler.toml` |
+
+### Reminder routes (all origin-gated; all but `/config` require the Bearer session + `X-Hammy-Anon`)
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/reminders/config` | public: `{ vapid_public_key, cron_interval_minutes }` |
+| GET / PUT | `/reminders/preferences` | read / save category times, quiet hours, timezone |
+| POST / DELETE | `/reminders/subscribe` | save / remove this device's push subscription |
+| PUT | `/reminders/status` | sync today's minimal completion flags only |
+| POST | `/reminders/pause-today` | pause reminders for the user's local date |
+| POST | `/reminders/test` | send a rate-limited test push |
+| DELETE | `/reminders/data` | delete all reminder data for this anonymous user |
+
+### Exact one-time setup commands
+
+```bash
+cd coach-worker
+
+# 1) Create the D1 database (prints a database_id)
+npx wrangler d1 create hammy-reminders
+
+# 2) Paste that id into wrangler.toml -> [[d1_databases]] database_id = "..."
+
+# 3) Apply the migration locally, then remotely
+npx wrangler d1 migrations apply hammy-reminders --local
+npx wrangler d1 migrations apply hammy-reminders --remote
+
+# 4) Generate VAPID keys (no extra deps)
+node scripts/gen-vapid.mjs
+#    -> copy PUBLIC into wrangler.toml [vars] VAPID_PUBLIC_KEY
+#    -> store PRIVATE as a secret:
+echo -n "<PASTE_VAPID_PRIVATE_KEY>" | npx wrangler secret put VAPID_PRIVATE_KEY
+
+# 5) (Cron is already configured in wrangler.toml: */15 * * * *)
+
+# 6) Deploy
+npx wrangler deploy
+
+# 7) Verify config route (public values only)
+curl -H "Origin: https://jackblaze919.github.io" https://hammy-coach.<sub>.workers.dev/reminders/config
+
+# 8) Test a push: in the app -> Ask Hammy -> 🔔 -> Enable -> Send test notification
+```
+
+**Privacy:** D1 stores only the push subscription, the chosen reminder times, and minimal
+boolean completion flags for the current day. No names, emails, weights, meal
+contents, photos, chat, or medical data are ever uploaded. `user_id` is an HMAC of the browser's
+anonymous id (never the raw id, never the access code). Notification copy is server-controlled.

@@ -6,9 +6,25 @@ compatibility_date = "2024-11-01"
 [vars]
 OPENAI_MODEL = "gpt-4.1-mini"
 ALLOWED_ORIGINS = "https://jackblaze919.github.io,http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173"
+# VAPID *public* key is not a secret (the browser needs it). Set after `wrangler deploy` via the
+# value printed by the key-generation step (see README). Leave empty until then.
+VAPID_PUBLIC_KEY = ""
+VAPID_SUBJECT = "https://jackblaze919.github.io/isa-tracker/"
+
+# Hammy reminders: Cloudflare D1 database binding. Create the DB, then paste its id here
+# (see README "Reminders one-time setup"). Until this exists, reminder routes return 503.
+[[d1_databases]]
+binding = "REMINDERS_DB"
+database_name = "hammy-reminders"
+database_id = "PASTE-D1-DATABASE-ID-HERE"
+
+# Cron: run the reminder scheduler about every 15 minutes.
+[triggers]
+crons = ["*/15 * * * *"]
 
 # SECRETS — never put in this file. Set them with:
 #   wrangler secret put OPENAI_API_KEY
 #   wrangler secret put COACH_ACCESS_CODE
 #   wrangler secret put SESSION_SIGNING_SECRET
+#   wrangler secret put VAPID_PRIVATE_KEY
 # For local dev, copy .dev.vars.example -> .dev.vars (gitignored) and fill it in.

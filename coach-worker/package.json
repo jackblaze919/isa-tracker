@@ -7,7 +7,11 @@
   "scripts": {
     "test": "node --test",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create hammy-reminders",
+    "db:migrate:local": "wrangler d1 migrations apply hammy-reminders --local",
+    "db:migrate:remote": "wrangler d1 migrations apply hammy-reminders --remote",
+    "vapid:gen": "node scripts/gen-vapid.mjs"
   },
   "devDependencies": {
     "wrangler": "^3.80.0"
