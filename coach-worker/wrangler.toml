@@ -8,7 +8,7 @@ OPENAI_MODEL = "gpt-4.1-mini"
 ALLOWED_ORIGINS = "https://jackblaze919.github.io,http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173"
 # VAPID *public* key is not a secret (the browser needs it). Set after `wrangler deploy` via the
 # value printed by the key-generation step (see README). Leave empty until then.
-VAPID_PUBLIC_KEY = ""
+VAPID_PUBLIC_KEY = "BJSk88gZG9sxfWs74ggR0Oa37qhtwBtDBCJnCX4Ly8VHi49ZBhrHZfL0OwKFmbIdyKNER5v708Nee21cgToxhbs"
 VAPID_SUBJECT = "https://jackblaze919.github.io/isa-tracker/"
 
 # Hammy reminders: Cloudflare D1 database binding. Create the DB, then paste its id here
