@@ -16,7 +16,7 @@ VAPID_SUBJECT = "https://jackblaze919.github.io/isa-tracker/"
 [[d1_databases]]
 binding = "REMINDERS_DB"
 database_name = "hammy-reminders"
-database_id = "PASTE-D1-DATABASE-ID-HERE"
+database_id = "06a594a1-0cfe-4950-aec8-e4197e546c88"
 
 # Cron: run the reminder scheduler about every 15 minutes.
 [triggers]
