@@ -112,6 +112,14 @@ test("prompt: contains injection-resistance, secret-refusal, urgent-first, no-ph
   assert.match(p, /BEGIN the reply with clear guidance to stop and seek/i);
   assert.match(p, /do NOT analyze body-progress or physique photos/i);
   assert.match(p, /Lower body/);                  // sanitized plan grounding included
+  // capability honesty: must not imply it can edit/adjust the tracker
+  assert.match(p, /CANNOT directly edit, update, save, log, swap, or change anything inside her tracker/i);
+  assert.match(p, /Do you want me to adjust your plan now\?/);   // named as a forbidden phrase
+  // richer exercise-swap format
+  assert.match(p, /EXERCISE SWAPS:/);
+  assert.match(p, /sets and reps/i);
+  assert.match(p, /whether to keep the same backpack\/load/i);
+  assert.match(p, /supported reverse lunges or floor glute bridges/);
   assert.deepEqual(SAFETY_VALUES, ["normal", "caution", "urgent"]);
   assert.deepEqual(MOOD_VALUES, ["neutral", "thinking", "proud", "concerned", "sleepy", "excited"]);
 });
