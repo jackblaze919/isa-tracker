@@ -1,0 +1,154 @@
+/* fun.css — Hammy's love-note delivery (envelope + modal). Themed to match the tracker. */
+
+/* ---- floating envelope (bottom-left; coach FAB is bottom-right) ---- */
+.love-fab {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--grad, linear-gradient(135deg, #ff5fa2, #e11d48));
+  box-shadow: var(--shadow, 0 6px 22px rgba(255, 93, 162, .16));
+  cursor: pointer;
+  z-index: 60;
+  display: none;
+  place-items: center;
+  padding: 0;
+  transform: scale(0);
+  transition: transform .28s cubic-bezier(.2, 1.4, .4, 1);
+}
+.love-fab.show { display: grid; transform: scale(1); animation: loveBob 2.6s ease-in-out infinite; }
+.love-fab.special { box-shadow: 0 0 0 4px rgba(255, 126, 179, .35), var(--shadow, 0 6px 22px rgba(255, 93, 162, .2)); }
+.love-fab:focus-visible { outline: 3px solid var(--hotdark, #cc1f4a); outline-offset: 3px; }
+.love-fab-emoji { font-size: 26px; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .15)); }
+.love-fab-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--hotdark, #cc1f4a);
+  font: 700 12px/20px "Quicksand", system-ui, sans-serif;
+  display: none;
+  place-items: center;
+  box-shadow: var(--shadow-sm, 0 3px 12px rgba(255, 93, 162, .12));
+}
+.love-fab-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--coral, #ff7eb3);
+  opacity: .55;
+  animation: lovePulse 2.2s ease-out infinite;
+  z-index: -1;
+}
+.love-fab-tip {
+  position: absolute;
+  left: 64px;
+  bottom: 8px;
+  white-space: nowrap;
+  background: #fff;
+  color: var(--ink, #4a2230);
+  font: 600 13px/1 "Quicksand", system-ui, sans-serif;
+  padding: 8px 11px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm, 0 3px 12px rgba(255, 93, 162, .12));
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+.love-fab.show .love-fab-tip { animation: loveTip 5.5s ease-in-out 1s 1 forwards; }
+.love-fab:hover .love-fab-tip { opacity: 1; transform: translateX(0); }
+
+@keyframes loveBob { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1) translateY(-5px); } }
+@keyframes lovePulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes loveTip { 0%, 100% { opacity: 0; transform: translateX(-6px); } 12%, 78% { opacity: 1; transform: translateX(0); } }
+
+/* ---- the note modal ---- */
+.love-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(74, 34, 48, .42);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity .26s ease;
+}
+.love-modal.show { opacity: 1; }
+.love-card {
+  position: relative;
+  width: min(92vw, 360px);
+  background: linear-gradient(180deg, #fff, var(--pink-soft, #ffe1ee));
+  border: 2px dashed var(--coral, #ff7eb3);
+  border-radius: var(--radius, 22px);
+  box-shadow: var(--shadow, 0 6px 22px rgba(255, 93, 162, .16));
+  padding: 20px 22px 22px;
+  text-align: center;
+  overflow: hidden;
+  transform: scale(.86) translateY(8px);
+  transition: transform .3s cubic-bezier(.2, 1.4, .4, 1);
+}
+.love-modal.show .love-card { transform: scale(1) translateY(0); }
+.love-ham {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 2px;
+}
+.love-ham svg { width: 100%; height: 100%; display: block; }
+.love-seal { font-size: 30px; line-height: 1; margin-top: -6px; }
+.love-title {
+  margin: 6px 0 4px;
+  color: var(--hot, #ff4d86);
+  font-family: "Pacifico", "Quicksand", cursive;
+  font-size: 22px;
+  font-weight: 700;
+}
+.love-text {
+  margin: 6px 4px 12px;
+  color: var(--ink, #4a2230);
+  font: 600 15.5px/1.5 "Quicksand", system-ui, sans-serif;
+}
+.love-sign {
+  margin: 0 0 16px;
+  color: var(--muted, #84566a);
+  font: 600 13px/1 "Quicksand", system-ui, sans-serif;
+}
+.love-close {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 18px;
+  background: var(--grad, linear-gradient(135deg, #ff5fa2, #e11d48));
+  color: #fff;
+  font: 700 14px/1 "Quicksand", system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm, 0 3px 12px rgba(255, 93, 162, .12));
+}
+.love-close:focus-visible { outline: 3px solid var(--hotdark, #cc1f4a); outline-offset: 2px; }
+
+/* birthday extras */
+.love-balloon {
+  position: absolute;
+  bottom: -10px;
+  pointer-events: none;
+  animation: loveFloat 2.4s ease-in forwards;
+}
+@keyframes loveFloat {
+  0% { transform: translateY(0) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(-360px) rotate(28deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .love-fab.show, .love-fab-pulse, .love-fab.show .love-fab-tip { animation: none; }
+  .love-fab.show { transform: scale(1); }
+  .love-balloon { display: none; }
+}
