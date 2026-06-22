@@ -41,6 +41,17 @@ export function inQuietHours(minutes, quietStart, quietEnd){
 
 export function isPausedToday(prefs, localDate){ return !!prefs && prefs.paused_local_date === localDate; }
 
+/* ---------- fitness-day cutoff (tracker day runs cutoffHour:00 -> next cutoffHour-1:59) ---------- */
+export function previousLocalDate(d){
+  const [y, m, day] = d.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1, day) - 86400000);
+  return t.getUTCFullYear() + "-" + (t.getUTCMonth() + 1 < 10 ? "0" : "") + (t.getUTCMonth() + 1) + "-" + (t.getUTCDate() < 10 ? "0" : "") + t.getUTCDate();
+}
+// Given the actual clock date+minutes, return the tracker-day date (before cutoffHour -> previous day).
+export function trackerDayDate(clockDate, minutes, cutoffHour){
+  return minutes < (cutoffHour | 0) * 60 ? previousLocalDate(clockDate) : clockDate;
+}
+
 /* ---------- deterministic, server-controlled copy ---------- */
 export function copyFor(category, status){
   switch(category){
@@ -283,7 +294,10 @@ export async function runScheduled(env, deps){
   let sentTotal = 0;
   for(const prefs of prefsList){
     if(!isValidTimezone(prefs.timezone)) continue;
-    const { date: localDate, minutes } = localParts(now, prefs.timezone);
+    const { date: clockDate, minutes } = localParts(now, prefs.timezone);
+    // status / dedupe use the tracker-day date (4 AM cutoff); send-time + quiet hours use the real clock.
+    const cutoff = Number(env && env.TRACKER_DAY_CUTOFF_HOUR) || 4;
+    const localDate = trackerDayDate(clockDate, minutes, cutoff);
     if(isPausedToday(prefs, localDate)) continue;
     if(inQuietHours(minutes, prefs.quiet_start || DEFAULT_QUIET.start, prefs.quiet_end || DEFAULT_QUIET.end)) continue;
     const status = await store.getStatus(prefs.user_id, localDate);

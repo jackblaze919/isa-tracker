@@ -61,11 +61,18 @@
 
   /* ---------- status (only allowed completion flags; nothing else) ---------- */
   function callFn(name, fb) { try { return (typeof window[name] === "function") ? window[name]() : fb; } catch (e) { return fb; } }
+  function trackerDayBase() {
+    // Use the tracker's frozen fitness day (TODAY) so local_date matches exactly where the data
+    // is stored (TODAY_KEY). Fall back to computing the 4 AM-cutoff day from the clock.
+    if (typeof TODAY !== "undefined" && TODAY instanceof Date) return TODAY;
+    var cut = (typeof TRACKER_DAY_CUTOFF_HOUR !== "undefined") ? TRACKER_DAY_CUTOFF_HOUR : 4;
+    var d = new Date(); if (d.getHours() < cut) d.setDate(d.getDate() - 1); return d;
+  }
   function buildReminderStatus() {
-    var nd = new Date();
-    var localDate = nd.getFullYear() + "-" + String(nd.getMonth() + 1).padStart(2, "0") + "-" + String(nd.getDate()).padStart(2, "0");
+    var base = trackerDayBase();
+    var localDate = base.getFullYear() + "-" + String(base.getMonth() + 1).padStart(2, "0") + "-" + String(base.getDate()).padStart(2, "0");
     var tz = "UTC"; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch (e) {}
-    var dow = (typeof TODAY_DOW !== "undefined") ? TODAY_DOW : nd.getDay();
+    var dow = base.getDay();
 
     var stepsActual = callFn("gStepsActual", 0) | 0;
     var stepTarget = 7000;

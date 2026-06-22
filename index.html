@@ -52,6 +52,8 @@
   }
   header h1{margin:0;font-family:"Pacifico",cursive;font-weight:400;font-size:34px;letter-spacing:.5px;text-shadow:0 2px 0 rgba(190,20,60,.35);cursor:pointer}
   header p{margin:8px 0 0;opacity:.97;font-size:14px;font-weight:700;letter-spacing:.3px}
+  header p.late-note{margin:7px auto 0;display:inline-block;font-size:12px;font-weight:600;letter-spacing:.2px;
+    background:rgba(255,255,255,.22);color:#fff;padding:4px 11px;border-radius:999px;opacity:1}
   header{cursor:pointer}
   header .spark{position:absolute;font-size:20px;opacity:.85;animation:floaty 5s ease-in-out infinite;pointer-events:none}
   .statdot.derived{border-style:dashed;border-color:#e9a7c2;cursor:pointer}
@@ -491,6 +493,7 @@
   <span class="spark" style="top:70px;right:22%;animation-delay:1.4s">🌸</span>
   <h1 id="appTitle" tabindex="0" role="button" aria-label="Isa's Tracker — tap for a surprise">Isa's Tracker</h1>
   <p id="todayLabel"></p>
+  <p id="lateNote" class="late-note" hidden></p>
 </header>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
@@ -813,7 +816,13 @@ const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 function dateKey(dt){ return dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate(); }
 function parseDateKey(k){ const p=k.split("-").map(Number); return new Date(p[0],p[1]-1,p[2]); }
 function dayDiff(a,b){ const A=new Date(a.getFullYear(),a.getMonth(),a.getDate()),B=new Date(b.getFullYear(),b.getMonth(),b.getDate()); return Math.round((A-B)/86400000); }
-const TODAY = new Date();
+// Fitness-day cutoff: the tracker day runs from 4:00 AM to 3:59 AM local time, so late-night
+// logging (e.g. 2 AM) still counts toward the previous day. Everything daily keys off TODAY/_KEY/_DOW.
+const TRACKER_DAY_CUTOFF_HOUR = 4;
+function trackerDayDate(now){ const d = new Date(now.getTime()); if(d.getHours() < TRACKER_DAY_CUTOFF_HOUR) d.setDate(d.getDate() - 1); d.setHours(12,0,0,0); return d; }
+const NOW = new Date();
+const IS_LATE_NIGHT = NOW.getHours() < TRACKER_DAY_CUTOFF_HOUR;   // real clock is 00:00–03:59
+const TODAY = trackerDayDate(NOW);                                // the tracker/fitness day (not raw calendar day)
 const TODAY_KEY = dateKey(TODAY);
 const TODAY_DOW = TODAY.getDay();
 const RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -1272,6 +1281,7 @@ function importBackup(e){
    INIT + DAY ROLLOVER + EASTER EGG
    ============================================================ */
 document.getElementById("todayLabel").textContent="💕 "+DAYS[TODAY_DOW]+" · "+TODAY.toLocaleDateString(undefined,{month:"long",day:"numeric"})+" 💕";
+(function(){ const ln=document.getElementById("lateNote"); if(ln && IS_LATE_NIGHT){ ln.textContent="🌙 Late-night logging — this still counts for "+DAYS[TODAY_DOW]+" until 4:00 AM."; ln.hidden=false; } })();
 (function(){ const lm=document.getElementById("todayLoveMsg"); if(lm) lm.textContent=LOVE_NOTES[dayOfYear(TODAY)%LOVE_NOTES.length]; })();
 (function(){ const hdr=document.querySelector("header"), h=document.getElementById("appTitle");
   const go=(e)=>{ const x=(e&&e.clientX)||window.innerWidth/2, y=(e&&e.clientY)||80; heartBurst(x,y); confettiRain(); };

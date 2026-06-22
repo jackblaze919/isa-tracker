@@ -10,6 +10,9 @@ ALLOWED_ORIGINS = "https://jackblaze919.github.io,http://localhost:8080,http://1
 # value printed by the key-generation step (see README). Leave empty until then.
 VAPID_PUBLIC_KEY = "BJSk88gZG9sxfWs74ggR0Oa37qhtwBtDBCJnCX4Ly8VHi49ZBhrHZfL0OwKFmbIdyKNER5v708Nee21cgToxhbs"
 VAPID_SUBJECT = "https://jackblaze919.github.io/isa-tracker/"
+# Fitness-day cutoff hour (tracker day runs from this local hour to 1 minute before it next day).
+# Reminder status dedupe + the future email digest use this. Keep in sync with the frontend (4).
+TRACKER_DAY_CUTOFF_HOUR = "4"
 
 # Hammy reminders: Cloudflare D1 database binding. Create the DB, then paste its id here
 # (see README "Reminders one-time setup"). Until this exists, reminder routes return 503.
